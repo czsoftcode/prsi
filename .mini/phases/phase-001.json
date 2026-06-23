@@ -1,0 +1,42 @@
+{
+  "id": 1,
+  "title": "Scaffold Vite + TypeScript",
+  "goal": "Založit Vite + TypeScript projekt se strukturou složek (engine/ui/assets) a ověřit, že běží dev server i produkční build.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Inicializace Vite vanilla-ts projektu",
+      "status": "done",
+      "detail": "package.json s vite + typescript (šablona vanilla-ts), npm install projde, npm run dev nastartuje dev server bez chyb."
+    },
+    {
+      "title": "Struktura složek a strict tsconfig",
+      "status": "done",
+      "detail": "Vytvořit src/engine/ a src/ui/ (public/cards/ už existuje); tsconfig.json má strict: true; npx tsc --noEmit projde."
+    },
+    {
+      "title": "Nastavení Vitestu se smoke testem",
+      "status": "done",
+      "detail": "Přidat vitest, npm test spustí a projde jeden triviální test v src/engine/, test runner je ověřený pro další fáze."
+    },
+    {
+      "title": "Placeholder herní stůl + ověření assetů",
+      "status": "done",
+      "detail": "index.html + src/ui/main.ts zobrazí nadpis a jednu kartu načtenou z /cards/rub.png, ověří funkční cestu k obrázkům."
+    },
+    {
+      "title": "Ověření produkčního buildu",
+      "status": "done",
+      "detail": "npm run build vytvoří dist/ bez chyb a npm run preview naservíruje funkční stránku."
+    }
+  ],
+  "startedAt": "2026-06-23T21:02:21.024Z",
+  "resolvedVerify": [
+    "Vizuální kontrola placeholder stránky v prohlížeči"
+  ],
+  "completedAt": "2026-06-23T21:07:36.605Z",
+  "autoCommit": {
+    "preSha": "93bb305b121f43a8bffdba3c94d66e54c1716905",
+    "subject": "Phase 1: Scaffold Vite + TypeScript"
+  }
+}

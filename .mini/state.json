@@ -2,5 +2,11 @@
   "version": 2,
   "createdAt": "2026-06-23T19:44:47.063Z",
   "currentPhaseId": null,
-  "phases": []
+  "phases": [
+    {
+      "id": 1,
+      "title": "Scaffold Vite + TypeScript",
+      "status": "done"
+    }
+  ]
 }
