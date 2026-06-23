@@ -31,6 +31,9 @@ export const HAND_SIZE = 5;
  */
 export type Rng = () => number;
 
+/** Účastník hry. */
+export type Player = "player" | "ai";
+
 /** Stav rozdané partie. U balíčků je poslední prvek vrchní (top). */
 export interface GameState {
   /** Ruka lidského hráče. */
@@ -41,6 +44,8 @@ export interface GameState {
   drawPile: Card[];
   /** Odhazovací hromádka; vrchní karta je poslední prvek. */
   discardPile: Card[];
+  /** Aktuálně požadovaná barva (po svršku se může lišit od barvy vrchní karty). */
+  currentSuit: Suit;
 }
 
 /** Vytvoří kompletní balíček 32 mariášových karet (každá kombinace barva×hodnota). */
@@ -83,7 +88,8 @@ export function deal(deck: readonly Card[]): GameState {
   const cards = deck.slice();
   const playerHand = cards.slice(0, HAND_SIZE);
   const aiHand = cards.slice(HAND_SIZE, HAND_SIZE * 2);
-  const discardPile = [cards[HAND_SIZE * 2]!];
+  const topCard = cards[HAND_SIZE * 2]!;
+  const discardPile = [topCard];
   const drawPile = cards.slice(HAND_SIZE * 2 + 1);
-  return { playerHand, aiHand, drawPile, discardPile };
+  return { playerHand, aiHand, drawPile, discardPile, currentSuit: topCard.suit };
 }

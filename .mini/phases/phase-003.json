@@ -1,0 +1,39 @@
+{
+  "id": 3,
+  "title": "Engine: základní tah",
+  "goal": "Validace platnosti tahu (shoda barvy nebo hodnoty), vyložení karty na hromádku, líznutí 1 karty když není co hrát, a remíchání odhazovací hromádky zpět do balíčku když dojde — jako čisté funkce pokryté unit testy.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Stav currentSuit a úprava deal",
+      "status": "done",
+      "detail": "Do GameState přidat pole currentSuit: Suit a typ Player = player|ai; deal() ho inicializuje na barvu úvodní odhazovací karty. Typy zůstávají v cards.ts, stávající testy deal projdou."
+    },
+    {
+      "title": "Validace tahu: isPlayable + playableCards",
+      "status": "done",
+      "detail": "Čisté funkce v src/engine/moves.ts — isPlayable(card, topCard, currentSuit) vrací true při card.suit===currentSuit || card.rank===topCard.rank; playableCards(hand, topCard, currentSuit) vrátí hratelné karty z ruky. Pokryto testy."
+    },
+    {
+      "title": "Vyložení karty: playCard(state, player, card)",
+      "status": "done",
+      "detail": "Ověří platnost (jinak vyhodí Error), odebere kartu z ruky hráče, položí na vrch discardPile, nastaví currentSuit na barvu zahrané karty; vrací nový stav, vstup nemění. Bez speciálních efektů."
+    },
+    {
+      "title": "Líznutí + remíchání: drawCard(state, player, rng)",
+      "status": "done",
+      "detail": "Líznutí vrchní karty z drawPile do ruky; při prázdném drawPile nejdřív zamíchá discardPile bez vrchní karty zpět (injektovaný Rng) a pak líže; když není co míchat ani líznout, vrátí stav beze změny. Čisté."
+    },
+    {
+      "title": "Unit testy základního tahu",
+      "status": "done",
+      "detail": "moves.test.ts pokryje validaci, vyložení, neplatný tah (Error), líznutí, remíchání se zachováním vrchní karty i okrajový stav 'není co líznout'; npm test a tsc --noEmit projdou zeleně."
+    }
+  ],
+  "startedAt": "2026-06-23T21:24:36.587Z",
+  "completedAt": "2026-06-23T21:27:34.584Z",
+  "autoCommit": {
+    "preSha": "4bdd66fecc77acc639c05171d2d11bc80364498c",
+    "subject": "Phase 3: Engine: základní tah"
+  }
+}
