@@ -10,3 +10,4 @@ Všechny podstatné změny v projektu Prší. Formát vychází z
 - Vitest jako test runner se smoke testem.
 - Placeholder herní obrazovka (nadpis + rub karty) ověřující cestu k obrázkům v `public/cards/`.
 - Skripty `dev`, `build`, `preview`, `typecheck`, `test`.
+- Datový model enginu: typy `Card`/`Suit`/`Rank`, balíček 32 mariášových karet (`createDeck`), zamíchání s injektovaným RNG (`shuffle`) a rozdání počátečního stavu partie 5+5 karet (`deal`) — čisté funkce pokryté unit testy.

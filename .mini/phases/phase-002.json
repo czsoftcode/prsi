@@ -1,0 +1,39 @@
+{
+  "id": 2,
+  "title": "Engine: datový model",
+  "goal": "Definovat typy Card/Suit/Rank, vytvořit 32 mariášových karet, zamíchání, rozdání ruky hráči i AI a počáteční odhazovací kartu — jako čisté funkce pokryté testy.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Typy Card/Suit/Rank a konstanty",
+      "status": "done",
+      "detail": "V src/engine/cards.ts definovat Suit (zaludy/zelene/srdce/kule), Rank (7,8,9,10,svrsek,spodek,kral,eso), typ Card a readonly pole všech barev/hodnot. Žádná logika."
+    },
+    {
+      "title": "Tvorba balíčku 32 karet",
+      "status": "done",
+      "detail": "Čistá funkce createDeck(): Card[] vrátí všech 32 unikátních kombinací barva×hodnota."
+    },
+    {
+      "title": "Zamíchání s injektovaným RNG",
+      "status": "done",
+      "detail": "shuffle(deck, rng) jako čistá funkce, RNG předán parametrem (ne Math.random uvnitř). S fixním seedem deterministický výsledek, zachová všechny karty."
+    },
+    {
+      "title": "Rozdání a počáteční stav hry",
+      "status": "done",
+      "detail": "deal(deck) rozdá 5 karet hráči i AI, první kartu z balíčku jako úvodní odhazovací (bez filtru funkčních karet), zbytek jako lízací balíček; vrací datovou strukturu stavu, součet = 32."
+    },
+    {
+      "title": "Unit testy datového modelu",
+      "status": "done",
+      "detail": "cards.test.ts pokrývá balíček, míchání i rozdání; npm test projde zeleně."
+    }
+  ],
+  "startedAt": "2026-06-23T21:13:17.284Z",
+  "completedAt": "2026-06-23T21:16:47.035Z",
+  "autoCommit": {
+    "preSha": "3528ea0410adee872ebf1d570a9951a8188f9f13",
+    "subject": "Phase 2: Engine: datový model"
+  }
+}
