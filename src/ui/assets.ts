@@ -4,6 +4,11 @@
 
 import type { Card, Rank, Suit } from "../engine/cards";
 
+// Prefix veřejných assetů. Vite ho nastaví dle `base`: v dev/testech "/",
+// v produkčním buildu na GitHub Pages "/prsi/". Vždy končí lomítkem, takže
+// se připojuje přímo bez dalšího "/".
+const BASE = import.meta.env.BASE_URL;
+
 /** Český popisek barvy (pro alt texty a overlay). Sdílí render i overlay. */
 export const SUIT_LABELS: Record<Suit, string> = {
   zaludy: "žaludy",
@@ -13,11 +18,11 @@ export const SUIT_LABELS: Record<Suit, string> = {
 };
 
 /** Cesta k obrázku rubu karty. */
-export const RUB_SRC = "/cards/rub.png";
+export const RUB_SRC = `${BASE}cards/rub.png`;
 
-/** Cesta k ikoně barvy (indikátor aktuální barvy), např. "srdce" -> "/cards/suit-srdce.png". */
+/** Cesta k ikoně barvy (indikátor aktuální barvy), např. "srdce" -> ".../cards/suit-srdce.png". */
 export function suitIconSrc(suit: Suit): string {
-  return `/cards/suit-${suit}.png`;
+  return `${BASE}cards/suit-${suit}.png`;
 }
 
 /** Část názvu souboru pro daný rank (numerické 7–9 se nulují, zbytek 1:1). */
@@ -36,5 +41,5 @@ function rankSlug(rank: Rank): string {
 
 /** Cesta k obrázku konkrétní karty, např. {srdce,7} -> "/cards/srdce-07.png". */
 export function cardSrc(card: Card): string {
-  return `/cards/${card.suit}-${rankSlug(card.rank)}.png`;
+  return `${BASE}cards/${card.suit}-${rankSlug(card.rank)}.png`;
 }

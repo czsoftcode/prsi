@@ -6,6 +6,7 @@ Všechny podstatné změny v projektu Prší. Formát vychází z
 ## [Unreleased]
 
 ### Added
+- Nasazení na GitHub Pages přes GitHub Actions (`.github/workflows/deploy.yml`): push do `main` spustí testy, build a deploy. Hra běží na `https://czsoftcode.github.io/prsi/`.
 - README s popisem hry (pro děti 6+, dětské motivy, odvozeno od žolíkových karet J/Q/K/A), pravidly ve zkratce, návodem na instalaci a spuštění přes Vite a vloženým snímkem herní plochy.
 - Interaktivní herní smyčka: hra je hratelná tah-za-tahem myší i dotykem. Klik/dotyk na zvýrazněnou hratelnou kartu ji zahraje, nehratelná karta se ignoruje; líznout lze jen když hráč nemá co hrát. Po zahrání svrška se otevře overlay výběru barvy (klik mimo = zrušení tahu), eso nechá hráče hrát znovu. AI reaguje s krátkou prodlevou (~600 ms) a stůl se po každém tahu překreslí. Po vyprázdnění ruky se zobrazí banner vítěze a vstup se zastaví.
 - Zvýraznění hratelných karet hráče (jen když je na tahu).
@@ -24,4 +25,5 @@ Všechny podstatné změny v projektu Prší. Formát vychází z
 - Svršek je nyní divoká karta — lze ho zahrát na libovolnou barvu i hodnotu (a mění barvu). Dříve engine svršek chybně omezoval na shodu barvy nebo hodnoty. Sedmy svršek neruší (pod útokem nakupených sedem je dál hratelná jen sedma).
 
 ### Changed
+- Cesty k obrázkům karet se nově skládají přes `import.meta.env.BASE_URL` (Vite `base`), aby fungovaly i při běhu pod podadresářem (`/prsi/` na GitHub Pages). V dev i testech zůstává prefix `/`.
 - `playCard` aplikuje efekty speciálních karet a předává tah (po esu zůstává hráči); přijímá volitelný `chosenSuit` pro svršek. `drawCard` pod útokem sedem líže `2 × pendingSevens` karet a předává tah. `isPlayable`/`playableCards` nově zohledňují nakupené sedmy (pod útokem je hratelná jen sedma).
