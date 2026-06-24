@@ -1,15 +1,9 @@
 // Vykreslení stavu hry do DOM. Pouze zobrazení, žádná interakce (to je fáze 7).
 // Kontrakt: render() je idempotentní — pokaždé přestaví celý obsah `root`.
 
-import type { Card, GameState, Suit } from "../engine/cards";
-import { cardSrc, RUB_SRC, suitIconSrc } from "./assets";
-
-const SUIT_LABELS: Record<Suit, string> = {
-  zaludy: "žaludy",
-  zelene: "zelené",
-  srdce: "srdce",
-  kule: "kule",
-};
+import type { Card, GameState } from "../engine/cards";
+import { playableCards } from "../engine/moves";
+import { cardSrc, RUB_SRC, suitIconSrc, SUIT_LABELS } from "./assets";
 
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -47,9 +41,18 @@ function renderAiZone(state: GameState): HTMLElement {
   return zone;
 }
 
+function sameCard(a: Card, b: Card): boolean {
+  return a.suit === b.suit && a.rank === b.rank;
+}
+
+function topOfDiscard(state: GameState): Card {
+  return state.discardPile[state.discardPile.length - 1]!;
+}
+
 /** Lízací balíček: rub s počtem, nebo prázdné místo když je vyčerpaný. */
 function renderDrawPile(state: GameState): HTMLElement {
   const pile = el("div", "pile pile--draw");
+  pile.dataset.action = "draw"; // interakce: klik/dotyk = líznutí
   if (state.drawPile.length > 0) {
     pile.append(backCard());
     const count = el("span", "pile__count");
@@ -125,9 +128,19 @@ function renderCenterZone(state: GameState): HTMLElement {
 function renderPlayerZone(state: GameState): HTMLElement {
   const zone = el("div", "zone zone--player");
   const hand = el("div", "hand hand--player");
-  for (const card of state.playerHand) {
-    hand.append(faceCard(card));
-  }
+  const myTurn = state.currentPlayer === "player";
+  // Hratelné karty zvýrazníme jen když je hráč na tahu.
+  const playable = myTurn
+    ? playableCards(state.playerHand, topOfDiscard(state), state.currentSuit, state.pendingSevens)
+    : [];
+  state.playerHand.forEach((card, index) => {
+    const img = faceCard(card);
+    img.dataset.index = String(index); // interakce: identita karty pro handler
+    if (playable.some((c) => sameCard(c, card))) {
+      img.classList.add("card--playable");
+    }
+    hand.append(img);
+  });
   zone.append(hand);
   return zone;
 }

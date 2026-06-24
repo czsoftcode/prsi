@@ -32,6 +32,11 @@
       "id": 6,
       "title": "UI herní stůl: vykreslení stavu",
       "status": "done"
+    },
+    {
+      "id": 7,
+      "title": "UI interakce: herní smyčka + barva",
+      "status": "done"
     }
   ]
 }

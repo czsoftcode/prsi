@@ -59,6 +59,25 @@ describe("render (jsdom smoke)", () => {
     expect(root.querySelectorAll(".pile--draw .card--back")).toHaveLength(0);
   });
 
+  it("karty hráče mají data-index a lízací balíček data-action=draw", () => {
+    render(makeState(), root);
+    const cards = root.querySelectorAll<HTMLElement>(".hand--player .card--face");
+    cards.forEach((c, i) => expect(c.dataset.index).toBe(String(i)));
+    expect(root.querySelector<HTMLElement>(".pile--draw")?.dataset.action).toBe("draw");
+  });
+
+  it("zvýrazní hratelné karty jen když je hráč na tahu", () => {
+    // currentSuit kule, top kule-svrsek; hratelné: kule-kral (barva) i ostatní kule.
+    const onTurn = makeState({ currentPlayer: "player" });
+    render(onTurn, root);
+    const highlightedOnTurn = root.querySelectorAll(".hand--player .card--playable").length;
+    expect(highlightedOnTurn).toBeGreaterThan(0);
+
+    const offTurn = makeState({ currentPlayer: "ai" });
+    render(offTurn, root);
+    expect(root.querySelectorAll(".hand--player .card--playable")).toHaveLength(0);
+  });
+
   it("je idempotentní — opakované volání dá stejný počet elementů", () => {
     render(makeState(), root);
     const first = root.innerHTML;

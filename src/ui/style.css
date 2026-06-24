@@ -124,3 +124,85 @@ body {
   background: #b3261e;
   font-weight: 700;
 }
+
+/* Interakce: zvýraznění hratelných karet hráče. */
+.hand--player .card {
+  transition: transform 0.08s ease;
+}
+
+.hand--player .card--playable {
+  cursor: pointer;
+  outline: 3px solid #ffd34d;
+  outline-offset: 1px;
+  border-radius: 6px;
+}
+
+.hand--player .card--playable:hover {
+  transform: translateY(-8px);
+}
+
+.pile--draw {
+  cursor: pointer;
+}
+
+/* Overlay výběru barvy (mimo #app, přes celou plochu). */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+.overlay__box {
+  background: #0e4a2b;
+  padding: clamp(16px, 4vw, 32px);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.overlay__title {
+  margin: 0 0 16px;
+  font-size: 1.2rem;
+}
+
+.overlay__suits {
+  display: flex;
+  gap: clamp(8px, 3vw, 20px);
+}
+
+.overlay__suit-btn {
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px;
+  cursor: pointer;
+}
+
+.overlay__suit-btn:hover,
+.overlay__suit-btn:focus {
+  border-color: #ffd34d;
+}
+
+.overlay__suit-btn img {
+  width: clamp(48px, 12vw, 88px);
+  height: auto;
+  display: block;
+}
+
+/* Banner konce hry (mimo #app). */
+.banner {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.75);
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  z-index: 20;
+}

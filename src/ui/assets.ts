@@ -4,6 +4,14 @@
 
 import type { Card, Rank, Suit } from "../engine/cards";
 
+/** Český popisek barvy (pro alt texty a overlay). Sdílí render i overlay. */
+export const SUIT_LABELS: Record<Suit, string> = {
+  zaludy: "žaludy",
+  zelene: "zelené",
+  srdce: "srdce",
+  kule: "kule",
+};
+
 /** Cesta k obrázku rubu karty. */
 export const RUB_SRC = "/cards/rub.png";
 

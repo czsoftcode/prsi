@@ -31,9 +31,11 @@ function otherPlayer(player: Player): Player {
 
 /**
  * Lze danou kartu zahrát? Když na hráče míří nakupené sedmy (pendingSevens > 0),
- * je hratelná POUZE sedma. Jinak platí běžné pravidlo: shoda barvy (proti aktuální
- * požadované barvě) nebo hodnoty (proti vrchní kartě hromádky). Jediné místo, kde
- * se rozhoduje o hratelnosti — playableCards i playCard se opírají o tuto funkci.
+ * je hratelná POUZE sedma (svršek sedmy neruší). Jinak je svršek divoká karta —
+ * lze ho zahrát na cokoliv (a mění barvu); ostatní karty platí běžné pravidlo:
+ * shoda barvy (proti aktuální požadované barvě) nebo hodnoty (proti vrchní kartě
+ * hromádky). Jediné místo, kde se rozhoduje o hratelnosti — playableCards i
+ * playCard se opírají o tuto funkci.
  */
 export function isPlayable(
   card: Card,
@@ -43,6 +45,9 @@ export function isPlayable(
 ): boolean {
   if (pendingSevens > 0) {
     return card.rank === "7";
+  }
+  if (card.rank === "svrsek") {
+    return true;
   }
   return card.suit === currentSuit || card.rank === topCard.rank;
 }

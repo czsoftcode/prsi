@@ -35,6 +35,14 @@ describe("isPlayable", () => {
     expect(isPlayable(c("kule", "8"), top, "kule")).toBe(true);
     expect(isPlayable(c("srdce", "8"), top, "kule")).toBe(false);
   });
+  it("svršek je divoká karta — hratelný na libovolnou barvu i hodnotu", () => {
+    // vrchní srdce-kral, aktuální barva srdce; svršek bez shody barvy ani hodnoty.
+    expect(isPlayable(c("kule", "svrsek"), top, "srdce")).toBe(true);
+    expect(isPlayable(c("zelene", "svrsek"), c("kule", "8"), "kule")).toBe(true);
+  });
+  it("svršek sedmy neruší — pod útokem je hratelná jen sedma", () => {
+    expect(isPlayable(c("kule", "svrsek"), top, "srdce", 1)).toBe(false);
+  });
 });
 
 describe("playableCards", () => {

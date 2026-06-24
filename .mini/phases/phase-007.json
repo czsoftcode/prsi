@@ -1,0 +1,43 @@
+{
+  "id": 7,
+  "title": "UI interakce: herní smyčka + barva",
+  "goal": "Hráč klikem/dotykem zahraje hratelnou kartu nebo líznе z balíčku, engine tah vyhodnotí, AI odpoví a stůl se překreslí; po svršku overlay výběru barvy; neplatné tahy se ignorují, ovladatelné myší i dotykem. Měnitelný GameState drží controller, sekvenování hráč→AI včetně opakování po esu. Bez obrazovky konce hry a nové partie (to je následující fáze).",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Controller: ciste funkce tahu + dohnani AI",
+      "status": "done",
+      "detail": "novy src/ui/game.ts; createGame(rng), playerPlay(state, cardIndex, chosenSuit?, rng) a playerDraw(state, rng) vraci novy stav nebo null pri neplatnem/ignorovanem tahu (vc. pravidla liznout jen bez hratelne karty), advanceAi(state, rng) ve smycce dozene tahy AI dokud neni na tahu hrac / vitez / stall (tah se neposunul). Ciste, bez DOM. Unit testy: eso-retezeni AI, must-play pravidlo, detekce stallu, zastaveni u viteze"
+    },
+    {
+      "title": "Render: zvyrazneni hratelnych + data-atributy",
+      "status": "done",
+      "detail": "render prida hratelnym kartam hrace tridu card--playable (pres playableCards, jen kdyz currentPlayer===player) a interakcni data-*: data-index na karty ruky hrace, data-action=draw na lizaci balicek; jsdom test overi atributy a zvyrazneni dle stavu"
+    },
+    {
+      "title": "Zapojeni vstupu: delegace + smycka v main.ts",
+      "status": "done",
+      "detail": "jeden listener na #app (klik i dotyk), cte data-* z event.target.closest(...), vola controller, po tahu hrace s ~600ms prodlevou dozene AI, behem prodlevy zamek vstupu; main.ts drzi menitelny GameState a po kazde akci prekresli; overeni manualni v prohlizeci"
+    },
+    {
+      "title": "Overlay vyberu barvy po svrskovi",
+      "status": "done",
+      "detail": "samostatny kontejner mimo #app, 4 tlacitka barev, blokuje vstup do stolu; po vyberu preda chosenSuit do playerPlay; otevre se jen kdyz hrac klikne na svrsek; overeni manualni"
+    },
+    {
+      "title": "Konec hry: zastaveni vstupu",
+      "status": "done",
+      "detail": "jakmile winnerOf(state) != null, zamknout vstup a zastavit smycku, zadny dalsi tah; minimalni textova indikace viteze (plna end-obrazovka + nova partie je faze 8)"
+    }
+  ],
+  "startedAt": "2026-06-24T12:40:19.018Z",
+  "resolvedVerify": [
+    "Odehrání několika tahů v prohlížeči (npm run dev)",
+    "Dotykové ovládání na reálném zařízení"
+  ],
+  "completedAt": "2026-06-24T13:21:47.283Z",
+  "autoCommit": {
+    "preSha": "5162d31e1685acec5ebe6ebeab2e5e7a25307a32",
+    "subject": "Phase 7: UI interakce: herní smyčka + barva"
+  }
+}
