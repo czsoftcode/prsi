@@ -42,6 +42,11 @@
       "id": 8,
       "title": "Konec hry, nová partie, pat",
       "status": "done"
+    },
+    {
+      "id": 9,
+      "title": "E2E herní simulace",
+      "status": "done"
     }
   ]
 }

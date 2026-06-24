@@ -1,0 +1,24 @@
+{
+  "id": 9,
+  "title": "E2E herní simulace",
+  "goal": "Deterministický test zahraje N kompletních partií (AI vs. AI přes engine) a ověří, že každá skončí výhrou nebo pataem bez pádu invariantů.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Simulační smyčka + invarianty",
+      "status": "done",
+      "detail": "Funkce simulateGame(seed, firstPlayer) zahraje jednu celou partii přes engine API (chooseAiMove → playCard/drawCard pro oba hráče). Po každém tahu ověří: součet karet = 32, currentSuit ∈ SUITS, pendingSevens ≤ 4. Vyhodí chybu při překročení 2000 tahů."
+    },
+    {
+      "title": "Parametrický test 200 partií",
+      "status": "done",
+      "detail": "100 seedů × 2 startovní hráči (player/ai), každý jako samostatný it. Všechny musí projít — npx vitest run zelený."
+    }
+  ],
+  "startedAt": "2026-06-24T14:15:59.783Z",
+  "completedAt": "2026-06-24T14:18:51.360Z",
+  "autoCommit": {
+    "preSha": "e0d7cc0c85cac4edb2a7993edc083c269f5b4cae",
+    "subject": "Phase 9: E2E herní simulace"
+  }
+}
