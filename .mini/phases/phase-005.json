@@ -1,0 +1,39 @@
+{
+  "id": 5,
+  "title": "AI soupeř: heuristika tahu",
+  "goal": "Čistá funkce, která pro daný stav vrátí vždy jen platný tah AI (zahrání karty / výběr barvy po svršku / líznutí), s jednoduchou heuristikou reagující na nakupené sedmy a vynucenou barvu — pokrytá unit testy.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Typ tahu AI a kostra ai.ts",
+      "status": "done",
+      "detail": "Nový modul src/engine/ai.ts; export discriminated union AiMove = { type: \"play\"; card: Card; chosenSuit?: Suit } | { type: \"draw\" } a kostra chooseAiMove(state: GameState): AiMove. Engine zůstává čistý, AI nic nemutuje."
+    },
+    {
+      "title": "Heuristika výběru karty (priorita)",
+      "status": "done",
+      "detail": "Funkce nad playableCards(aiHand, top, currentSuit, pendingSevens): když nejsou hratelné karty → draw. Pevně daná priorita mezi kandidáty (obyčejná shoda dřív, sedma při pendingSevens>0 nebo k tlaku, eso k získání tahu, svršek jako poslední/k odhození nechtěné barvy). Ověřitelné: pro dané stavy vrací očekávanou kartu."
+    },
+    {
+      "title": "Výběr barvy po svrškovi",
+      "status": "done",
+      "detail": "Když AI hraje svrška, chosenSuit = nejčastější barva ve zbytku ruky po jeho odehrání (tie-break deterministicky podle pořadí SUITS); prázdná ruka → libovolná platná barva. Ověřitelné testem."
+    },
+    {
+      "title": "chooseAiMove: sestavení tahu + invariant platnosti",
+      "status": "done",
+      "detail": "Spojení heuristiky a výběru barvy do výsledného AiMove; garantováno, že type:play vrací jen kartu z playableCards a svršek vždy s chosenSuit, jinak type:draw."
+    },
+    {
+      "title": "Unit testy AI",
+      "status": "done",
+      "detail": "Testy heuristiky (reakce na nakupené sedmy, vynucená barva, výběr barvy svrškem) + invariant: pro reprezentativní stavy je vrácený tah vždy proveditelný playCard/drawCard bez chyby."
+    }
+  ],
+  "startedAt": "2026-06-24T11:17:07.683Z",
+  "completedAt": "2026-06-24T11:34:06.766Z",
+  "autoCommit": {
+    "preSha": "3c871701f5246be8c267073903ba0b050b557dd5",
+    "subject": "Phase 5: AI soupeř: heuristika tahu"
+  }
+}

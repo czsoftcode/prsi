@@ -6,6 +6,7 @@ Všechny podstatné změny v projektu Prší. Formát vychází z
 ## [Unreleased]
 
 ### Added
+- AI soupeř: čistá funkce `chooseAiMove(state)` vracející vždy platný tah (`play` se zahranou kartou a u svrška i zvolenou barvou, nebo `draw`). Jednoduchá heuristika reagující na nakupené sedmy i vynucenou barvu; barvu po svršku volí podle nejčastější barvy ve zbytku ruky — pokryto unit testy.
 - Engine speciálních karet a výhry: sedma (soupeř bere 2, hromadění až 4 sedmy = ber 8), eso (soupeř stojí → v 1v1 hraješ znovu), svršek (změna barvy přes `chosenSuit`) a detekce vítěze prázdnou rukou (`winnerOf`) — pokryto unit testy.
 - Stav partie nově nese, kdo je na tahu (`currentPlayer`), a počet nakupených sedem (`pendingSevens`).
 - Základ projektu: Vite + TypeScript (bez frameworku), struktura `src/engine/` a `src/ui/`.

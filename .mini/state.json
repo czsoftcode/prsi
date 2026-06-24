@@ -22,6 +22,11 @@
       "id": 4,
       "title": "Engine: speciální karty + výhra",
       "status": "done"
+    },
+    {
+      "id": 5,
+      "title": "AI soupeř: heuristika tahu",
+      "status": "done"
     }
   ]
 }
