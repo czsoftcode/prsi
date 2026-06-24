@@ -46,6 +46,13 @@ export interface GameState {
   discardPile: Card[];
   /** Aktuálně požadovaná barva (po svršku se může lišit od barvy vrchní karty). */
   currentSuit: Suit;
+  /** Kdo je právě na tahu. */
+  currentPlayer: Player;
+  /**
+   * Počet nakupených sedem mířících na hráče, který je na tahu (0–4). Když je > 0,
+   * hratelná je pouze sedma; jinak musí hráč líznout 2 × pendingSevens karet.
+   */
+  pendingSevens: number;
 }
 
 /** Vytvoří kompletní balíček 32 mariášových karet (každá kombinace barva×hodnota). */
@@ -91,5 +98,13 @@ export function deal(deck: readonly Card[]): GameState {
   const topCard = cards[HAND_SIZE * 2]!;
   const discardPile = [topCard];
   const drawPile = cards.slice(HAND_SIZE * 2 + 1);
-  return { playerHand, aiHand, drawPile, discardPile, currentSuit: topCard.suit };
+  return {
+    playerHand,
+    aiHand,
+    drawPile,
+    discardPile,
+    currentSuit: topCard.suit,
+    currentPlayer: "player",
+    pendingSevens: 0,
+  };
 }

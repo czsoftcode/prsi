@@ -1,0 +1,44 @@
+{
+  "id": 4,
+  "title": "Engine: speciální karty + výhra",
+  "goal": "Doplnit do enginu efekty sedmy (ber 2, hromadění max 4 sedmy = 8 karet), esa (soupeř stojí → v 1v1 hraješ znovu), svršku (změna barvy) a detekci výhry (prázdná ruka), vše pokryté unit testy.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Model: currentPlayer + pendingSevens do GameState",
+      "status": "done",
+      "detail": "Přidat obě pole do GameState; deal nastaví currentPlayer=\"player\" a pendingSevens=0. Opravit GameState literály v moves.test.ts. Výstup: tsc projde, stávající testy zelené."
+    },
+    {
+      "title": "Střídání tahu v playCard a drawCard",
+      "status": "done",
+      "detail": "Normální playCard i drawCard (1 karta) předají tah soupeři přes currentPlayer, bez efektů speciálek. Test: po tahu hráče je na řadě AI a naopak."
+    },
+    {
+      "title": "Eso: hraješ znovu",
+      "status": "done",
+      "detail": "playCard s esem ponechá currentPlayer beze změny. Test: po esu je znovu na řadě tentýž hráč; dvě esa za sebou = hraje pořád on."
+    },
+    {
+      "title": "Svršek: změna barvy přes chosenSuit",
+      "status": "done",
+      "detail": "playCard(state, player, card, chosenSuit?). U svrška chosenSuit povinný (jinak Error), nastaví currentSuit na vybranou barvu; u ne-svrška poslání chosenSuit = Error. Test: po svršku platí vybraná barva, další tah se validuje proti currentSuit."
+    },
+    {
+      "title": "Sedma: hromadění a líznutí penalty",
+      "status": "done",
+      "detail": "isPlayable/playableCards znají pendingSevens (když >0, hratelná jen sedma); playCard se sedmou inkrementuje pendingSevens; drawCard pod útokem vezme 2×pendingSevens a vynuluje (pohlídat remíchání při docházejícím balíčku). Testy: stack 1–4, ber 2/4/6/8, eso pod útokem nelze."
+    },
+    {
+      "title": "Detekce výhry: winnerOf(state)",
+      "status": "done",
+      "detail": "Odvozená funkce winnerOf(state): Player | null podle prázdné ruky. Testy: výhra prázdnou rukou; výhra i když je poslední karta funkční (efekt se neaplikuje)."
+    }
+  ],
+  "startedAt": "2026-06-24T10:18:29.076Z",
+  "completedAt": "2026-06-24T10:25:42.014Z",
+  "autoCommit": {
+    "preSha": "4fa6c211bad8724cbabede298f6b664fc5bd9f75",
+    "subject": "Phase 4: Engine: speciální karty + výhra"
+  }
+}
