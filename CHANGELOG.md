@@ -6,6 +6,7 @@ Všechny podstatné změny v projektu Prší. Formát vychází z
 ## [Unreleased]
 
 ### Added
+- README s popisem hry (pro děti 6+, dětské motivy, odvozeno od žolíkových karet J/Q/K/A), pravidly ve zkratce, návodem na instalaci a spuštění přes Vite a vloženým snímkem herní plochy.
 - Interaktivní herní smyčka: hra je hratelná tah-za-tahem myší i dotykem. Klik/dotyk na zvýrazněnou hratelnou kartu ji zahraje, nehratelná karta se ignoruje; líznout lze jen když hráč nemá co hrát. Po zahrání svrška se otevře overlay výběru barvy (klik mimo = zrušení tahu), eso nechá hráče hrát znovu. AI reaguje s krátkou prodlevou (~600 ms) a stůl se po každém tahu překreslí. Po vyprázdnění ruky se zobrazí banner vítěze a vstup se zastaví.
 - Zvýraznění hratelných karet hráče (jen když je na tahu).
 - Vykreslení herního stolu z enginu (`render(state, root)`): ruka hráče dole lícem, ruby AI nahoře, lízací balíček (s počtem, prázdný = placeholder) a odhazovací hromádka uprostřed, indikátor aktuální barvy (vyhrazená ikona `suit-<barva>.png` přes `suitIconSrc`), počtu nakupených sedem a kdo je na tahu. Načítání karet z `public/cards/` přes `cardSrc(card)` (mapování názvů včetně nulování ranků 7–9). Zatím bez interakce. Pokryto unit testy (mapování) a jsdom smoke testem (struktura).

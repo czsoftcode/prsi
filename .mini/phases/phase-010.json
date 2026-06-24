@@ -1,0 +1,42 @@
+{
+  "id": 10,
+  "title": "README s návodem a snímkem",
+  "goal": "Přepsat README.md: popis hry, návod na instalaci a spuštění přes Vite (npm install/dev/build) a vložený snímek herní plochy z public/images/hraci_plocha.png.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Struktura README: nadpis + popis hry",
+      "status": "done",
+      "detail": "Úvodní sekce — Prší 1v1 proti AI s mariášovými kartami podle českých pravidel, běží v prohlížeči."
+    },
+    {
+      "title": "Sekce Pravidla (stručně)",
+      "status": "done",
+      "detail": "Klíčová pravidla: shoda barvy/hodnoty, svršek = změna barvy, sedma = +2 a hromadění (max 4), eso = stop, lízání, výhra prázdnou rukou."
+    },
+    {
+      "title": "Sekce Instalace a spuštění",
+      "status": "done",
+      "detail": "Prerekvizity (Node.js + npm), npm install, npm run dev, npm run build + npm run preview, npm test — dle package.json."
+    },
+    {
+      "title": "Vložení snímku herní plochy",
+      "status": "done",
+      "detail": "Markdown obrázek na public/images/hraci_plocha.png relativní cestou."
+    },
+    {
+      "title": "Vizuální ověření renderu README",
+      "status": "done",
+      "detail": "Kontrola, že README i obrázek se korektně vykreslí, žádné rozbité odkazy."
+    }
+  ],
+  "startedAt": "2026-06-24T14:40:03.820Z",
+  "resolvedVerify": [
+    "README a snímek se na GitHubu vykreslí správně"
+  ],
+  "completedAt": "2026-06-24T14:49:04.137Z",
+  "autoCommit": {
+    "preSha": "fd55f99a4075d194168c8b7061c4ec6e6fefb85c",
+    "subject": "Phase 10: README s návodem a snímkem"
+  }
+}

@@ -47,6 +47,11 @@
       "id": 9,
       "title": "E2E herní simulace",
       "status": "done"
+    },
+    {
+      "id": 10,
+      "title": "README s návodem a snímkem",
+      "status": "done"
     }
   ]
 }
