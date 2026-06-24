@@ -44,3 +44,7 @@ npm test
 
 TypeScript + [Vite](https://vitejs.dev/), bez frameworku — vykreslování běží na čistém DOM.
 Herní engine je oddělený od UI a je plně pokrytý testy.
+
+## Licence
+
+[MIT](LICENSE)
