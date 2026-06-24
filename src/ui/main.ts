@@ -8,8 +8,9 @@ import {
   advanceAi,
   playerPlayable,
   winnerOf,
+  isPat,
 } from "./game";
-import { chooseSuit } from "./overlay";
+import { chooseSuit, showEndOverlay } from "./overlay";
 
 /** Prodleva před reakcí AI, aby byl tah vidět (není to animace, jen pauza). */
 const AI_DELAY_MS = 600;
@@ -24,11 +25,7 @@ if (app) {
 function startGame(app: HTMLElement): void {
   let state: GameState = createGame(rng);
   let locked = false; // zámek vstupu během AI prodlevy a otevřeného overlay
-
-  const banner = document.createElement("div");
-  banner.className = "banner";
-  banner.hidden = true;
-  document.body.append(banner);
+  let ended = false; // hra skončila (výhra/pat) → vstup zamčen, čeká se na novou partii
 
   function sameCard(a: Card, b: Card): boolean {
     return a.suit === b.suit && a.rank === b.rank;
@@ -38,14 +35,35 @@ function startGame(app: HTMLElement): void {
     return winnerOf(state) !== null;
   }
 
-  function draw(): void {
-    render(state, app);
+  /** Text overlaye konce hry, nebo null když hra běží dál. */
+  function endMessage(): string | null {
     const winner = winnerOf(state);
     if (winner) {
-      banner.hidden = false;
-      banner.textContent = winner === "player" ? "Vyhrál jsi! 🎉" : "Vyhrál počítač.";
-    } else {
-      banner.hidden = true;
+      return winner === "player" ? "Vyhrál jsi! 🎉" : "Vyhrál počítač.";
+    }
+    if (isPat(state)) {
+      return "Nikdo nemůže hrát — remíza!";
+    }
+    return null;
+  }
+
+  /** Nová partie bez reloadu: reset stavu, NE druhý startGame (jediný listener zůstává). */
+  function newGame(): void {
+    state = createGame(rng);
+    ended = false;
+    locked = false;
+    draw();
+  }
+
+  function draw(): void {
+    render(state, app);
+    if (!ended) {
+      const msg = endMessage();
+      if (msg) {
+        ended = true;
+        locked = true; // zamkni vstup (overlay navíc fyzicky překryje stůl)
+        showEndOverlay(msg, newGame);
+      }
     }
   }
 
@@ -57,9 +75,12 @@ function startGame(app: HTMLElement): void {
     }
     locked = true;
     window.setTimeout(() => {
+      if (ended) {
+        return; // hra mezitím skončila → žádný zbloudilý tah
+      }
       state = advanceAi(state, rng);
       draw();
-      locked = false;
+      locked = ended; // po výhře/patu nech zamčeno, jinak odemkni
     }, AI_DELAY_MS);
   }
 

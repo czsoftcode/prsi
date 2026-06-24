@@ -193,16 +193,24 @@ body {
   display: block;
 }
 
-/* Banner konce hry (mimo #app). */
-.banner {
-  position: fixed;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.75);
-  padding: 10px 20px;
+/* Overlay konce hry — tlačítko nová partie. */
+.overlay__newgame {
+  margin-top: 20px;
+  padding: 12px 28px;
+  border: none;
   border-radius: 999px;
+  background: #ffd34d;
+  color: #0e4a2b;
   font-size: 1.1rem;
   font-weight: 700;
-  z-index: 20;
+  cursor: pointer;
+}
+
+.overlay__newgame:hover,
+.overlay__newgame:focus {
+  background: #ffdf73;
+}
+
+.overlay--end .overlay__title {
+  font-size: 1.6rem;
 }

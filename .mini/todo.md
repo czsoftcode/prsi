@@ -9,5 +9,5 @@
 - [x] Fáze 4 — Engine, speciální karty: sedma (ber 2) s hromaděním max 4 sedmy, eso (soupeř stojí = v 1v1 hraješ znovu), svršek (změna barvy), detekce výhry (prázdná ruka) + unit testy.
 - [x] Fáze 5 — AI soupeř: heuristika výběru vždy platného tahu (preferuj speciální karty rozumně), reakce na nakupené sedmy a vynucenou barvu.
 - [x] Fáze 6 — UI herní stůl: vykreslení stavu z enginu — ruka hráče dole, ruby AI nahoře, lízací balíček a odhazovací hromádka uprostřed, indikátor aktuální barvy a počtu nakupených sedem; načítání obrázků z public/cards/.
-- [ ] Fáze 7 — UI interakce: klik/dotyk na kartu a balíček, overlay výběru barvy po svršku, obrazovka konce hry + nová partie; ovladatelné myší i dotykem.
+- [x] Fáze 7 — UI interakce: klik/dotyk na kartu a balíček, overlay výběru barvy po svršku, obrazovka konce hry + nová partie; ovladatelné myší i dotykem.
 - [ ] Fáze 8 — End-to-end playtest a doladění: odehrání celé partie od rozdání po výhru, ošetření edge cases (souběh eso + nakupené sedmy, prázdný balíček).

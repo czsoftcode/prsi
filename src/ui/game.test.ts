@@ -6,6 +6,7 @@ import {
   playerDraw,
   advanceAi,
   playerPlayable,
+  isPat,
 } from "./game";
 
 /** Deterministický RNG (mulberry32) pro testy. */
@@ -156,5 +157,42 @@ describe("advanceAi", () => {
   it("nedělá nic, když už je vítěz", () => {
     const s = makeState({ currentPlayer: "ai", playerHand: [] });
     expect(advanceAi(s, seededRng(1))).toBe(s);
+  });
+});
+
+describe("isPat", () => {
+  // Pat: hráč na tahu nemá hratelnou kartu, balíček prázdný a hromádku nelze remíchat.
+  const patBase = (): GameState =>
+    makeState({
+      playerHand: [card("kule", "9")], // na barvu srdce nehratelná
+      currentSuit: "srdce",
+      discardPile: [card("srdce", "10")], // length 1 → nelze remíchat
+      drawPile: [],
+    });
+
+  it("je pat, když hráč nemůže hrát ani líznout", () => {
+    expect(isPat(patBase())).toBe(true);
+  });
+
+  it("není pat, když lze líznout (balíček není prázdný)", () => {
+    expect(isPat({ ...patBase(), drawPile: [card("zelene", "8")] })).toBe(false);
+  });
+
+  it("není pat, když lze remíchat (hromádka má víc než vrchní kartu)", () => {
+    expect(
+      isPat({ ...patBase(), discardPile: [card("srdce", "10"), card("zelene", "8")] }),
+    ).toBe(false);
+  });
+
+  it("není pat, když má hráč hratelnou kartu", () => {
+    expect(isPat({ ...patBase(), playerHand: [card("srdce", "8")] })).toBe(false);
+  });
+
+  it("není pat, když už je vítěz", () => {
+    expect(isPat({ ...patBase(), playerHand: [] })).toBe(false);
+  });
+
+  it("zachytí i AI stall (currentPlayer === ai, AI nemůže hrát ani líznout)", () => {
+    expect(isPat({ ...patBase(), currentPlayer: "ai", aiHand: [card("kule", "9")] })).toBe(true);
   });
 });

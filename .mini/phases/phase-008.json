@@ -1,0 +1,37 @@
+{
+  "id": 8,
+  "title": "Konec hry, nová partie, pat",
+  "goal": "Po výhře se zobrazí overlay konce hry s vítězem a tlačítkem Nová partie, které bez reloadu rozdá a vykreslí novou partii (reset stavu v controlleru, ne druhý listener); overlay je mimo #app a blokuje vstup do stolu. Ošetřit i patový stav (nikdo nemůže hrát, vyčerpaný balíček) — detekovat a oznámit overlayem s možností nové partie, bez zacyklení.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "isPat: cista funkce + unit testy",
+      "status": "done",
+      "detail": "v game.ts isPat(state): true kdyz neni vitez a hrac na tahu nema hratelnou kartu a nelze liznout (drawPile prazdny + discardPile.length<=1); bez RNG. Testy: pat stav, ne-pat kdyz lze liznout, ne-pat pri vyhre, pat i pro currentPlayer==ai (AI stall)"
+    },
+    {
+      "title": "End overlay komponenta + CSS + jsdom test",
+      "status": "done",
+      "detail": "v overlay.ts showEndOverlay(message, onNewGame): overlay mimo #app s textem vysledku a tlacitkem Nova partie, blokuje vstup; CSS. jsdom test: overlay s danym textem, klik na tlacitko zavola callback a overlay odstrani"
+    },
+    {
+      "title": "Zapojeni v main.ts: konec/pat -> overlay, restart",
+      "status": "done",
+      "detail": "draw() kontroluje poradi vitez -> pat a zobrazi prislusny overlay (vyhra Vyhral jsi/Vyhral pocitac, pat Nikdo nemuze hrat - remiza); Nova partie resetuje closure state=createGame(rng), zavre overlay, prekresli, bez druheho startGame/listeneru; nahradi textovy banner"
+    },
+    {
+      "title": "Zastaveni smycky po konci + overeni cyklu",
+      "status": "done",
+      "detail": "guard na zacatku AI setTimeout callbacku (po vitezi/patu zadny dalsi tah); zadne dva overlaye naraz; po Nova partie jde hra zase hrat; manualni overeni celeho cyklu v prohlizeci"
+    }
+  ],
+  "startedAt": "2026-06-24T13:30:42.980Z",
+  "resolvedVerify": [
+    "Vizuální průběh konce hry a restartu v prohlížeči"
+  ],
+  "completedAt": "2026-06-24T14:03:12.718Z",
+  "autoCommit": {
+    "preSha": "7a82bf62a9d474b6b43a8019d2b0125de2e35ec4",
+    "subject": "Phase 8: Konec hry, nová partie, pat"
+  }
+}

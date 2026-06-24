@@ -117,5 +117,25 @@ export function advanceAi(state: GameState, rng: Rng): GameState {
   return cur;
 }
 
+/**
+ * Patový stav: partie nemá vítěze, ale hráč na tahu nemá co zahrát ani co líznout
+ * (lízací balíček je prázdný a odhazovací hromádku nelze remíchat —
+ * `discardPile.length <= 1`). Bez tohoto je hra zaseknutá. Čistá funkce bez RNG.
+ */
+export function isPat(state: GameState): boolean {
+  if (winnerOf(state) !== null) {
+    return false;
+  }
+  const hand = state.currentPlayer === "player" ? state.playerHand : state.aiHand;
+  const canPlay =
+    playableCards(hand, topCard(state), state.currentSuit, state.pendingSevens).length > 0;
+  if (canPlay) {
+    return false;
+  }
+  // Nemůže hrát → může vůbec líznout? (stejná podmínka jako no-op v drawCard)
+  const canDraw = state.drawPile.length > 0 || state.discardPile.length > 1;
+  return !canDraw;
+}
+
 /** Vítěz partie nebo null, dokud oba mají karty. */
 export { winnerOf };

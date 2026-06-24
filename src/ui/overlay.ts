@@ -1,6 +1,6 @@
-// Overlay výběru barvy po zahrání svrška. Vykresluje se mimo #app (do document.body),
-// takže ho full re-render herního stolu nesmaže. Blokuje vstup do stolu vizuálně
-// (backdrop) i logicky (volající drží zámek, dokud Promise nedoběhne).
+// Overlaye mimo #app (do document.body), takže je full re-render herního stolu
+// nesmaže. Blokují vstup do stolu vizuálně (backdrop) i logicky (volající drží zámek
+// / smyčka se nevolá, dokud overlay žije).
 
 import { SUITS, type Suit } from "../engine/cards";
 import { suitIconSrc, SUIT_LABELS } from "./assets";
@@ -52,4 +52,34 @@ export function chooseSuit(): Promise<Suit | null> {
     backdrop.append(box);
     document.body.append(backdrop);
   });
+}
+
+/**
+ * Zobrazí overlay konce hry s výsledkem (`message`) a tlačítkem „Nová partie".
+ * Nelze ho zavřít jinak než tlačítkem (jediná akce je nová hra). Po kliku se overlay
+ * odstraní a zavolá `onNewGame`. Vykresluje se mimo #app, blokuje vstup do stolu.
+ */
+export function showEndOverlay(message: string, onNewGame: () => void): void {
+  const backdrop = document.createElement("div");
+  backdrop.className = "overlay overlay--end";
+
+  const box = document.createElement("div");
+  box.className = "overlay__box";
+
+  const title = document.createElement("p");
+  title.className = "overlay__title";
+  title.textContent = message;
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "overlay__newgame";
+  btn.textContent = "Nová partie";
+  btn.addEventListener("click", () => {
+    backdrop.remove();
+    onNewGame();
+  });
+
+  box.append(title, btn);
+  backdrop.append(box);
+  document.body.append(backdrop);
 }

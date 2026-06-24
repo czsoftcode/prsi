@@ -37,6 +37,11 @@
       "id": 7,
       "title": "UI interakce: herní smyčka + barva",
       "status": "done"
+    },
+    {
+      "id": 8,
+      "title": "Konec hry, nová partie, pat",
+      "status": "done"
     }
   ]
 }
