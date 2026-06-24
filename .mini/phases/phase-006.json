@@ -1,0 +1,47 @@
+{
+  "id": 6,
+  "title": "UI herní stůl: vykreslení stavu",
+  "goal": "Čistá render funkce, která z aktuálního stavu enginu vykreslí do DOM herní stůl — ruka hráče dole lícem, ruby AI nahoře, lízací balíček a odhazovací hromádka uprostřed, indikátor aktuální barvy a počtu nakupených sedem — s načítáním PNG z public/cards/; zatím jen vykreslení, bez interakce.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "cardSrc helper + unit testy",
+      "status": "done",
+      "detail": "cardSrc(card) mapuje kartu na /cards/{suit}-{rank}.png s nulovanim ranku 7-9 (7->07), rub jako konstanta; pokryto unit testy vsech 32 karet + rub, test selze pri naivnim sablonovani ranku"
+    },
+    {
+      "title": "Kostra render(state, root) + struktura stolu",
+      "status": "done",
+      "detail": "novy src/ui/render.ts; funkce vycisti root a postavi 3 zony (AI nahore, stred, hrac dole); full re-render z korene, idempotentni"
+    },
+    {
+      "title": "Vykresleni rukou a hromadek",
+      "status": "done",
+      "detail": "ruka hrace dole licem dle playerHand, nahore aiHand.length rubu, uprostred lizaci balicek (rub + pocet drawPile.length, prazdny = prazdne misto bez chyby) a vrchni karta discardPile"
+    },
+    {
+      "title": "Indikatory barvy a sedem",
+      "status": "done",
+      "detail": "currentSuit jako miniatura karty te barvy s popiskem Barva: (vizualne odliseno od hromadky), pendingSevens skryt pri 0, vyznaceni currentPlayer"
+    },
+    {
+      "title": "CSS layout + zapojeni do main.ts",
+      "status": "done",
+      "detail": "src/ui/style.css s rozvrzenim 3 zon (flex/grid), responzivni a citelne na dotyku/mysi; main.ts zavola render s ukazkovym deal() stavem misto placeholderu"
+    },
+    {
+      "title": "jsdom smoke test renderu",
+      "status": "done",
+      "detail": "pridat jsdom jako devDependency; test s // @vitest-environment jsdom overi pocet karet hrace, rubu AI, vrchni kartu hromadky a oba indikatory z GameState"
+    }
+  ],
+  "startedAt": "2026-06-24T11:51:44.611Z",
+  "resolvedVerify": [
+    "Vizuální rozvržení stolu v prohlížeči (npm run dev)"
+  ],
+  "completedAt": "2026-06-24T12:24:47.696Z",
+  "autoCommit": {
+    "preSha": "53d03a3dc0d94e8ed0c069e8bd50c242fa5752dd",
+    "subject": "Phase 6: UI herní stůl: vykreslení stavu"
+  }
+}

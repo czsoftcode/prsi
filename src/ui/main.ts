@@ -1,13 +1,11 @@
+import "./style.css";
+import { createDeck, deal } from "../engine/cards";
+import { render } from "./render";
+
 const app = document.querySelector<HTMLDivElement>("#app");
 
 if (app) {
-  const title = document.createElement("h1");
-  title.textContent = "Prší";
-
-  const card = document.createElement("img");
-  card.src = "/cards/rub.png";
-  card.alt = "Rub karty";
-  card.width = 158;
-
-  app.append(title, card);
+  // Zatím bez interakce a míchání — ukázkový rozdaný stav pro vykreslení.
+  const state = deal(createDeck());
+  render(state, app);
 }

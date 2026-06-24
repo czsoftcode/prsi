@@ -1,0 +1,126 @@
+:root {
+  --card-w: clamp(48px, 11vw, 96px);
+  --felt: #15663a;
+  --felt-dark: #0e4a2b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  color: #fff;
+  background: var(--felt-dark);
+}
+
+#app {
+  height: 100vh;
+}
+
+/* Tři vodorovné zóny: AI nahoře, střed, hráč dole. */
+.prsi-table {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: clamp(8px, 2vh, 24px);
+  height: 100%;
+  padding: clamp(8px, 2vh, 24px);
+  background: radial-gradient(ellipse at center, var(--felt), var(--felt-dark));
+}
+
+.zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zone--center {
+  flex-direction: column;
+  gap: clamp(8px, 2vh, 20px);
+}
+
+/* Ruce — řada karet, na úzkém displeji se zalamuje. */
+.hand {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(2px, 1vw, 8px);
+}
+
+.card {
+  width: var(--card-w);
+  height: auto;
+  display: block;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Balíčky uprostřed. */
+.piles {
+  display: flex;
+  gap: clamp(16px, 5vw, 48px);
+  align-items: center;
+}
+
+.pile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--card-w);
+}
+
+.pile--empty {
+  width: var(--card-w);
+  aspect-ratio: 2 / 3;
+  border: 2px dashed rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+}
+
+.pile__empty {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.pile__count {
+  position: absolute;
+  bottom: -1.4em;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* Indikátory. */
+.indicators {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(8px, 2vw, 20px);
+  align-items: center;
+  justify-content: center;
+}
+
+.indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  font-size: 0.9rem;
+}
+
+.indicator--suit .indicator__suit-img {
+  width: calc(var(--card-w) * 0.45);
+  height: auto;
+  border-radius: 4px;
+}
+
+.indicator--sevens {
+  background: #b3261e;
+  font-weight: 700;
+}

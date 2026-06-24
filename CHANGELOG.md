@@ -6,6 +6,7 @@ Všechny podstatné změny v projektu Prší. Formát vychází z
 ## [Unreleased]
 
 ### Added
+- Vykreslení herního stolu z enginu (`render(state, root)`): ruka hráče dole lícem, ruby AI nahoře, lízací balíček (s počtem, prázdný = placeholder) a odhazovací hromádka uprostřed, indikátor aktuální barvy (vyhrazená ikona `suit-<barva>.png` přes `suitIconSrc`), počtu nakupených sedem a kdo je na tahu. Načítání karet z `public/cards/` přes `cardSrc(card)` (mapování názvů včetně nulování ranků 7–9). Zatím bez interakce. Pokryto unit testy (mapování) a jsdom smoke testem (struktura).
 - AI soupeř: čistá funkce `chooseAiMove(state)` vracející vždy platný tah (`play` se zahranou kartou a u svrška i zvolenou barvou, nebo `draw`). Jednoduchá heuristika reagující na nakupené sedmy i vynucenou barvu; barvu po svršku volí podle nejčastější barvy ve zbytku ruky — pokryto unit testy.
 - Engine speciálních karet a výhry: sedma (soupeř bere 2, hromadění až 4 sedmy = ber 8), eso (soupeř stojí → v 1v1 hraješ znovu), svršek (změna barvy přes `chosenSuit`) a detekce vítěze prázdnou rukou (`winnerOf`) — pokryto unit testy.
 - Stav partie nově nese, kdo je na tahu (`currentPlayer`), a počet nakupených sedem (`pendingSevens`).

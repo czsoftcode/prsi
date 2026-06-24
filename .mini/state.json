@@ -27,6 +27,11 @@
       "id": 5,
       "title": "AI soupeř: heuristika tahu",
       "status": "done"
+    },
+    {
+      "id": 6,
+      "title": "UI herní stůl: vykreslení stavu",
+      "status": "done"
     }
   ]
 }
