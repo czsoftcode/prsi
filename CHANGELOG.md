@@ -6,6 +6,9 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ## [Unreleased]
 
+### Changed
+- Karty jsou na mobilu a tabletu (šířka do 900px) výrazně větší. Velikost se počítá z `min(20vw, 13vh)`, takže na nízkém displeji (např. iPhone SE, 667px) rozhoduje výška a tři řady karet se vejdou na obrazovku; na úzkém displeji rozhoduje šířka. Na desktopu beze změny.
+
 ## [1.1.0] - 2026-06-26
 
 ### Added

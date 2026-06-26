@@ -4,6 +4,17 @@
   --felt-dark: #0e4a2b;
 }
 
+/* Mobil/tablet: karty jsou na malých displejích nečitelně malé (spodní mez 48px).
+   Velikost počítáme z min(šířka, výška) — na nízkém displeji (iPhone SE 667px)
+   rozhoduje vh, takže se tři řady karet vejdou na výšku; na úzkém displeji vw.
+   Všechny navázané rozměry (.card, .pile, prázdný balíček, ikona barvy přes calc)
+   dědí přes proměnnou automaticky. */
+@media (max-width: 900px) {
+  :root {
+    --card-w: clamp(56px, min(20vw, 13vh), 120px);
+  }
+}
+
 * {
   box-sizing: border-box;
 }

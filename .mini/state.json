@@ -72,6 +72,11 @@
       "id": 14,
       "title": "UI výběru motivu (overlay)",
       "status": "done"
+    },
+    {
+      "id": 15,
+      "title": "Větší karty na mobilu",
+      "status": "done"
     }
   ]
 }

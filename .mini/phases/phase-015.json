@@ -1,0 +1,38 @@
+{
+  "id": 15,
+  "title": "Větší karty na mobilu",
+  "goal": "Přidat mobilní @media breakpoint v src/ui/style.css, který na úzkých displejích zvětší --card-w a navázané rozměry alespoň na dvojnásobek současné velikosti, aniž by se rozbil layout ruky a středové zóny.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Mobilní @media breakpoint pro --card-w",
+      "status": "done",
+      "detail": "V src/ui/style.css přidat media query (úzký displej, např. max-width: 600px), která přenastaví --card-w na >=2x současné mobilní hodnoty (cíl ~96px na typickém telefonu); navázané rozměry dědí přes proměnnou automaticky."
+    },
+    {
+      "title": "Ověřit layout ruky a středu na mobilu",
+      "status": "done",
+      "detail": "Vizuálně zkontrolovat při šířce ~360-414px, že ruka se zalamuje bez horizontálního přetečení a středové balíčky + indikátory zůstávají v zóně; podle potřeby doladit gap/padding."
+    },
+    {
+      "title": "Ošetřit přetečení při velké ruce",
+      "status": "done",
+      "detail": "Ověřit, že hráčská zóna (auto řádek gridu) při větším počtu karet nezatlačí AI/střed mimo obrazovku; pokud ano, omezit (scroll/menší gap), jinak ponechat."
+    },
+    {
+      "title": "Zelený build + testy",
+      "status": "done",
+      "detail": "npm run build a npm test projdou bez chyb."
+    }
+  ],
+  "startedAt": "2026-06-26T14:32:12.335Z",
+  "resolvedVerify": [
+    "Velikost karet na reálném telefonu vč. iPhone SE (375x667)",
+    "Svislé přetečení při velmi velké ruce po nakupení sedem"
+  ],
+  "completedAt": "2026-06-26T14:49:06.453Z",
+  "autoCommit": {
+    "preSha": "63b5272b4b1cf63ea202c13d64325cefbd5505d0",
+    "subject": "Phase 15: Větší karty na mobilu"
+  }
+}
