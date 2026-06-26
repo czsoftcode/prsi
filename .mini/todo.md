@@ -11,5 +11,5 @@
 - [x] Fáze 6 — UI herní stůl: vykreslení stavu z enginu — ruka hráče dole, ruby AI nahoře, lízací balíček a odhazovací hromádka uprostřed, indikátor aktuální barvy a počtu nakupených sedem; načítání obrázků z public/cards/.
 - [x] Fáze 7 — UI interakce: klik/dotyk na kartu a balíček, overlay výběru barvy po svršku, obrazovka konce hry + nová partie; ovladatelné myší i dotykem.
 - [x] Fáze 8 — End-to-end playtest a doladění: odehrání celé partie od rozdání po výhru, ošetření edge cases (souběh eso + nakupené sedmy, prázdný balíček).
-- [ ] UI výběru motivu: tlačítko "Motiv" vedle indikátoru barvy, které otevře in-app obrazovku (overlay) s miniaturami 4 karet (z každé barvy jedna) + rub pro každý dostupný motiv; klik přepne aktivní motiv a vrátí do hry.
+- [x] UI výběru motivu: tlačítko "Motiv" vedle indikátoru barvy, které otevře in-app obrazovku (overlay) s miniaturami 4 karet (z každé barvy jedna) + rub pro každý dostupný motiv; klik přepne aktivní motiv a vrátí do hry.
 - [x] Registr dostupných motivů (cards_NN + dashboard_NN), aby obrazovka výběru nabízela motivy bez natvrdo zadaného seznamu a šlo přidat další motiv jen nahráním složky.

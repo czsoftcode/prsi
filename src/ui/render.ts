@@ -105,6 +105,15 @@ function renderSevensIndicator(state: GameState): HTMLElement | null {
   return box;
 }
 
+/** Tlačítko otevírající výběr motivu. Má data-action pro delegovaný listener. */
+function renderThemeButton(): HTMLButtonElement {
+  const btn = el("button", "indicator indicator--theme");
+  btn.type = "button";
+  btn.dataset.action = "theme";
+  btn.textContent = "Vyber si motiv obrázků";
+  return btn;
+}
+
 /** Indikátor, kdo je na tahu. */
 function renderTurnIndicator(state: GameState): HTMLElement {
   const box = el("div", "indicator indicator--turn");
@@ -117,7 +126,11 @@ function renderCenterZone(state: GameState): HTMLElement {
   const zone = el("div", "zone zone--center");
 
   const indicators = el("div", "indicators");
-  indicators.append(renderTurnIndicator(state), renderSuitIndicator(state));
+  indicators.append(
+    renderTurnIndicator(state),
+    renderSuitIndicator(state),
+    renderThemeButton(),
+  );
   const sevens = renderSevensIndicator(state);
   if (sevens) {
     indicators.append(sevens);

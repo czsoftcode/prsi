@@ -5,7 +5,7 @@
 // Motiv (NN) je runtime stav (theme.ts). Cesty se proto musí počítat při každém
 // volání, ne jednou při importu — jinak by přepnutí motivu nemělo efekt.
 
-import type { Card, Rank, Suit } from "../engine/cards";
+import { SUITS, type Card, type Rank, type Suit } from "../engine/cards";
 import { getActiveTheme } from "./theme";
 
 // Prefix veřejných assetů. Vite ho nastaví dle `base`: v dev/testech "/",
@@ -13,10 +13,18 @@ import { getActiveTheme } from "./theme";
 // se připojuje přímo bez dalšího "/".
 const BASE = import.meta.env.BASE_URL;
 
+/** Adresář sady karet pro konkrétní motiv NN, např. "/cards_02/" (s koncovým lomítkem). */
+function cardsDirOf(themeId: string): string {
+  return `${BASE}cards_${themeId}/`;
+}
+
 /** Adresář aktivní sady karet, např. "/cards_01/" (s koncovým lomítkem). */
 function cardsDir(): string {
-  return `${BASE}cards_${getActiveTheme()}/`;
+  return cardsDirOf(getActiveTheme());
 }
+
+/** Reprezentativní rank pro náhled motivu — jedna karta z každé barvy. */
+const PREVIEW_RANK: Rank = "kral";
 
 /** Český popisek barvy (pro alt texty a overlay). Sdílí render i overlay. */
 export const SUIT_LABELS: Record<Suit, string> = {
@@ -69,4 +77,17 @@ function rankSlug(rank: Rank): string {
 /** Cesta k obrázku konkrétní karty, např. {srdce,7} -> "/cards_01/srdce-07.png". */
 export function cardSrc(card: Card): string {
   return `${cardsDir()}${card.suit}-${rankSlug(card.rank)}.png`;
+}
+
+/**
+ * Náhledové cesty pro daný motiv NN: jedna karta z každé barvy (pevný rank, v
+ * pořadí SUITS) + rub. Nezávisí na aktivním motivu — slouží overlayi výběru, kde
+ * se zobrazují i jiné než aktivní motivy.
+ */
+export function themePreviewSrcs(themeId: string): { cards: string[]; rub: string } {
+  const dir = cardsDirOf(themeId);
+  return {
+    cards: SUITS.map((suit) => `${dir}${suit}-${rankSlug(PREVIEW_RANK)}.png`),
+    rub: `${dir}rub.png`,
+  };
 }

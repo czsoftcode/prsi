@@ -45,6 +45,16 @@ describe("render (jsdom smoke)", () => {
     expect(suit?.getAttribute("src")).toBe("/cards_01/suit-srdce.png");
   });
 
+  it("vykreslí tlačítko Motiv s data-action=theme vedle indikátorů", () => {
+    render(makeState(), root);
+    const btn = root.querySelector<HTMLButtonElement>(
+      ".indicators [data-action='theme']",
+    );
+    expect(btn).not.toBeNull();
+    expect(btn?.tagName).toBe("BUTTON");
+    expect(btn?.textContent).toBe("Vyber si motiv obrázků");
+  });
+
   it("indikátor sedem se skryje při 0 a zobrazí při >0", () => {
     render(makeState({ pendingSevens: 0 }), root);
     expect(root.querySelector(".indicator--sevens")).toBeNull();

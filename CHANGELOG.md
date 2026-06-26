@@ -6,7 +6,10 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-06-26
+
 ### Added
+- Výběr motivu obrázků přímo ve hře: tlačítko „Vyber si motiv obrázků" vedle indikátorů otevře overlay s náhledem každého dostupného motivu (karta z každé barvy + rub). Klik motiv přepne a překreslí stůl bez načtení stránky; volba se uchovává v prohlížeči.
 - Registr dostupných motivů: Vite plugin při buildu/dev proskenuje `public/` a sestaví seznam motivů s kompletními assety (`cards_NN` + pozadí `dashboard_NN`). Nový motiv stačí nahrát jako složku a znovu sestavit, není třeba upravovat kód.
 
 ### Changed

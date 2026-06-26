@@ -67,6 +67,11 @@
       "id": 13,
       "title": "Registr dostupných motivů",
       "status": "done"
+    },
+    {
+      "id": 14,
+      "title": "UI výběru motivu (overlay)",
+      "status": "done"
     }
   ]
 }

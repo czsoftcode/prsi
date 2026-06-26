@@ -1,0 +1,53 @@
+{
+  "id": 14,
+  "title": "UI výběru motivu (overlay)",
+  "goal": "Přidat tlačítko \"Motiv\" vedle indikátoru barvy, které otevře in-app overlay s náhledem každého dostupného motivu (4 karty + rub); klik přepne aktivní motiv, zavře overlay a překreslí stůl bez reloadu stránky.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Helper pro náhledové cesty motivu (assets.ts)",
+      "status": "done",
+      "detail": "Parametrizovat výpočet cest explicitním themeId (themePreviewSrcs(themeId) -> 4 karty z každé barvy jedna při pevném ranku + rub). Stávající funkce vázané na getActiveTheme() zůstanou beze změny. Pokryto v assets.test.ts."
+    },
+    {
+      "title": "Export seznamu motivů (theme.ts)",
+      "status": "done",
+      "detail": "Přidat listThemes(): string[], které vrátí registr (enkapsuluje virtual:themes na jednom místě, overlay ho neimportuje přímo). Pokryto v theme.test.ts."
+    },
+    {
+      "title": "Overlay výběru motivu (overlay.ts)",
+      "status": "done",
+      "detail": "chooseTheme(): Promise<string|null> — grid náhledů z listThemes(), aktivní motiv zvýrazněn, klik na motiv resolvuje jeho NN, klik mimo box = null. Promise resolvuje vždy. Pokryto v overlay.test.ts (jsdom)."
+    },
+    {
+      "title": "Tlačítko Motiv ve stolu (render.ts)",
+      "status": "done",
+      "detail": "Do bloku indikátorů vedle indikátoru barvy přidat button data-action=theme, aby přežil re-render. Pokryto v render.test.ts."
+    },
+    {
+      "title": "Napojení výběru v main.ts",
+      "status": "done",
+      "detail": "Delegovaný listener zachytí data-action=theme, zamkne vstup, otevře chooseTheme(); po výběru setActiveTheme(id)+draw() (re-render bez reloadu), při zrušení nic. Zámek se uvolní vždy (finally). Pokryto v main.test.ts."
+    },
+    {
+      "title": "CSS overlaye motivů (style.css)",
+      "status": "done",
+      "detail": "Styl pro overlay--theme (grid náhledů, mini karty, zvýraznění aktivního) a tlačítko Motiv. Vizuální ověření."
+    },
+    {
+      "title": "Ověřit zelený build + testy",
+      "status": "done",
+      "detail": "npm test a tsc/build projdou bez chyb."
+    }
+  ],
+  "startedAt": "2026-06-26T11:21:15.818Z",
+  "resolvedVerify": [
+    "Vizuální přepnutí motivu ve hře",
+    "Vzhled overlaye výběru motivu na mobilu i desktopu"
+  ],
+  "completedAt": "2026-06-26T11:34:45.327Z",
+  "autoCommit": {
+    "preSha": "de7b19bdfc2c0f2916d50b765cae130b10e18853",
+    "subject": "Phase 14: UI výběru motivu (overlay)"
+  }
+}

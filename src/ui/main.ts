@@ -10,7 +10,8 @@ import {
   winnerOf,
   isPat,
 } from "./game";
-import { chooseSuit, showEndOverlay } from "./overlay";
+import { chooseSuit, chooseTheme, showEndOverlay } from "./overlay";
+import { setActiveTheme } from "./theme";
 
 /** Prodleva před reakcí AI, aby byl tah vidět (není to animace, jen pauza). */
 const AI_DELAY_MS = 600;
@@ -114,6 +115,20 @@ function startGame(app: HTMLElement): void {
     scheduleAi();
   }
 
+  /** Otevře výběr motivu; po výběru přepne motiv a překreslí stůl (bez reloadu). */
+  async function onChooseTheme(): Promise<void> {
+    locked = true; // drž zámek, dokud overlay žije (žádný tah pod ním)
+    try {
+      const picked = await chooseTheme();
+      if (picked !== null) {
+        setActiveTheme(picked);
+        draw(); // assety se počítají z aktivního motivu → re-render stačí
+      }
+    } finally {
+      locked = false; // motiv nemění herní stav, hra nemohla skončit → odemkni
+    }
+  }
+
   function onDraw(): void {
     if (locked || gameOver() || state.currentPlayer !== "player") {
       return;
@@ -136,6 +151,10 @@ function startGame(app: HTMLElement): void {
     const cardEl = target.closest<HTMLElement>(".card--face[data-index]");
     if (cardEl && cardEl.dataset.index !== undefined) {
       void onPlayCard(Number(cardEl.dataset.index));
+      return;
+    }
+    if (target.closest<HTMLElement>("[data-action='theme']")) {
+      void onChooseTheme();
       return;
     }
     if (target.closest<HTMLElement>("[data-action='draw']")) {

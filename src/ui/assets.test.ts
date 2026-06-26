@@ -5,6 +5,7 @@ import {
   rubSrc,
   suitIconSrc,
   tableBgImageSet,
+  themePreviewSrcs,
 } from "./assets";
 import { setActiveTheme } from "./theme";
 
@@ -64,6 +65,29 @@ describe("tableBgImageSet", () => {
     const bg = tableBgImageSet();
     expect(bg).toContain('url("/images/dashboard_01.webp") type("image/webp")');
     expect(bg).toContain('url("/images/dashboard_01.jpg") type("image/jpeg")');
+  });
+});
+
+describe("themePreviewSrcs", () => {
+  // Po testu vrátíme aktivní motiv na 01, ať neovlivníme ostatní testy.
+  afterEach(() => setActiveTheme("01"));
+
+  it("vrací jednu kartu z každé barvy (pevný rank) + rub pro daný motiv", () => {
+    const { cards, rub } = themePreviewSrcs("02");
+    expect(cards).toEqual([
+      "/cards_02/zaludy-kral.png",
+      "/cards_02/zelene-kral.png",
+      "/cards_02/srdce-kral.png",
+      "/cards_02/kule-kral.png",
+    ]);
+    expect(rub).toBe("/cards_02/rub.png");
+  });
+
+  it("nezávisí na aktivním motivu (zobrazuje i jiné než aktivní)", () => {
+    setActiveTheme("02"); // aktivní 02, ale ptáme se na 01
+    const { cards, rub } = themePreviewSrcs("01");
+    expect(cards.every((src) => src.startsWith("/cards_01/"))).toBe(true);
+    expect(rub).toBe("/cards_01/rub.png");
   });
 });
 

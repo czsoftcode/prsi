@@ -84,4 +84,10 @@ describe("registr motivů (virtual:themes)", () => {
     expect([...THEMES].sort()).toEqual(THEMES); // plugin vrací vzestupně
     expect(THEMES).not.toContain("99"); // motiv bez assetů se nepropašuje
   });
+
+  it("listThemes() vrací registr (stejný obsah jako THEMES)", async () => {
+    const { listThemes } = await freshTheme();
+    expect([...listThemes()]).toEqual([...THEMES]);
+    expect(listThemes()).toContain("01");
+  });
 });

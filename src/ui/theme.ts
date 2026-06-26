@@ -36,6 +36,15 @@ export function getActiveTheme(): string {
   return active;
 }
 
+/**
+ * Vrátí seznam dostupných motivů (NN) z registru, vzestupně. Enkapsuluje
+ * `virtual:themes` — ostatní moduly (overlay výběru) nemusí virtuální modul
+ * importovat přímo.
+ */
+export function listThemes(): readonly string[] {
+  return THEMES;
+}
+
 /** Nastaví aktivní motiv a zkusí ho uložit do localStorage. */
 export function setActiveTheme(id: string): void {
   active = id;
