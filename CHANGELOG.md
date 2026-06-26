@@ -6,6 +6,9 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ## [Unreleased]
 
+### Changed
+- Pozadí herního stolu je nově dětský ilustrovaný obrázek (medvídek ve vláčku) místo zeleného „filcového" gradientu. Použit `dashboard_01.webp` s `.jpg` fallbackem přes `image-set()`, překrytý poloprůhledným ztmavujícím gradientem kvůli čitelnosti karet a textu. Filcový gradient zůstává jako fallback, kdyby se obrázek nenačetl.
+
 ## [1.0.3] - 2026-06-24
 
 ### Added

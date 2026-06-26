@@ -1,0 +1,37 @@
+{
+  "id": 11,
+  "title": "Pozadí herního stolu z obrázku",
+  "goal": "Nahradit zelený filcový gradient .prsi-table obrázkem dashboard_01.webp (s .jpg fallbackem) jako pozadí (cover, fixní), s poloprůhledným ztmavujícím překryvem, aby karty a bílý text zůstaly čitelné na všech velikostech displeje.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Ověřit existenci a rozměry obrázků",
+      "status": "done",
+      "detail": "Potvrdit, že public/images/dashboard_01.webp i .jpg existují; ověřit poměr stran (16:9) kvůli ořezu na mobilu."
+    },
+    {
+      "title": "Nastavit obrázek jako pozadí .prsi-table",
+      "status": "done",
+      "detail": "Nahradit radial-gradient v .prsi-table za image-set() (webp s jpg fallbackem) přes background-image; background-size: cover, background-position: center, background-repeat: no-repeat; BEZ background-attachment: fixed kvůli mobilu."
+    },
+    {
+      "title": "Přidat ztmavující překryv pro čitelnost",
+      "status": "done",
+      "detail": "Vrstvit poloprůhledný tmavý gradient/overlay nad obrázek, aby bílý text a rub karet zůstaly čitelné."
+    },
+    {
+      "title": "Ověřit čitelnost na mobilu i desktopu",
+      "status": "done",
+      "detail": "Vizuálně zkontrolovat render — karty, indikátory, overlaye (výběr barvy, konec hry) čitelné na širokém i úzkém displeji; ořez vláčku akceptovatelný."
+    }
+  ],
+  "startedAt": "2026-06-26T08:52:06.693Z",
+  "resolvedVerify": [
+    "Vizuální čitelnost pozadí na desktopu i mobilu"
+  ],
+  "completedAt": "2026-06-26T09:40:03.881Z",
+  "autoCommit": {
+    "preSha": "6ccffef967ddc07ea4be0259c4b62dc113ae6518",
+    "subject": "Phase 11: Pozadí herního stolu z obrázku"
+  }
+}

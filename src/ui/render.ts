@@ -3,7 +3,13 @@
 
 import type { Card, GameState } from "../engine/cards";
 import { playableCards } from "../engine/moves";
-import { cardSrc, RUB_SRC, suitIconSrc, SUIT_LABELS } from "./assets";
+import {
+  cardSrc,
+  RUB_SRC,
+  suitIconSrc,
+  SUIT_LABELS,
+  TABLE_BG_IMAGE_SET,
+} from "./assets";
 
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -152,6 +158,8 @@ function renderPlayerZone(state: GameState): HTMLElement {
 export function render(state: GameState, root: HTMLElement): void {
   root.replaceChildren();
   root.classList.add("prsi-table");
+  // Pozadí přes CSS proměnnou (base-path-safe), overlay řeší style.css.
+  root.style.setProperty("--table-bg", TABLE_BG_IMAGE_SET);
   root.append(
     renderAiZone(state),
     renderCenterZone(state),

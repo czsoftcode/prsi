@@ -31,7 +31,14 @@ body {
   gap: clamp(8px, 2vh, 24px);
   height: 100%;
   padding: clamp(8px, 2vh, 24px);
-  background: radial-gradient(ellipse at center, var(--felt), var(--felt-dark));
+  /* Ztmavující overlay (čitelnost bílého textu a rubů) nad obrázkem pozadí.
+     --table-bg nastavuje render.ts (image-set webp + jpg fallback) kvůli base path.
+     Fallback na filcový gradient, kdyby se obrázek nenačetl / --table-bg nebyla. */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.55)),
+    var(--table-bg, radial-gradient(ellipse at center, var(--felt), var(--felt-dark)));
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .zone {
