@@ -13,7 +13,7 @@ import {
 import { chooseSuit, chooseTheme, showEndOverlay } from "./overlay";
 import { setActiveTheme } from "./theme";
 import { animatePlay, animateDraw, clearAnim } from "./animate";
-import { playPlay, playDraw, initAudioUnlock } from "./audio";
+import { playPlay, playDraw, playWin, playLose, initAudioUnlock } from "./audio";
 
 /** Prodleva před reakcí AI, aby byl tah vidět (není to animace, jen pauza). */
 const AI_DELAY_MS = 600;
@@ -114,6 +114,15 @@ function startGame(app: HTMLElement): void {
       if (msg) {
         ended = true;
         locked = true; // zamkni vstup (overlay navíc fyzicky překryje stůl)
+        // Zvuk konce hry právě jednou: ended brání opakování při dalším renderu,
+        // newGame() ho resetuje → po nové partii může zaznít znovu. Pat (winner ===
+        // null) zůstává bez zvuku.
+        const winner = winnerOf(state);
+        if (winner === "player") {
+          playWin();
+        } else if (winner === "ai") {
+          playLose();
+        }
         showEndOverlay(msg, newGame);
       }
     }

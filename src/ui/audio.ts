@@ -8,11 +8,13 @@
 
 const BASE = import.meta.env.BASE_URL;
 
-type SoundName = "draw" | "play";
+type SoundName = "draw" | "play" | "win" | "lose";
 
 const SOURCES: Record<SoundName, string> = {
   draw: `${BASE}sounds/liznuti.mp3`,
   play: `${BASE}sounds/odhoz.mp3`,
+  win: `${BASE}sounds/fanfara.mp3`,
+  lose: `${BASE}sounds/defeat.mp3`,
 };
 
 /** Přednačtené uzly (jeden na zvuk). Lazy: až při prvním dotyku na zvuk. */
@@ -32,12 +34,14 @@ function makeAudio(src: string): HTMLAudioElement {
   return a;
 }
 
-/** Přednačte uzly jednou; vrací sdílenou trojici (resp. dvojici) prvků. */
+/** Přednačte uzly jednou; vrací sdílenou čtveřici prvků. */
 function ensureElements(): Record<SoundName, HTMLAudioElement> {
   if (!elements) {
     elements = {
       draw: makeAudio(SOURCES.draw),
       play: makeAudio(SOURCES.play),
+      win: makeAudio(SOURCES.win),
+      lose: makeAudio(SOURCES.lose),
     };
   }
   return elements;
@@ -79,6 +83,16 @@ export function playDraw(): void {
 
 export function playPlay(): void {
   play("play");
+}
+
+/** Fanfára při výhře hráče. Volá se z main.ts jednou při skončení partie. */
+export function playWin(): void {
+  play("win");
+}
+
+/** Smutný zvuk při prohře hráče. Volá se z main.ts jednou při skončení partie. */
+export function playLose(): void {
+  play("lose");
 }
 
 /** Odemkne audio během uživatelského gesta: krátce (muted) prohraje uzly. */

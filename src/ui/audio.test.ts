@@ -28,6 +28,37 @@ describe("audio", () => {
     expect(playSpy).toHaveBeenCalledTimes(2);
   });
 
+  it("playWin a playLose přehrají zvuk (jedno play na volání)", async () => {
+    const { playWin, playLose } = await import("./audio");
+    playWin();
+    expect(playSpy).toHaveBeenCalledTimes(1);
+    playLose();
+    expect(playSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("playWin/playLose mapují na fanfaru/defeat (správné MP3 cesty)", async () => {
+    // Zuby: zachyť src klonu, který se reálně přehrává (ne jen přednačtený uzel).
+    const srcs: string[] = [];
+    playSpy.mockImplementation(function (this: HTMLAudioElement) {
+      srcs.push(this.src);
+      return Promise.resolve();
+    });
+    const { playWin, playLose } = await import("./audio");
+    playWin();
+    playLose();
+    expect(srcs[0]).toContain("sounds/fanfara.mp3");
+    expect(srcs[1]).toContain("sounds/defeat.mp3");
+  });
+
+  it("playWin/playLose jsou bez Audia no-op (test/SSR)", async () => {
+    vi.stubGlobal("Audio", undefined);
+    const { playWin, playLose } = await import("./audio");
+    expect(() => playWin()).not.toThrow();
+    expect(() => playLose()).not.toThrow();
+    expect(playSpy).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
+
   it("odmítnutý play() Promise se spolkne (.catch) a nevyhodí (autoplay policy)", async () => {
     // Deterministicky (bez časování unhandledRejection): ověř, že na odmítnutý
     // Promise z play() byl reálně připojen .catch. Spy zároveň přebírá originál,
@@ -58,8 +89,8 @@ describe("audio", () => {
     expect(playSpy).not.toHaveBeenCalled(); // bez gesta zatím nic
 
     window.dispatchEvent(new Event("pointerdown"));
-    // odemčení krátce (muted) prohraje oba přednačtené uzly
-    expect(playSpy).toHaveBeenCalledTimes(2);
+    // odemčení krátce (muted) prohraje všechny čtyři přednačtené uzly
+    expect(playSpy).toHaveBeenCalledTimes(4);
     // …a OBA listenery se reálně odeberou (zuby: jinak by test odhalil leak jen
     // díky unlocked-guardu, ne díky removeEventListener)
     expect(removeSpy).toHaveBeenCalledWith("pointerdown", expect.any(Function));
@@ -67,6 +98,6 @@ describe("audio", () => {
 
     window.dispatchEvent(new Event("pointerdown")); // listener byl odebrán
     window.dispatchEvent(new Event("keydown"));
-    expect(playSpy).toHaveBeenCalledTimes(2); // beze změny
+    expect(playSpy).toHaveBeenCalledTimes(4); // beze změny
   });
 });

@@ -1,0 +1,42 @@
+{
+  "id": 19,
+  "title": "Zvuk výhry a prohry",
+  "goal": "Rozšířit audio.ts o efekty win/lose (fanfara.mp3 / defeat.mp3) a přehrát je v main.ts právě jednou ve chvíli, kdy partie skončí (winnerOf → player = fanfára, ai = defeat), s jednorázovým guardem proti opakování při re-renderu (reset při nové partii) a beze změny stávající herní smyčky.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "audio.ts: zvuky win/lose",
+      "status": "done",
+      "detail": "Rozšířit SoundName o win|lose, doplnit SOURCES (sounds/fanfara.mp3, sounds/defeat.mp3), exportovat playWin()/playLose(); zahrnout do ensureElements i unlock smyčky (preload + odemčení gestem)."
+    },
+    {
+      "title": "main.ts: přehrání při skončení partie",
+      "status": "done",
+      "detail": "V draw() uvnitř bloku if(msg) (kde se ended překlápí na true) přehrát dle winnerOf(state): player → playWin(), ai → playLose(). Pat zůstává bez zvuku. Guard je stávající ended, reset zajišťuje newGame()."
+    },
+    {
+      "title": "Testy audio vrstvy",
+      "status": "done",
+      "detail": "V audio.test.ts ověřit existenci playWin/playLose, no-op bez Audio (test/SSR) a správné mapování na MP3 cesty."
+    },
+    {
+      "title": "Test jednorázového přehrání v main",
+      "status": "done",
+      "detail": "V main.test.ts ověřit, že win/lose zvuk zazní právě jednou při přechodu do konce hry (ne při dalším renderu), po nové partii může zaznít znovu a pat nepřehraje nic."
+    },
+    {
+      "title": "Zelený build + lint",
+      "status": "done",
+      "detail": "npm run build a testy projdou bez chyb; ruční ověření v prohlížeči (fanfára při výhře hráče, defeat při prohře)."
+    }
+  ],
+  "startedAt": "2026-06-26T18:54:33.352Z",
+  "resolvedVerify": [
+    "Skutečné přehrání fanfáry/defeat v prohlížeči"
+  ],
+  "completedAt": "2026-06-26T19:19:42.774Z",
+  "autoCommit": {
+    "preSha": "ab415126866e12e31db68da771e4b8e032b6fd36",
+    "subject": "Phase 19: Zvuk výhry a prohry"
+  }
+}

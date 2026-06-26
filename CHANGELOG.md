@@ -6,6 +6,9 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ## [Unreleased]
 
+### Added
+- Zvuk konce hry: při výhře hráče zazní fanfára, při prohře smutný zvuk. Přehraje se právě jednou ve chvíli skončení partie (remíza je beze zvuku) a po spuštění nové partie může zaznít znovu.
+
 ## [1.3.0] - 2026-06-26
 
 ### Added
