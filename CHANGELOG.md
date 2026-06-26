@@ -6,6 +6,11 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-06-26
+
+### Added
+- Zvukové efekty: při odhození karty (hráč i počítač) zazní krátký zvuk odhozu, při líznutí z balíčku zvuk líznutí. Zvuky se odemknou po prvním kliknutí/stisku klávesy (kvůli pravidlům prohlížečů pro automatické přehrávání) a zní i tehdy, když má hráč zapnuté omezené animace.
+
 ## [1.2.0] - 2026-06-26
 
 ### Added

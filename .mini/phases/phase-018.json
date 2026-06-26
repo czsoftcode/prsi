@@ -1,0 +1,43 @@
+{
+  "id": 18,
+  "title": "Zvuková vrstva: líznutí a odhoz",
+  "goal": "Přidat lehký audio.ts, který přehraje MP3 efekt líznutí při braní karty a odhozu při zahrání karty (hráč i AI), zapojený ve stejných bodech jako stávající animace, s odolností vůči autoplay-blokaci a bez zásahu do render() či zaseknutí herní smyčky.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "audio.ts: přednačtení + přehrávání",
+      "status": "done",
+      "detail": "Lehký modul: preload obou MP3, playDraw()/playPlay(), klon audio uzlu pro překryv rychlých tahů, chyby/odmítnutý play() Promise tiše spolknuté (nikdy nezasekne smyčku). Pokryto testem (Audio mockováno)."
+    },
+    {
+      "title": "Odolnost vůči autoplay-blokaci",
+      "status": "done",
+      "detail": "Odemknutí zvuku při prvním uživatelském gestu (pointerdown/keydown), aby tah AI hned po načtení nebyl umlčen; opakované odemknutí je no-op. Pokryto testem."
+    },
+    {
+      "title": "Zapojení zvuků do herních helperů",
+      "status": "done",
+      "detail": "playPlay() v flyToDiscard, playDraw() v flyFromDraw — před guardem na rect, takže hraje i bez animace; pokrývá hráče i AI jediným místem na helper."
+    },
+    {
+      "title": "Úklid WAV souborů",
+      "status": "done",
+      "detail": "Smazat public/sounds/liznuti.wav a odhoz.wav (10x větší balast, v MP3 stejný obsah); ověřit, že na ně nikdo neodkazuje."
+    },
+    {
+      "title": "Testy + zelený build",
+      "status": "done",
+      "detail": "Vitest zelený, tsc/vite build bez chyb."
+    }
+  ],
+  "startedAt": "2026-06-26T18:27:49.503Z",
+  "resolvedVerify": [
+    "Zvuky reálně zní v prohlížeči a nejsou otravné",
+    "Autoplay unlock v Safari / iOS"
+  ],
+  "completedAt": "2026-06-26T18:45:55.280Z",
+  "autoCommit": {
+    "preSha": "746c127c04f27e06f98a97adb020003566531f8d",
+    "subject": "Phase 18: Zvuková vrstva: líznutí a odhoz"
+  }
+}

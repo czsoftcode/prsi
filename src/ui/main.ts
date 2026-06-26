@@ -13,6 +13,7 @@ import {
 import { chooseSuit, chooseTheme, showEndOverlay } from "./overlay";
 import { setActiveTheme } from "./theme";
 import { animatePlay, animateDraw, clearAnim } from "./animate";
+import { playPlay, playDraw, initAudioUnlock } from "./audio";
 
 /** Prodleva před reakcí AI, aby byl tah vidět (není to animace, jen pauza). */
 const AI_DELAY_MS = 600;
@@ -25,6 +26,7 @@ if (app) {
 }
 
 function startGame(app: HTMLElement): void {
+  initAudioUnlock(); // odemkne zvuk na první gesto (autoplay policy)
   let state: GameState = createGame(rng);
   let locked = false; // zámek vstupu během AI prodlevy a otevřeného overlay
   let ended = false; // hra skončila (výhra/pat) → vstup zamčen, čeká se na novou partii
@@ -53,6 +55,7 @@ function startGame(app: HTMLElement): void {
    * chybí, animace se přeskočí (smyčka pokračuje). animatePlay resolvuje vždy.
    */
   async function flyToDiscard(card: Card, fromRect: DOMRect | null): Promise<void> {
+    playPlay(); // zvuk odhozu — před guardem, ať zní i bez animace (reduced-motion)
     const toRect = rectOf(".pile--discard .card--face");
     if (!fromRect || !toRect) {
       return;
@@ -70,6 +73,7 @@ function startGame(app: HTMLElement): void {
     count: number,
     fromRect: DOMRect | null,
   ): Promise<void> {
+    playDraw(); // zvuk líznutí — před guardem, ať zní i bez animace (reduced-motion)
     const toRect = rectOf(handSelector);
     if (!fromRect || !toRect) {
       return;
