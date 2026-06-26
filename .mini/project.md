@@ -19,7 +19,7 @@ Uživatel ve věku 6+
 - Nezaváděj pravidlo „červená sedma vrací hráče do hry".
 - Nezaváděj pravidlo „poslední karta nesmí být funkční".
 - Neimplementuj skóre přes více partií ani více kol — jen jedna partie.
-- Nepřidávej zvuky, animace, nastavení obtížnosti, ukládání ani lokalizaci.
+- Nepřidávej nastavení obtížnosti, ukládání ani lokalizaci.
 
 ## Success criteria
 - Lze odehrát celou partii 1v1 od rozdání po výhru bez chyby pravidel.

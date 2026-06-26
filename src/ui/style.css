@@ -284,3 +284,22 @@ body {
   display: block;
   border-radius: 4px;
 }
+
+/* Animační vrstva ghost karet: nad stolem, ale POD overlayi (z-index 10),
+   aby ji výběr barvy / konec hry vždy překryly. Nereaguje na vstup. */
+.anim-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9;
+}
+
+.anim-ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  will-change: transform;
+  border-radius: 6px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+}

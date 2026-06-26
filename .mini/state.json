@@ -77,6 +77,11 @@
       "id": 15,
       "title": "Větší karty na mobilu",
       "status": "done"
+    },
+    {
+      "id": 16,
+      "title": "Animační vrstva: zahrání karty",
+      "status": "done"
     }
   ]
 }

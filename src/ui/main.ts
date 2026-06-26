@@ -12,6 +12,7 @@ import {
 } from "./game";
 import { chooseSuit, chooseTheme, showEndOverlay } from "./overlay";
 import { setActiveTheme } from "./theme";
+import { animatePlay, clearAnim } from "./animate";
 
 /** Prodleva před reakcí AI, aby byl tah vidět (není to animace, jen pauza). */
 const AI_DELAY_MS = 600;
@@ -27,9 +28,36 @@ function startGame(app: HTMLElement): void {
   let state: GameState = createGame(rng);
   let locked = false; // zámek vstupu během AI prodlevy a otevřeného overlay
   let ended = false; // hra skončila (výhra/pat) → vstup zamčen, čeká se na novou partii
+  // Generace partie: každá nová partie ji zvýší. Asynchronní tah (let ghostu, AI
+  // prodleva) si svou generaci zapamatuje a po awaitu se zahodí, pokud se mezitím
+  // změnila — jinak by stará continuation sáhla na zámek/AI nové partie.
+  let generation = 0;
 
   function sameCard(a: Card, b: Card): boolean {
     return a.suit === b.suit && a.rank === b.rank;
+  }
+
+  /** Vrchní karta odhazovací hromádky (discardPile má vždy ≥1 prvek). */
+  function topDiscard(s: GameState): Card {
+    return s.discardPile[s.discardPile.length - 1]!;
+  }
+
+  /** Rect prvku v #app, nebo null když chybí / nemá layout. */
+  function rectOf(selector: string): DOMRect | null {
+    return app.querySelector(selector)?.getBoundingClientRect() ?? null;
+  }
+
+  /**
+   * Nechá ghost zahrané `card` přeletět z `fromRect` (zachyceného PŘED překreslením)
+   * na aktuální vrch hromádky. Cíl se čte až teď, po draw(). Když některý rect
+   * chybí, animace se přeskočí (smyčka pokračuje). animatePlay resolvuje vždy.
+   */
+  async function flyToDiscard(card: Card, fromRect: DOMRect | null): Promise<void> {
+    const toRect = rectOf(".pile--discard .card--face");
+    if (!fromRect || !toRect) {
+      return;
+    }
+    await animatePlay({ fromRect, toRect, card });
   }
 
   function gameOver(): boolean {
@@ -50,6 +78,8 @@ function startGame(app: HTMLElement): void {
 
   /** Nová partie bez reloadu: reset stavu, NE druhý startGame (jediný listener zůstává). */
   function newGame(): void {
+    generation++; // zneplatni doběhlé async tahy z minulé partie
+    clearAnim(); // smaž případný letící ghost, ať nepřeletí přes nový stůl
     state = createGame(rng);
     ended = false;
     locked = false;
@@ -75,14 +105,35 @@ function startGame(app: HTMLElement): void {
       return;
     }
     locked = true;
+    const gen = generation;
     window.setTimeout(() => {
-      if (ended) {
-        return; // hra mezitím skončila → žádný zbloudilý tah
-      }
-      state = advanceAi(state, rng);
-      draw();
-      locked = ended; // po výhře/patu nech zamčeno, jinak odemkni
+      void runAi(gen);
     }, AI_DELAY_MS);
+  }
+
+  /**
+   * Dožene tahy AI a animuje JEDEN ghost ze zóny AI na hromádku, pokud AI reálně
+   * zahrála kartu (vrch hromádky se změnil). Zjednodušení: při esu hraje AI víc
+   * karet v jednom advanceAi — animuje se jen výsledná vrchní karta. Když AI jen
+   * lízla, vrch se nezmění a animace se nehraje. Zámek se uvolní až po letu.
+   */
+  async function runAi(gen: number): Promise<void> {
+    if (gen !== generation || ended) {
+      return; // nová partie během AI prodlevy, nebo hra už skončila → zbloudilý tah
+    }
+    const topBefore = topDiscard(state);
+    // Zdroj = první rub v zóně AI (velikost karty), zachycený před překreslením.
+    const fromRect = rectOf(".zone--ai .card--back") ?? rectOf(".zone--ai");
+    state = advanceAi(state, rng);
+    const played = topDiscard(state);
+    draw();
+    if (!sameCard(topBefore, played)) {
+      await flyToDiscard(played, fromRect);
+    }
+    if (gen !== generation) {
+      return; // během letu začala nová partie → nesahej na její zámek
+    }
+    locked = ended; // po výhře/patu nech zamčeno, jinak odemkni
   }
 
   async function onPlayCard(index: number): Promise<void> {
@@ -110,9 +161,21 @@ function startGame(app: HTMLElement): void {
     if (!next) {
       return;
     }
+    // Zdrojový rect zahrané karty musíme zachytit PŘED draw() — po překreslení
+    // už karta v ruce není.
+    const fromRect = rectOf(`.hand--player .card--face[data-index="${index}"]`);
     state = next;
     draw();
-    scheduleAi();
+    locked = true; // drž zámek po dobu letu ghostu, ať klik nerozjede stav
+    const gen = generation;
+    await flyToDiscard(card, fromRect);
+    if (gen !== generation) {
+      return; // během letu začala nová partie → tahle continuation už neplatí
+    }
+    if (ended) {
+      return; // vítězný tah hráče: nech zamčeno (overlay stejně překrývá), nevolej AI
+    }
+    scheduleAi(); // nastaví zámek dle toho, kdo je na tahu
   }
 
   /** Otevře výběr motivu; po výběru přepne motiv a překreslí stůl (bez reloadu). */

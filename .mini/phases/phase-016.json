@@ -1,0 +1,43 @@
+{
+  "id": 16,
+  "title": "Animační vrstva: zahrání karty",
+  "goal": "Přidat overlay animační vrstvu řízenou herní smyčkou, která při zahrání karty (hráčem i AI) nechá ghost kartu přeletět ze zdrojové pozice na vrch odhazovací hromádky, se zamčeným vstupem po dobu animace a respektem k prefers-reduced-motion, bez zásahu do kontraktu render().",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Animační modul ghost karty (animate.ts)",
+      "status": "done",
+      "detail": "Nový src/ui/animate.ts s animatePlay({fromRect,toRect,card}): absolutně pozicovaný ghost img lícem karty v overlay vrstvě mimo #app (nepodléhá full re-renderu), CSS transform z fromRect do toRect; Promise se resolvne na transitionend s timeout fallbackem (nikdy nevisí). Respektuje prefers-reduced-motion (žádný ghost, okamžitý resolve) i nulové rect (bez layoutu skip). CSS overlay/ghost ve style.css. Testy: reduced-motion skip, fallback resolve, úklid ghostu."
+    },
+    {
+      "title": "Zapojení animace zahrání hráčem",
+      "status": "done",
+      "detail": "V onPlayCard zachytit zdrojový rect klatknuté karty před draw(), cílový rect vrchní karty hromádky (.pile--discard .card--face) po draw(), držet locked=true po dobu await animatePlay(...), pak scheduleAi(). Ověřitelné: ghost letí z ruky na hromádku, vstup je během letu zamčený."
+    },
+    {
+      "title": "Zapojení animace zahrání AI",
+      "status": "done",
+      "detail": "V scheduleAi po advanceAi+draw poslat ghost ze zóny AI (.zone--ai) na vrchní kartu hromádky pro zahranou kartu AI (nový vrch discardPile); zámek držet do konce letu a uvolnit dle ended. Známé zjednodušení: eso řetězec (AI hraje víckrát) animuje jen jednu kartu."
+    },
+    {
+      "title": "Robustnost: reduced-motion, krátké trvání, žádné zaseknutí",
+      "status": "done",
+      "detail": "Trvání ~200-300 ms; při prefers-reduced-motion se nehraje nic a smyčka běží bez prodlevy; rychlé kliky během letu jsou ignorované (lock) a nerozjedou stav; ghost se vždy uklidí i při přerušení (nová partie přes newGame)."
+    },
+    {
+      "title": "Zelený build + testy + lint",
+      "status": "done",
+      "detail": "npm run build, npm test (v jsdom mockovat matchMedia), lint vše zelené; stávající testy render/main/overlay nerozbité."
+    }
+  ],
+  "startedAt": "2026-06-26T17:31:36.166Z",
+  "resolvedVerify": [
+    "Vizuální dojem letu ghost karty v prohlížeči",
+    "Geometrie zdroje letu AI karty"
+  ],
+  "completedAt": "2026-06-26T17:46:06.211Z",
+  "autoCommit": {
+    "preSha": "7d1911eb56c206fc981d682f41ea3d462b9b706e",
+    "subject": "Phase 16: Animační vrstva: zahrání karty"
+  }
+}
