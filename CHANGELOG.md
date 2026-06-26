@@ -6,8 +6,11 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-06-26
+
 ### Added
 - Animace zahrání karty: při tahu hráče i počítače „odletí" karta lícem ze své pozice na vrch odhazovací hromádky. Po dobu letu (~260 ms) je ovládání zamčené, takže klik nerozhodí stav. Kdo má v systému zapnuté omezené animace (`prefers-reduced-motion`), žádný let nevidí a hra běží bez prodlevy.
+- Animace líznutí karty: když si hráč nebo počítač líznou z balíčku, rub karty přeletí z lízacího balíčku do ruky. Při braní více karet po sedmě (až 8) letí ruby krátce za sebou; pro plynulost se jich naráz animuje nejvýš pár. Respektuje `prefers-reduced-motion` a po dobu letu je ovládání zamčené.
 
 ### Changed
 - Karty jsou na mobilu a tabletu (šířka do 900px) výrazně větší. Velikost se počítá z `min(20vw, 13vh)`, takže na nízkém displeji (např. iPhone SE, 667px) rozhoduje výška a tři řady karet se vejdou na obrazovku; na úzkém displeji rozhoduje šířka. Na desktopu beze změny.

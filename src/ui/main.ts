@@ -12,7 +12,7 @@ import {
 } from "./game";
 import { chooseSuit, chooseTheme, showEndOverlay } from "./overlay";
 import { setActiveTheme } from "./theme";
-import { animatePlay, clearAnim } from "./animate";
+import { animatePlay, animateDraw, clearAnim } from "./animate";
 
 /** Prodleva před reakcí AI, aby byl tah vidět (není to animace, jen pauza). */
 const AI_DELAY_MS = 600;
@@ -58,6 +58,23 @@ function startGame(app: HTMLElement): void {
       return;
     }
     await animatePlay({ fromRect, toRect, card });
+  }
+
+  /**
+   * Nechá `count` rubů přeletět z lízacího balíčku (`fromRect` zachycený PŘED
+   * překreslením) do zóny ruky `handSelector`, kterou čte až teď (po draw()).
+   * Když některý rect chybí, animace se přeskočí. animateDraw resolvuje vždy.
+   */
+  async function flyFromDraw(
+    handSelector: string,
+    count: number,
+    fromRect: DOMRect | null,
+  ): Promise<void> {
+    const toRect = rectOf(handSelector);
+    if (!fromRect || !toRect) {
+      return;
+    }
+    await animateDraw({ fromRect, toRect, count });
   }
 
   function gameOver(): boolean {
@@ -112,23 +129,30 @@ function startGame(app: HTMLElement): void {
   }
 
   /**
-   * Dožene tahy AI a animuje JEDEN ghost ze zóny AI na hromádku, pokud AI reálně
-   * zahrála kartu (vrch hromádky se změnil). Zjednodušení: při esu hraje AI víc
-   * karet v jednom advanceAi — animuje se jen výsledná vrchní karta. Když AI jen
-   * lízla, vrch se nezmění a animace se nehraje. Zámek se uvolní až po letu.
+   * Dožene tahy AI a animuje JEDEN přelet. Priorita: zahrání (vrch hromádky se
+   * změnil) → ghost ze zóny AI na hromádku. Jinak když ruka AI vzrostla → líznutí
+   * (rub z balíčku do zóny AI). Zjednodušení: při esu hraje AI víc karet v jednom
+   * advanceAi (animuje se jen výsledná vrchní karta), a vzácný případ "eso + vynucené
+   * braní" ukáže jen zahrání. Detekce líznutí přes nárůst ruky, ne přes drawPile
+   * (robustní vůči remíchání balíčku). Zámek se uvolní až po letu.
    */
   async function runAi(gen: number): Promise<void> {
     if (gen !== generation || ended) {
       return; // nová partie během AI prodlevy, nebo hra už skončila → zbloudilý tah
     }
     const topBefore = topDiscard(state);
-    // Zdroj = první rub v zóně AI (velikost karty), zachycený před překreslením.
-    const fromRect = rectOf(".zone--ai .card--back") ?? rectOf(".zone--ai");
+    const aiCountBefore = state.aiHand.length;
+    // Zdroje obou možných animací, zachycené před překreslením.
+    const playFrom = rectOf(".zone--ai .card--back") ?? rectOf(".zone--ai");
+    const drawFrom = rectOf(".pile--draw");
     state = advanceAi(state, rng);
     const played = topDiscard(state);
+    const drew = state.aiHand.length - aiCountBefore;
     draw();
     if (!sameCard(topBefore, played)) {
-      await flyToDiscard(played, fromRect);
+      await flyToDiscard(played, playFrom);
+    } else if (drew > 0) {
+      await flyFromDraw(".hand--ai", drew, drawFrom);
     }
     if (gen !== generation) {
       return; // během letu začala nová partie → nesahej na její zámek
@@ -192,7 +216,7 @@ function startGame(app: HTMLElement): void {
     }
   }
 
-  function onDraw(): void {
+  async function onDraw(): Promise<void> {
     if (locked || gameOver() || state.currentPlayer !== "player") {
       return;
     }
@@ -200,9 +224,18 @@ function startGame(app: HTMLElement): void {
     if (!next) {
       return; // má hratelnou kartu, nebo nelze líznout (stall)
     }
+    // Počet líznutých karet a zdroj (lízací balíček) zachytit PŘED draw().
+    const count = next.playerHand.length - state.playerHand.length;
+    const fromRect = rectOf(".pile--draw");
     state = next;
     draw();
-    scheduleAi();
+    locked = true; // drž zámek po dobu letu rubů, ať klik nerozjede stav
+    const gen = generation;
+    await flyFromDraw(".hand--player", count, fromRect);
+    if (gen !== generation) {
+      return; // během letu začala nová partie → tahle continuation už neplatí
+    }
+    scheduleAi(); // nastaví zámek dle toho, kdo je na tahu
   }
 
   // Jeden delegovaný listener — přežije full re-render #app. Click pokrývá myš i dotyk.
@@ -221,7 +254,7 @@ function startGame(app: HTMLElement): void {
       return;
     }
     if (target.closest<HTMLElement>("[data-action='draw']")) {
-      onDraw();
+      void onDraw();
     }
   });
 

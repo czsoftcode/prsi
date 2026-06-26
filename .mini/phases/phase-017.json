@@ -1,0 +1,48 @@
+{
+  "id": 17,
+  "title": "Animace líznutí karty",
+  "goal": "Při líznutí karty (hráčem i AI, včetně vynuceného braní po sedmě) nechá ghost rubu přeletět z lízacího balíčku do cílové zóny ruky, se stejným kontraktem jako animatePlay (zámek vstupu po dobu letu, respekt k prefers-reduced-motion, Promise resolvuje vždy, žádné zaseknutí smyčky) a bez zásahu do render().",
+  "status": "done",
+  "steps": [
+    {
+      "title": "animateDraw v animate.ts",
+      "status": "done",
+      "detail": "Nová exportovaná funkce: ghost rubSrc() letí z fromRect (lízací balíček) do toRect (zóna ruky), stejný kontrakt jako animatePlay — resolvuje vždy (transitionend + timeout fallback), přeskočí při prefers-reduced-motion i degenerované geometrii. Sdílí ensureLayer/clearAnim."
+    },
+    {
+      "title": "Stagger více líznutých karet",
+      "status": "done",
+      "detail": "animateDraw (nebo wrapper) přijme počet karet a pošle je s malým časovým posunem; celkové trvání ohraničené (cap), aby braní 8 karet po sedmách neutáhlo zámek na vteřiny. Jedna Promise resolvuje po doletu poslední."
+    },
+    {
+      "title": "Helper flyFromDraw v main.ts",
+      "status": "done",
+      "detail": "Zachytí rect .pile--draw PŘED draw(), po překreslení čte cílovou zónu (.hand--player/.hand--ai) a zavolá animateDraw. Když rect chybí, animace se přeskočí (smyčka jede dál)."
+    },
+    {
+      "title": "Zapojení líznutí hráčem",
+      "status": "done",
+      "detail": "onDraw → async; spočítá počet líznutých karet (rozdíl velikosti ruky před/po), drží zámek po dobu letu, generation guard po awaitu, pak scheduleAi(). Žádný falešný úspěch při stallu (playerDraw vrátí null)."
+    },
+    {
+      "title": "Zapojení líznutí AI v runAi",
+      "status": "done",
+      "detail": "Když se vrch hromádky nezměnil, ale ruka AI vzrostla → animuj líznutí (ghost do .hand--ai) místo zahrání. Robustní vůči remíchání balíčku (detekce přes nárůst ruky, ne přes drawPile). Zámek se uvolní až po letu."
+    },
+    {
+      "title": "Testy + zelený build",
+      "status": "done",
+      "detail": "Do animate.test.ts přidat testy animateDraw zrcadlící animatePlay (reduced-motion skip, degenerovaná geometrie, fallback úklid, více karet). npm run build + testy + lint zeleně."
+    }
+  ],
+  "startedAt": "2026-06-26T18:09:26.788Z",
+  "resolvedVerify": [
+    "Vizuální dojem letu rubů z balíčku do ruky",
+    "Braní více karet po sedmě (stagger)"
+  ],
+  "completedAt": "2026-06-26T18:18:00.440Z",
+  "autoCommit": {
+    "preSha": "92a41767a32ed03de098b389201439e6cb8c8c70",
+    "subject": "Phase 17: Animace líznutí karty"
+  }
+}

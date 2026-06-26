@@ -82,6 +82,11 @@
       "id": 16,
       "title": "Animační vrstva: zahrání karty",
       "status": "done"
+    },
+    {
+      "id": 17,
+      "title": "Animace líznutí karty",
+      "status": "done"
     }
   ]
 }
