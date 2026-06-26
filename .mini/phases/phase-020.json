@@ -1,0 +1,48 @@
+{
+  "id": 20,
+  "title": "Hudba na pozadí ve smyčce",
+  "goal": "Přidat do audio.ts trvalý smyčkový uzel pro soundtrack.mp3 (snížená hlasitost, loop=true) s startMusic()/stopMusic(), spustit ho při odemčení zvuku gestem (autoplay policy) a zastavit v main.ts přesně v bodě konce partie (výhra/prohra/pat, aby fanfára/defeat zazněly do ticha), restart při nové partii (reset currentTime). Přidat vypínač hudby v UI (tlačítko vedle indikátorů) přepínající přehrávání, s perzistencí volby v prohlížeči (localStorage), respektovaný i při startMusic.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "audio.ts: smyčkový hudební uzel + start/stop",
+      "status": "done",
+      "detail": "ensureMusic() lazy uzel pro soundtrack.mp3 s loop=true a sníženou volume; startMusic()/stopMusic() (stop = pause + currentTime=0). startMusic no-op bez Audia, bez odemčení nebo když je hudba vypnutá. Napojení startMusic() do unlock() po odemčení efektů."
+    },
+    {
+      "title": "audio.ts: perzistence vypínače (localStorage)",
+      "status": "done",
+      "detail": "isMusicEnabled()/setMusicEnabled(on), zdroj pravdy v paměti + best-effort localStorage (klíč prsi.music), default zapnuto. setMusicEnabled(true)→startMusic, (false)→pause bez resetu."
+    },
+    {
+      "title": "render.ts: tlačítko vypínače hudby",
+      "status": "done",
+      "detail": "renderMusicButton() s data-action='music', popisek dle isMusicEnabled() (Hudba: zap/vyp), vedle tlačítka Motiv; CSS .indicator--music konzistentní s --theme."
+    },
+    {
+      "title": "main.ts: napojení do životního cyklu hry",
+      "status": "done",
+      "detail": "stopMusic() v draw() v bloku if(msg) vedle playWin/playLose (fanfára/defeat do ticha), startMusic() v newGame() (restart smyčky); delegovaný listener obslouží data-action='music' (toggle + draw), funkční i při locked."
+    },
+    {
+      "title": "Testy audio + render + main",
+      "status": "done",
+      "detail": "audio.test.ts: loop/snížená volume, start/stop, perzistence, no-op bez Audia; render.test.ts: tlačítko + popisek dle stavu; main test: stopMusic při konci, startMusic při nové partii, toggle přepne a uloží."
+    },
+    {
+      "title": "Zelený build + ruční ověření",
+      "status": "done",
+      "detail": "npm run build a celá test sada zelené; ruční: hudba ve smyčce od prvního gesta, ticho při konci partie, restart při nové partii, vypínač funguje a přežije reload."
+    }
+  ],
+  "startedAt": "2026-06-26T19:24:54.050Z",
+  "resolvedVerify": [
+    "Reálné přehrávání hudby v prohlížeči",
+    "Hlasitost hudby vůči efektům"
+  ],
+  "completedAt": "2026-06-26T19:38:38.224Z",
+  "autoCommit": {
+    "preSha": "2f67edd81ee6230c3968864eadfe4a2300db3e5f",
+    "subject": "Phase 20: Hudba na pozadí ve smyčce"
+  }
+}

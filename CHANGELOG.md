@@ -8,6 +8,7 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ### Added
 - Zvuk konce hry: při výhře hráče zazní fanfára, při prohře smutný zvuk. Přehraje se právě jednou ve chvíli skončení partie (remíza je beze zvuku) a po spuštění nové partie může zaznít znovu.
+- Hudba na pozadí ve smyčce: během partie hraje podkresová hudba, která se rozjede po prvním kliknutí/stisku klávesy (kvůli pravidlům prohlížečů), ztichne při konci hry (aby fanfára/smutný zvuk zazněly čistě) a naběhne znovu při nové partii. Tlačítko „Hudba: zap/vyp" mezi indikátory ji vypne nebo zapne; volba se uchová v prohlížeči.
 
 ## [1.3.0] - 2026-06-26
 

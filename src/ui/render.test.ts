@@ -1,7 +1,12 @@
 // @vitest-environment jsdom
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import type { Card, GameState } from "../engine/cards";
 import { render } from "./render";
+import { isMusicEnabled } from "./audio";
+
+// render čte stav hudby pro popisek vypínače — mockujeme ho, ať test ovládá
+// zap/vyp nezávisle na localStorage. Default true odpovídá reálnému chování.
+vi.mock("./audio", () => ({ isMusicEnabled: vi.fn(() => true) }));
 
 function card(suit: Card["suit"], rank: Card["rank"]): Card {
   return { suit, rank };
@@ -53,6 +58,26 @@ describe("render (jsdom smoke)", () => {
     expect(btn).not.toBeNull();
     expect(btn?.tagName).toBe("BUTTON");
     expect(btn?.textContent).toBe("Vyber si motiv obrázků");
+  });
+
+  it("vykreslí vypínač hudby a popisek odráží stav zap/vyp", () => {
+    vi.mocked(isMusicEnabled).mockReturnValue(true);
+    render(makeState(), root);
+    const btn = root.querySelector<HTMLButtonElement>(
+      ".indicators [data-action='music']",
+    );
+    expect(btn).not.toBeNull();
+    expect(btn?.tagName).toBe("BUTTON");
+    expect(btn?.textContent).toContain("zap");
+    expect(btn?.getAttribute("aria-pressed")).toBe("true");
+
+    vi.mocked(isMusicEnabled).mockReturnValue(false);
+    render(makeState(), root);
+    const off = root.querySelector<HTMLButtonElement>(
+      ".indicators [data-action='music']",
+    );
+    expect(off?.textContent).toContain("vyp");
+    expect(off?.getAttribute("aria-pressed")).toBe("false");
   });
 
   it("indikátor sedem se skryje při 0 a zobrazí při >0", () => {

@@ -13,7 +13,17 @@ import {
 import { chooseSuit, chooseTheme, showEndOverlay } from "./overlay";
 import { setActiveTheme } from "./theme";
 import { animatePlay, animateDraw, clearAnim } from "./animate";
-import { playPlay, playDraw, playWin, playLose, initAudioUnlock } from "./audio";
+import {
+  playPlay,
+  playDraw,
+  playWin,
+  playLose,
+  initAudioUnlock,
+  startMusic,
+  stopMusic,
+  isMusicEnabled,
+  setMusicEnabled,
+} from "./audio";
 
 /** Prodleva před reakcí AI, aby byl tah vidět (není to animace, jen pauza). */
 const AI_DELAY_MS = 600;
@@ -104,6 +114,8 @@ function startGame(app: HTMLElement): void {
     state = createGame(rng);
     ended = false;
     locked = false;
+    startMusic(); // rozjeď hudbu (od začátku — předchozí konec hry zavolal
+    // stopMusic, který přetočil currentTime na 0); no-op když je hudba vypnutá
     draw();
   }
 
@@ -117,6 +129,7 @@ function startGame(app: HTMLElement): void {
         // Zvuk konce hry právě jednou: ended brání opakování při dalším renderu,
         // newGame() ho resetuje → po nové partii může zaznít znovu. Pat (winner ===
         // null) zůstává bez zvuku.
+        stopMusic(); // ztiš hudbu, ať fanfára/defeat (i pat) zazní do ticha
         const winner = winnerOf(state);
         if (winner === "player") {
           playWin();
@@ -253,10 +266,19 @@ function startGame(app: HTMLElement): void {
 
   // Jeden delegovaný listener — přežije full re-render #app. Click pokrývá myš i dotyk.
   app.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    // Vypínač hudby řešíme PŘED zámkem `locked`, ať jde přepnout i v okně AI
+    // prodlevy (locked=true, ale stůl je odkrytý). Nemění herní stav. Pozn.: pod
+    // otevřeným overlayem (výběr barvy/motivu, konec hry) je tlačítko fyzicky
+    // překryté (overlay má z-index a chytá kliky), takže tam se sem klik nedostane.
+    if (target.closest<HTMLElement>("[data-action='music']")) {
+      setMusicEnabled(!isMusicEnabled());
+      draw(); // překresli popisek tlačítka podle nového stavu
+      return;
+    }
     if (locked) {
       return;
     }
-    const target = e.target as HTMLElement;
     const cardEl = target.closest<HTMLElement>(".card--face[data-index]");
     if (cardEl && cardEl.dataset.index !== undefined) {
       void onPlayCard(Number(cardEl.dataset.index));

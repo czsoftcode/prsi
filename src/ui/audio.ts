@@ -1,12 +1,20 @@
-// Zvuková vrstva: krátké efekty líznutí a odhozu. Žije mimo render() — herní
-// smyčka v main.ts ji volá ze stejných míst jako animace. Kontrakt: přehrání je
-// fire-and-forget a NIKDY nesmí zaseknout smyčku — odmítnutý play() Promise
-// (autoplay policy prohlížeče) i prostředí bez Audio (SSR/test) se tiše spolknou.
+// Zvuková vrstva: krátké efekty líznutí a odhozu + hudba na pozadí ve smyčce.
+// Žije mimo render() — herní smyčka v main.ts ji volá ze stejných míst jako
+// animace. Kontrakt: přehrání je fire-and-forget a NIKDY nesmí zaseknout smyčku —
+// odmítnutý play() Promise (autoplay policy prohlížeče) i prostředí bez Audio
+// (SSR/test) se tiše spolknou.
 //
 // Soubory leží v public/sounds/ (nejsou to moduly), proto se cesta skládá z
 // BASE_URL stejně jako u obrázků karet — v dev/testech "/", v buildu "/prsi/".
 
 const BASE = import.meta.env.BASE_URL;
+
+/** Cesta k hudbě na pozadí (jeden trvalý smyčkový uzel, ne klonovaný efekt). */
+const MUSIC_SRC = `${BASE}sounds/soundtrack.mp3`;
+/** Hlasitost hudby — pod efekty, ať nepřehluší líznutí/odhoz a fanfáru. */
+const MUSIC_VOLUME = 0.35;
+/** Klíč v localStorage pro volbu zapnuté/vypnuté hudby (best-effort). */
+const MUSIC_STORAGE_KEY = "prsi.music";
 
 type SoundName = "draw" | "play" | "win" | "lose";
 
@@ -95,6 +103,94 @@ export function playLose(): void {
   play("lose");
 }
 
+// --- Hudba na pozadí ------------------------------------------------------
+
+/** Trvalý smyčkový uzel hudby (jeden, NEklonuje se — na rozdíl od efektů). */
+let musicEl: HTMLAudioElement | null = null;
+/**
+ * Zdroj pravdy pro zapnutou/vypnutou hudbu. `null` = ještě nenačteno z úložiště;
+ * inicializuje se líně při prvním dotyku (isMusicEnabled/setMusicEnabled).
+ */
+let musicEnabled: boolean | null = null;
+
+/** Přednačte hudební uzel jednou (loop + snížená hlasitost). */
+function ensureMusic(): HTMLAudioElement {
+  if (!musicEl) {
+    musicEl = makeAudio(MUSIC_SRC);
+    musicEl.loop = true;
+    musicEl.volume = MUSIC_VOLUME;
+  }
+  return musicEl;
+}
+
+/** Best-effort čtení volby z localStorage; default zapnuto (vrací true). */
+function loadMusicEnabled(): boolean {
+  try {
+    return localStorage.getItem(MUSIC_STORAGE_KEY) !== "off";
+  } catch {
+    return true; // localStorage nedostupné (private mode) → default zapnuto
+  }
+}
+
+/** Vrátí, zda je hudba zapnutá (líně inicializuje z localStorage). */
+export function isMusicEnabled(): boolean {
+  if (musicEnabled === null) {
+    musicEnabled = loadMusicEnabled();
+  }
+  return musicEnabled;
+}
+
+/**
+ * Spustí hudbu od aktuální pozice. No-op, když: není Audio (test/SSR), zvuk
+ * ještě nebyl odemčen gestem (autoplay policy) nebo je hudba vypnutá. Voláno
+ * z unlock() (první gesto) a z newGame() v main.ts (restart partie).
+ */
+export function startMusic(): void {
+  if (!audioAvailable() || !unlocked || !isMusicEnabled()) {
+    return;
+  }
+  try {
+    swallow(ensureMusic().play());
+  } catch {
+    // Hudba je dekorativní; synchronní chyba NESMÍ rozbít herní smyčku.
+  }
+}
+
+/** Zastaví hudbu a přetočí na začátek (další startMusic ji rozjede znovu). */
+export function stopMusic(): void {
+  if (!musicEl) {
+    return;
+  }
+  try {
+    musicEl.pause();
+    musicEl.currentTime = 0;
+  } catch {
+    // pause()/currentTime v exotickém prostředí — ignoruj, je to dekorace.
+  }
+}
+
+/**
+ * Přepne hudbu zap/vyp, uloží volbu (best-effort) a rovnou ji rozjede/utiší.
+ * Vypnutí jen pozastaví (bez resetu pozice), aby zpětné zapnutí navázalo.
+ */
+export function setMusicEnabled(on: boolean): void {
+  musicEnabled = on;
+  try {
+    localStorage.setItem(MUSIC_STORAGE_KEY, on ? "on" : "off");
+  } catch {
+    // localStorage nedostupné — volba platí aspoň pro tuto relaci (in-memory).
+  }
+  if (on) {
+    startMusic();
+  } else if (musicEl) {
+    try {
+      musicEl.pause();
+    } catch {
+      // viz výše — dekorace, chybu spolkni
+    }
+  }
+}
+
 /** Odemkne audio během uživatelského gesta: krátce (muted) prohraje uzly. */
 function unlock(): void {
   if (unlocked) {
@@ -121,6 +217,8 @@ function unlock(): void {
       restore();
     }
   }
+  // Gesto právě odemklo autoplay i pro hudbu → rozjeď ji (respektuje volbu).
+  startMusic();
 }
 
 /**

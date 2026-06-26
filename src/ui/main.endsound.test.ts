@@ -20,6 +20,10 @@ vi.mock("./audio", () => ({
   playPlay: vi.fn(),
   playDraw: vi.fn(),
   initAudioUnlock: vi.fn(),
+  startMusic: vi.fn(),
+  stopMusic: vi.fn(),
+  isMusicEnabled: vi.fn(() => true),
+  setMusicEnabled: vi.fn(),
 }));
 vi.mock("./theme", () => ({
   setActiveTheme: vi.fn(),
@@ -68,6 +72,7 @@ describe("main: zvuk konce hry", () => {
       '<div id="app">' +
       "<button data-action='theme'></button>" +
       "<button data-action='draw'></button>" +
+      "<button data-action='music'></button>" +
       "</div>";
   });
 
@@ -125,5 +130,33 @@ describe("main: zvuk konce hry", () => {
     await import("./main"); // bootstrap draw() → pat overlay, ale ticho
     expect(audio.playWin).not.toHaveBeenCalled();
     expect(audio.playLose).not.toHaveBeenCalled();
+  });
+
+  it("hudba se zastaví při konci hry a restartuje při nové partii", async () => {
+    const game = await import("./game");
+    const audio = await import("./audio");
+    const overlay = await import("./overlay");
+    vi.mocked(game.winnerOf).mockReturnValue("player");
+    await import("./main"); // konec hry → stopMusic; startMusic zatím 0×
+    expect(audio.stopMusic).toHaveBeenCalledTimes(1);
+    expect(audio.startMusic).not.toHaveBeenCalled();
+
+    const onNewGame = vi.mocked(overlay.showEndOverlay).mock.calls[0]![1];
+    onNewGame(); // nová partie → restart smyčky
+    expect(audio.startMusic).toHaveBeenCalledTimes(1);
+  });
+
+  it("klik na vypínač přepne hudbu i při locked (handler je před zámkem)", async () => {
+    // Ověřuje LOGIKU handleru, ne fyzickou dosažitelnost: klik míří přímo na
+    // tlačítko, takže obchází z-index/hit-testing overlaye. Reálně je vypínač
+    // klikatelný v okně AI prodlevy (locked=true, bez overlaye) — pod end-overlayem
+    // je překrytý. Test drží kontrakt "obsluha běží i když locked".
+    const game = await import("./game");
+    const audio = await import("./audio");
+    vi.mocked(game.winnerOf).mockReturnValue("player"); // konec → locked=true
+    vi.mocked(audio.isMusicEnabled).mockReturnValue(true);
+    await import("./main");
+    clickAction("music");
+    expect(audio.setMusicEnabled).toHaveBeenCalledWith(false); // true → toggle → false
   });
 });

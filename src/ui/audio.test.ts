@@ -10,6 +10,7 @@ describe("audio", () => {
 
   beforeEach(() => {
     vi.resetModules();
+    localStorage.clear(); // volba hudby (prsi.music) nesmí prosáknout mezi testy
     playSpy = vi.fn(() => Promise.resolve());
     HTMLMediaElement.prototype.play = playSpy as unknown as () => Promise<void>;
     // pause() jsdom také neimplementuje (volá ho unlock při restore) — utiš ho
@@ -89,8 +90,8 @@ describe("audio", () => {
     expect(playSpy).not.toHaveBeenCalled(); // bez gesta zatím nic
 
     window.dispatchEvent(new Event("pointerdown"));
-    // odemčení krátce (muted) prohraje všechny čtyři přednačtené uzly
-    expect(playSpy).toHaveBeenCalledTimes(4);
+    // odemčení prohraje 4 přednačtené efekty (muted) + rozjede hudbu na pozadí
+    expect(playSpy).toHaveBeenCalledTimes(5);
     // …a OBA listenery se reálně odeberou (zuby: jinak by test odhalil leak jen
     // díky unlocked-guardu, ne díky removeEventListener)
     expect(removeSpy).toHaveBeenCalledWith("pointerdown", expect.any(Function));
@@ -98,6 +99,65 @@ describe("audio", () => {
 
     window.dispatchEvent(new Event("pointerdown")); // listener byl odebrán
     window.dispatchEvent(new Event("keydown"));
-    expect(playSpy).toHaveBeenCalledTimes(4); // beze změny
+    expect(playSpy).toHaveBeenCalledTimes(5); // beze změny
+  });
+
+  // --- Hudba na pozadí ----------------------------------------------------
+
+  it("hudba: po odemčení se spustí smyčkový uzel (loop, snížená hlasitost)", async () => {
+    // Zachyť vlastnosti uzlu, na kterém se reálně volá play(). Hudební uzel se
+    // pozná podle loop===true (efekty mají loop=false).
+    const seen: { loop: boolean; volume: number; src: string }[] = [];
+    playSpy.mockImplementation(function (this: HTMLAudioElement) {
+      seen.push({ loop: this.loop, volume: this.volume, src: this.src });
+      return Promise.resolve();
+    });
+    const { initAudioUnlock } = await import("./audio");
+    initAudioUnlock();
+    window.dispatchEvent(new Event("pointerdown")); // odemkne → unlock → startMusic
+    const music = seen.find((s) => s.loop === true);
+    expect(music).toBeDefined();
+    expect(music!.volume).toBeCloseTo(0.35);
+    expect(music!.src).toContain("sounds/soundtrack.mp3");
+  });
+
+  it("startMusic bez odemčení nehraje (autoplay policy)", async () => {
+    const { startMusic } = await import("./audio");
+    startMusic();
+    expect(playSpy).not.toHaveBeenCalled();
+  });
+
+  it("vypnutá hudba se po odemčení nespustí", async () => {
+    localStorage.setItem("prsi.music", "off");
+    const loops: boolean[] = [];
+    playSpy.mockImplementation(function (this: HTMLAudioElement) {
+      loops.push(this.loop);
+      return Promise.resolve();
+    });
+    const { initAudioUnlock, isMusicEnabled } = await import("./audio");
+    expect(isMusicEnabled()).toBe(false);
+    initAudioUnlock();
+    window.dispatchEvent(new Event("pointerdown")); // efekty se odemknou, hudba ne
+    expect(loops.some((loop) => loop === true)).toBe(false);
+  });
+
+  it("setMusicEnabled uloží volbu do localStorage a přepne isMusicEnabled", async () => {
+    const { setMusicEnabled, isMusicEnabled } = await import("./audio");
+    expect(isMusicEnabled()).toBe(true); // default
+    setMusicEnabled(false);
+    expect(localStorage.getItem("prsi.music")).toBe("off");
+    expect(isMusicEnabled()).toBe(false);
+    setMusicEnabled(true);
+    expect(localStorage.getItem("prsi.music")).toBe("on");
+    expect(isMusicEnabled()).toBe(true);
+  });
+
+  it("hudba: bez Audia jsou start/stop no-op", async () => {
+    vi.stubGlobal("Audio", undefined);
+    const { startMusic, stopMusic } = await import("./audio");
+    expect(() => startMusic()).not.toThrow();
+    expect(() => stopMusic()).not.toThrow();
+    expect(playSpy).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
   });
 });

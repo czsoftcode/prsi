@@ -10,6 +10,7 @@ import {
   SUIT_LABELS,
   tableBgImageSet,
 } from "./assets";
+import { isMusicEnabled } from "./audio";
 
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -114,6 +115,17 @@ function renderThemeButton(): HTMLButtonElement {
   return btn;
 }
 
+/** Vypínač hudby na pozadí. Popisek odráží aktuální stav (zap/vyp). */
+function renderMusicButton(): HTMLButtonElement {
+  const on = isMusicEnabled();
+  const btn = el("button", "indicator indicator--music");
+  btn.type = "button";
+  btn.dataset.action = "music";
+  btn.setAttribute("aria-pressed", on ? "true" : "false");
+  btn.textContent = on ? "🔊 Hudba: zap" : "🔇 Hudba: vyp";
+  return btn;
+}
+
 /** Indikátor, kdo je na tahu. */
 function renderTurnIndicator(state: GameState): HTMLElement {
   const box = el("div", "indicator indicator--turn");
@@ -130,6 +142,7 @@ function renderCenterZone(state: GameState): HTMLElement {
     renderTurnIndicator(state),
     renderSuitIndicator(state),
     renderThemeButton(),
+    renderMusicButton(),
   );
   const sevens = renderSevensIndicator(state);
   if (sevens) {

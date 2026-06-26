@@ -144,7 +144,8 @@ body {
 }
 
 /* Tlačítko otevírající výběr motivu — vypadá jako ostatní indikátory. */
-.indicator--theme {
+.indicator--theme,
+.indicator--music {
   color: inherit;
   font: inherit;
   border: none;
@@ -152,7 +153,9 @@ body {
 }
 
 .indicator--theme:hover,
-.indicator--theme:focus {
+.indicator--theme:focus,
+.indicator--music:hover,
+.indicator--music:focus {
   background: rgba(255, 211, 77, 0.35);
 }
 
