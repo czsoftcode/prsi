@@ -57,6 +57,11 @@
       "id": 11,
       "title": "Pozadí herního stolu z obrázku",
       "status": "done"
+    },
+    {
+      "id": 12,
+      "title": "Motivy: abstrakce assetů + přejmenování",
+      "status": "done"
     }
   ]
 }

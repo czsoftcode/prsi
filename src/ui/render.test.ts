@@ -36,13 +36,13 @@ describe("render (jsdom smoke)", () => {
   it("vrchní karta odhazovací hromádky je poslední prvek discardPile", () => {
     render(makeState(), root);
     const top = root.querySelector<HTMLImageElement>(".pile--discard .card--face");
-    expect(top?.getAttribute("src")).toBe("/cards/kule-svrsek.png");
+    expect(top?.getAttribute("src")).toBe("/cards_01/kule-svrsek.png");
   });
 
   it("indikátor barvy zobrazuje ikonu currentSuit", () => {
     render(makeState({ currentSuit: "srdce" }), root);
     const suit = root.querySelector<HTMLImageElement>(".indicator--suit .indicator__suit-img");
-    expect(suit?.getAttribute("src")).toBe("/cards/suit-srdce.png");
+    expect(suit?.getAttribute("src")).toBe("/cards_01/suit-srdce.png");
   });
 
   it("indikátor sedem se skryje při 0 a zobrazí při >0", () => {

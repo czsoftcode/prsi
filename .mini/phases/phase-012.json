@@ -1,0 +1,42 @@
+{
+  "id": 12,
+  "title": "Motivy: abstrakce assetů + přejmenování",
+  "goal": "Přejmenovat public/cards na public/cards_01 a převést src/ui/assets.ts ze statických konstant na runtime motiv: cardSrc, RUB_SRC, suitIconSrc i pozadí stolu čtou aktivní motiv NN (výchozí 01), volba se ukládá do localStorage; aktualizovat dotčené testy (assets.test.ts, render.test.ts). Bez UI obrazovky výběru — jen funkční přepnutí motivu programově.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Přejmenovat složku karet na cards_01",
+      "status": "done",
+      "detail": "git mv public/cards public/cards_01; existuje public/cards_01/ (karty, rub.png, suit-*.png), public/cards/ už ne. Nemíchat do toho rozpracovaný hraci_plocha.png."
+    },
+    {
+      "title": "Modul src/ui/theme.ts se stavem a persistencí",
+      "status": "done",
+      "detail": "getActiveTheme(): string a setActiveTheme(id: string): void; klíč localStorage prsi.theme, default 01, čtení i zápis v try/catch s fallbackem na in-memory 01. Pokrýt theme.test.ts (default, set->get, fallback při nedostupném localStorage)."
+    },
+    {
+      "title": "Refaktor assets.ts na runtime motiv",
+      "status": "done",
+      "detail": "cardSrc/suitIconSrc použijí prefix cards_${getActiveTheme()}; RUB_SRC->funkce rubSrc(), TABLE_BG_IMAGE_SET->funkce tableBgImageSet() (image-set webp+jpg pro dashboard_NN). Vše čte aktivní motiv při volání, zachová BASE_URL prefix."
+    },
+    {
+      "title": "Aktualizovat konzumenty v render.ts",
+      "status": "done",
+      "detail": "nahradit RUB_SRC->rubSrc() (~ř.34) a TABLE_BG_IMAGE_SET->tableBgImageSet() (~ř.162) včetně importů. Typecheck/build prochází."
+    },
+    {
+      "title": "Aktualizovat a doplnit testy",
+      "status": "done",
+      "detail": "assets.test.ts a render.test.ts přepsat z /cards/ na /cards_01/; přidat test, že po setActiveTheme(02) vrací cardSrc cestu s cards_02 a tableBgImageSet() obsahuje dashboard_02. npm test zelené."
+    }
+  ],
+  "startedAt": "2026-06-26T10:31:59.987Z",
+  "resolvedVerify": [
+    "Vizuální kontrola v prohlížeči: karty i pozadí se načtou bez 404"
+  ],
+  "completedAt": "2026-06-26T10:41:40.262Z",
+  "autoCommit": {
+    "preSha": "91e4de7165e90fdaee34ec0211efd4ec84c6d4e3",
+    "subject": "Phase 12: Motivy: abstrakce assetů + přejmenování"
+  }
+}

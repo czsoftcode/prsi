@@ -5,10 +5,10 @@ import type { Card, GameState } from "../engine/cards";
 import { playableCards } from "../engine/moves";
 import {
   cardSrc,
-  RUB_SRC,
+  rubSrc,
   suitIconSrc,
   SUIT_LABELS,
-  TABLE_BG_IMAGE_SET,
+  tableBgImageSet,
 } from "./assets";
 
 function el<K extends keyof HTMLElementTagNameMap>(
@@ -31,7 +31,7 @@ function faceCard(card: Card): HTMLImageElement {
 /** Obrázek rubu karty. */
 function backCard(): HTMLImageElement {
   const img = el("img", "card card--back");
-  img.src = RUB_SRC;
+  img.src = rubSrc();
   img.alt = "Rub karty";
   return img;
 }
@@ -159,7 +159,7 @@ export function render(state: GameState, root: HTMLElement): void {
   root.replaceChildren();
   root.classList.add("prsi-table");
   // Pozadí přes CSS proměnnou (base-path-safe), overlay řeší style.css.
-  root.style.setProperty("--table-bg", TABLE_BG_IMAGE_SET);
+  root.style.setProperty("--table-bg", tableBgImageSet());
   root.append(
     renderAiZone(state),
     renderCenterZone(state),
