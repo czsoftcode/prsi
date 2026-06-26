@@ -1,4 +1,5 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
+import { THEMES } from "virtual:themes";
 
 // theme.ts má modulový stav (cache aktivního motivu) — pro čistý stav v každém
 // testu modul znovu importujeme přes vi.resetModules() + dynamic import.
@@ -48,6 +49,14 @@ describe("theme persistence", () => {
     expect(second.getActiveTheme()).toBe("02");
   });
 
+  it("uložené neznámé NN (mimo registr) → fallback na default", async () => {
+    const store = memStorage();
+    store.setItem("prsi.theme", "99"); // motiv, který v registru není
+    (globalThis as unknown as { localStorage?: unknown }).localStorage = store;
+    const { getActiveTheme } = await freshTheme();
+    expect(getActiveTheme()).toBe("01");
+  });
+
   it("nedostupné localStorage nezpůsobí pád: fallback na default a in-memory set", async () => {
     const throwing = {
       getItem: () => {
@@ -62,5 +71,17 @@ describe("theme persistence", () => {
     expect(getActiveTheme()).toBe("01"); // čtení spadlo -> default
     expect(() => setActiveTheme("02")).not.toThrow();
     expect(getActiveTheme()).toBe("02"); // in-memory drží i bez úložiště
+  });
+});
+
+describe("registr motivů (virtual:themes)", () => {
+  it("virtuální modul se resolvuje a obsahuje výchozí motiv 01", () => {
+    expect(Array.isArray(THEMES)).toBe(true);
+    expect(THEMES).toContain("01");
+  });
+
+  it("je seřazený a neobsahuje neexistující motiv", () => {
+    expect([...THEMES].sort()).toEqual(THEMES); // plugin vrací vzestupně
+    expect(THEMES).not.toContain("99"); // motiv bez assetů se nepropašuje
   });
 });

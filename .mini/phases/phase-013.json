@@ -1,0 +1,39 @@
+{
+  "id": 13,
+  "title": "Registr dostupných motivů",
+  "goal": "Build-time skript/Vite plugin proskenuje public/cards_* a public/images/dashboard_*, spáruje je a vygeneruje manifest motivů (jen NN s kompletními assety – cards_NN i dashboard_NN), který appka importuje místo natvrdo zadaného seznamu; getActiveTheme validuje uloženou hodnotu proti registru a při neznámém/nekompletním NN spadne na DEFAULT_THEME. Bez UI obrazovky výběru (to je todo 9).",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Vite plugin: sken public/ -> virtual:themes",
+      "status": "done",
+      "detail": "Inline plugin ve vite.config.ts; resolveId/load pres node fs proskenuje public/cards_*, NN = cast za cards_; motiv validni jen kdyz existuji public/images/dashboard_NN.webp i .jpg. Exportuje export const THEMES: string[] (vzestupne). Funguje v dev, build i vitest (sdileny config)."
+    },
+    {
+      "title": "Ambient deklarace virtual:themes",
+      "status": "done",
+      "detail": "Novy src/virtual-themes.d.ts: declare module \"virtual:themes\" { export const THEMES: string[] }. tsc --noEmit projde."
+    },
+    {
+      "title": "Validace v getActiveTheme",
+      "status": "done",
+      "detail": "theme.ts importuje THEMES; po nacteni ulozene hodnoty: pokud NN neni v THEMES, vrat DEFAULT_THEME (uloziste NEprepisuj). Prazdny registr -> DEFAULT_THEME. setActiveTheme beze zmeny. Aktualizovat komentar v hlavicce."
+    },
+    {
+      "title": "Testy registru a fallbacku",
+      "status": "done",
+      "detail": "theme.test.ts: novy test ulozene nezname NN (99) -> getActiveTheme vrati 01; overit ze set 02 -> get 02 dal prochazi; smoke test ze se virtual:themes ve vitest resolvuje (THEMES obsahuje 01)."
+    },
+    {
+      "title": "Overit zeleny build",
+      "status": "done",
+      "detail": "npm run test, npm run typecheck a npm run build projdou; cards_03 (bez dashboardu) se v THEMES neobjevi."
+    }
+  ],
+  "startedAt": "2026-06-26T11:10:15.125Z",
+  "completedAt": "2026-06-26T11:15:23.118Z",
+  "autoCommit": {
+    "preSha": "ad0ac26a08b9601b76617f70893efe4453549387",
+    "subject": "Phase 13: Registr dostupných motivů"
+  }
+}

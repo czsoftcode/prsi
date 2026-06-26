@@ -6,8 +6,14 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ## [Unreleased]
 
+### Added
+- Registr dostupných motivů: Vite plugin při buildu/dev proskenuje `public/` a sestaví seznam motivů s kompletními assety (`cards_NN` + pozadí `dashboard_NN`). Nový motiv stačí nahrát jako složku a znovu sestavit, není třeba upravovat kód.
+
 ### Changed
 - Pozadí herního stolu je nově dětský ilustrovaný obrázek (medvídek ve vláčku) místo zeleného „filcového" gradientu. Použit `dashboard_01.webp` s `.jpg` fallbackem přes `image-set()`, překrytý poloprůhledným ztmavujícím gradientem kvůli čitelnosti karet a textu. Filcový gradient zůstává jako fallback, kdyby se obrázek nenačetl.
+
+### Fixed
+- Neplatně uložený motiv (např. po odebrání složky) už nevede na rozbité obrázky — hra spadne zpět na výchozí motiv.
 
 ## [1.0.3] - 2026-06-24
 
