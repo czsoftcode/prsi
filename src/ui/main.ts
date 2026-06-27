@@ -24,6 +24,7 @@ import {
   isMusicEnabled,
   setMusicEnabled,
 } from "./audio";
+import { isHintEnabled, setHintEnabled } from "./hint";
 
 /** Prodleva před reakcí AI, aby byl tah vidět (není to animace, jen pauza). */
 const AI_DELAY_MS = 600;
@@ -274,6 +275,13 @@ function startGame(app: HTMLElement): void {
     if (target.closest<HTMLElement>("[data-action='music']")) {
       setMusicEnabled(!isMusicEnabled());
       draw(); // překresli popisek tlačítka podle nového stavu
+      return;
+    }
+    // Přepínač nápovědy je čistě vizuální (nemění herní stav) — řešíme ho také
+    // PŘED zámkem `locked`, ať jde přepnout i v okně AI prodlevy.
+    if (target.closest<HTMLElement>("[data-action='hint']")) {
+      setHintEnabled(!isHintEnabled());
+      draw(); // překresli stůl: tlačítko + (ne)zvýraznění hratelných karet
       return;
     }
     if (locked) {

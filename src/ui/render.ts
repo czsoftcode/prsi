@@ -11,6 +11,7 @@ import {
   tableBgImageSet,
 } from "./assets";
 import { isMusicEnabled } from "./audio";
+import { isHintEnabled } from "./hint";
 
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -132,6 +133,20 @@ function renderMusicButton(): HTMLButtonElement {
   return btn;
 }
 
+/** Vypínač nápovědy tahu (žluté zvýraznění). Popisek odráží aktuální stav. */
+function renderHintButton(): HTMLButtonElement {
+  const on = isHintEnabled();
+  const btn = el("button", "indicator indicator--hint");
+  btn.type = "button";
+  btn.dataset.action = "hint";
+  btn.setAttribute("aria-pressed", on ? "true" : "false");
+  const label = on ? "Nápověda: zap" : "Nápověda: vyp";
+  btn.title = label;
+  btn.setAttribute("aria-label", label);
+  btn.textContent = on ? "💡" : "🚫";
+  return btn;
+}
+
 /** Indikátor, kdo je na tahu. */
 function renderTurnIndicator(state: GameState): HTMLElement {
   const box = el("div", "indicator indicator--turn");
@@ -161,7 +176,7 @@ function renderCenterZone(state: GameState): HTMLElement {
 
   // Pod balíčky zůstávají ovládací tlačítka a indikátor nakupených sedem.
   const indicators = el("div", "indicators");
-  indicators.append(renderThemeButton(), renderMusicButton());
+  indicators.append(renderThemeButton(), renderMusicButton(), renderHintButton());
   const sevens = renderSevensIndicator(state);
   if (sevens) {
     indicators.append(sevens);
@@ -176,8 +191,11 @@ function renderPlayerZone(state: GameState): HTMLElement {
   const zone = el("div", "zone zone--player");
   const hand = el("div", "hand hand--player");
   const myTurn = state.currentPlayer === "player";
-  // Hratelné karty zvýrazníme jen když je hráč na tahu.
-  const playable = myTurn
+  // Hratelné karty zvýrazníme jen když je hráč na tahu A je zapnutá nápověda.
+  // Výpočet `playable` zůstává nedotčený (validaci tahu řeší engine zvlášť),
+  // nápověda jen rozhoduje, zda se promítne do CSS třídy.
+  const showHint = myTurn && isHintEnabled();
+  const playable = showHint
     ? playableCards(state.playerHand, topOfDiscard(state), state.currentSuit, state.pendingSevens)
     : [];
   state.playerHand.forEach((card, index) => {

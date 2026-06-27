@@ -107,6 +107,11 @@
       "id": 21,
       "title": "Popisky a tlačítka pod hromádky",
       "status": "done"
+    },
+    {
+      "id": 22,
+      "title": "Přepínač nápovědy tahu",
+      "status": "done"
     }
   ]
 }

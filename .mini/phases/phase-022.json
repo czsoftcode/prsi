@@ -1,0 +1,42 @@
+{
+  "id": 22,
+  "title": "Přepínač nápovědy tahu",
+  "goal": "Přidat tlačítko vedle motivu a hudby, které zapíná a vypíná žluté zvýraznění hratelných karet; volba se ukládá do localStorage a při vypnutí se třída card--playable nevykresluje, aniž by se měnila validace tahu.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Modul stavu nápovědy s persistencí",
+      "status": "done",
+      "detail": "Nový src/ui/hint.ts (zrcadlo audio přepínače): isHintEnabled() líně čte z localStorage, setHintEnabled(on) zapíše; default zapnuto, vlastní storage klíč, best-effort try/catch."
+    },
+    {
+      "title": "Tlačítko nápovědy v render.ts",
+      "status": "done",
+      "detail": "renderHintButton() analogicky k renderMusicButton — data-action='hint', aria-pressed a ikona/title dle stavu; přidat do indikátorů vedle motivu a hudby (render.ts:164)."
+    },
+    {
+      "title": "Podmínit vykreslení card--playable",
+      "status": "done",
+      "detail": "Výpočet playable ponechat beze změny (validace tahu se nemění), třídu card--playable přidat jen když isHintEnabled()."
+    },
+    {
+      "title": "Handler přepnutí v main.ts",
+      "status": "done",
+      "detail": "Větev data-action='hint' po vzoru hudby — setHintEnabled, draw(); nemění herní stav ani zámek locked."
+    },
+    {
+      "title": "Testy a zelený build",
+      "status": "done",
+      "detail": "Rozšířit render.test.ts: zapnuto na tahu = zvýrazněno, vypnuto = 0 i na tahu; ověřit že playerPlayable/validace zůstává. npm run build + testy zelené."
+    }
+  ],
+  "startedAt": "2026-06-27T09:52:13.851Z",
+  "resolvedVerify": [
+    "Vizuální chování přepínače 💡/🚫 na stole"
+  ],
+  "completedAt": "2026-06-27T09:58:34.546Z",
+  "autoCommit": {
+    "preSha": "0421456a574ecc8ca4d83f155189bf78e2c5b025",
+    "subject": "Phase 22: Přepínač nápovědy tahu"
+  }
+}

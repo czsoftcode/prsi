@@ -3,10 +3,13 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import type { Card, GameState } from "../engine/cards";
 import { render } from "./render";
 import { isMusicEnabled } from "./audio";
+import { isHintEnabled } from "./hint";
 
 // render čte stav hudby pro popisek vypínače — mockujeme ho, ať test ovládá
 // zap/vyp nezávisle na localStorage. Default true odpovídá reálnému chování.
 vi.mock("./audio", () => ({ isMusicEnabled: vi.fn(() => true) }));
+// stejně mockujeme stav nápovědy — řídí, zda render přidá třídu card--playable.
+vi.mock("./hint", () => ({ isHintEnabled: vi.fn(() => true) }));
 
 function card(suit: Card["suit"], rank: Card["rank"]): Card {
   return { suit, rank };
@@ -30,6 +33,7 @@ describe("render (jsdom smoke)", () => {
 
   beforeEach(() => {
     root = document.createElement("div");
+    vi.mocked(isHintEnabled).mockReturnValue(true); // default: nápověda zapnutá
   });
 
   it("vykreslí počet karet hráče lícem a počet rubů AI", () => {
@@ -139,6 +143,26 @@ describe("render (jsdom smoke)", () => {
     const offTurn = makeState({ currentPlayer: "ai" });
     render(offTurn, root);
     expect(root.querySelectorAll(".hand--player .card--playable")).toHaveLength(0);
+  });
+
+  it("při vypnuté nápovědě nezvýrazní karty ani na tahu", () => {
+    vi.mocked(isHintEnabled).mockReturnValue(false);
+    const onTurn = makeState({ currentPlayer: "player" });
+    render(onTurn, root);
+    // Karty se vykreslí normálně, jen bez žlutého orámování.
+    expect(root.querySelectorAll(".hand--player .card--face")).toHaveLength(3);
+    expect(root.querySelectorAll(".hand--player .card--playable")).toHaveLength(0);
+  });
+
+  it("vykreslí přepínač nápovědy s data-action a aria-pressed dle stavu", () => {
+    render(makeState(), root);
+    const on = root.querySelector<HTMLElement>("[data-action='hint']");
+    expect(on?.getAttribute("aria-pressed")).toBe("true");
+
+    vi.mocked(isHintEnabled).mockReturnValue(false);
+    render(makeState(), root);
+    const off = root.querySelector<HTMLElement>("[data-action='hint']");
+    expect(off?.getAttribute("aria-pressed")).toBe("false");
   });
 
   it("je idempotentní — opakované volání dá stejný počet elementů", () => {
