@@ -50,12 +50,15 @@ describe("createGame", () => {
   });
 });
 
-describe("playerDraw — pravidlo líznutí jen bez hratelné karty", () => {
-  it("vrátí null, když má hráč hratelnou kartu (must-play)", () => {
-    // 8 srdce je hratelná na 9 srdce → líznutí zakázané.
+describe("playerDraw — dobrovolné líznutí kdykoliv", () => {
+  it("líznе i když má hráč hratelnou kartu, a předá tah AI", () => {
+    // 8 srdce je hratelná na 9 srdce, ale líznutí je přesto povolené.
     const s = makeState();
     expect(playerPlayable(s).length).toBeGreaterThan(0);
-    expect(playerDraw(s, seededRng(1))).toBeNull();
+    const next = playerDraw(s, seededRng(1));
+    expect(next).not.toBeNull();
+    expect(next!.playerHand.length).toBe(2);
+    expect(next!.currentPlayer).toBe("ai");
   });
 
   it("líznе, když hráč nemá co hrát, a předá tah AI", () => {
@@ -69,6 +72,33 @@ describe("playerDraw — pravidlo líznutí jen bez hratelné karty", () => {
     expect(next).not.toBeNull();
     expect(next!.playerHand.length).toBe(2);
     expect(next!.currentPlayer).toBe("ai");
+  });
+
+  it("u nakupených sedem vezme penaltu i se sedmou v ruce (lze ji schovat)", () => {
+    // pendingSevens=2 → penalta 4 karty; hráč má sedmu, ale rozhodne se líznout.
+    const s = makeState({
+      playerHand: [card("srdce", "7"), card("kule", "9")],
+      pendingSevens: 2,
+      drawPile: [
+        card("zelene", "10"),
+        card("zaludy", "kral"),
+        card("kule", "8"),
+        card("srdce", "spodek"),
+      ],
+    });
+    const next = playerDraw(s, seededRng(1));
+    expect(next).not.toBeNull();
+    expect(next!.playerHand.length).toBe(2 + 4); // 2 původní + penalta 4
+    expect(next!.pendingSevens).toBe(0);
+    expect(next!.currentPlayer).toBe("ai");
+  });
+
+  it("vrátí null, když hráč není na tahu", () => {
+    expect(playerDraw(makeState({ currentPlayer: "ai" }), seededRng(1))).toBeNull();
+  });
+
+  it("vrátí null, když už je vítěz", () => {
+    expect(playerDraw(makeState({ playerHand: [] }), seededRng(1))).toBeNull();
   });
 
   it("vrátí null při stallu (prázdný balíček, nelze remíchat)", () => {

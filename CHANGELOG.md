@@ -6,6 +6,11 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-06-27
+
+### Changed
+- Líznout z balíčku lze nově kdykoliv na svém tahu — i když máš hratelnou kartu (líznutí pak předá tah počítači). Díky tomu si můžeš schválně schovat sedmu: u nakupených sedem klik na balíček vezme penaltu místo toho, abys musel sedmu zahrát. Dřív šlo líznout jen tehdy, když jsi neměl co hrát.
+
 ## [1.4.0] - 2026-06-27
 
 ### Added

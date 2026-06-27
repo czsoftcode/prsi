@@ -249,7 +249,7 @@ function startGame(app: HTMLElement): void {
     }
     const next = playerDraw(state, rng);
     if (!next) {
-      return; // má hratelnou kartu, nebo nelze líznout (stall)
+      return; // nelze líznout: nebyl na tahu / konec / prázdný balíček (stall)
     }
     // Počet líznutých karet a zdroj (lízací balíček) zachytit PŘED draw().
     const count = next.playerHand.length - state.playerHand.length;

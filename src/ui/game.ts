@@ -72,16 +72,15 @@ export function playerPlay(
 }
 
 /**
- * Líznutí hráče. Povolené JEN když nemá žádnou hratelnou kartu (pravidlo
- * „kdo nemá co hrát, líže"). Vrací nový stav, nebo null když je tah ignorovaný:
- * hráč není na tahu, partie skončila, má hratelnou kartu, nebo nešlo líznout ani
- * remíchat (drawCard vrátí tentýž stav).
+ * Líznutí hráče. Líznout smí kdykoliv na svém tahu — i když má hratelnou kartu
+ * (líznutí pak předá tah soupeři). U nakupených sedem (pendingSevens>0) líznutí
+ * bere penaltu 2×pendingSevens, takže si hráč může sedmu schválně schovat místo
+ * jejího zahrání. Vrací nový stav, nebo null když je tah ignorovaný: hráč není
+ * na tahu, partie skončila, nebo nešlo líznout ani remíchat (drawCard vrátí
+ * tentýž stav).
  */
 export function playerDraw(state: GameState, rng: Rng): GameState | null {
   if (state.currentPlayer !== "player" || winnerOf(state) !== null) {
-    return null;
-  }
-  if (playerPlayable(state).length > 0) {
     return null;
   }
   const next = drawCard(state, "player", rng);

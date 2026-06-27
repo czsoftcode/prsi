@@ -1,0 +1,37 @@
+{
+  "id": 23,
+  "title": "Dobrovolné líznutí kdykoliv",
+  "goal": "Hráč smí na svém tahu líznout kartu i když má hratelnou (uvolnit gate v playerDraw, balíček klikací i s hratelnou kartou); líznutí dál předává tah a u nakupených sedem bere penaltu, čímž se pro lidského hráče naplní i pravidlo nemusím hrát sedmu. Pokrýt testy.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Uvolnit gate dobrovolného líznutí v playerDraw",
+      "status": "done",
+      "detail": "V src/ui/game.ts odstranit blok if (playerPlayable(state).length > 0) return null; aktualizovat JSDoc. playerDraw vrací null jen když hráč není na tahu, je vítěz, nebo drawCard vrátí tentýž stav (no-op stall). Líznutí dál předává tah a u pendingSevens>0 bere penaltu."
+    },
+    {
+      "title": "Narovnat komentář onDraw v main.ts",
+      "status": "done",
+      "detail": "V src/ui/main.ts (~ř. 252) je komentář o má hratelnou kartu nebo nelze líznout — po změně už neplatí. Upravit text a ručně ověřit animaci dobrovolného líznutí i líznutí penalty u sedem."
+    },
+    {
+      "title": "Testy game.ts pro dobrovolné líznutí",
+      "status": "done",
+      "detail": "Do src/ui/game.test.ts: hráč s hratelnou kartou smí líznout (nový stav, tah na AI, +1 karta); při pendingSevens>0 se sedmou v ruce líznutí vezme penaltu (2x) a vynuluje sedmy; zachovat guardy (ne na tahu / konec / no-op stall vrací null)."
+    },
+    {
+      "title": "Zelený build, lint a celá test suite",
+      "status": "done",
+      "detail": "Spustit build, lint a všechny testy do zelena."
+    }
+  ],
+  "startedAt": "2026-06-27T10:16:01.841Z",
+  "resolvedVerify": [
+    "Ruční zahrání: dobrovolné líznutí v UI"
+  ],
+  "completedAt": "2026-06-27T10:20:01.478Z",
+  "autoCommit": {
+    "preSha": "3bb166bdf3a6f893e43cf8d1908cc4d782afbeb7",
+    "subject": "Phase 23: Dobrovolné líznutí kdykoliv"
+  }
+}

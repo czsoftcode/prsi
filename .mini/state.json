@@ -112,6 +112,11 @@
       "id": 22,
       "title": "Přepínač nápovědy tahu",
       "status": "done"
+    },
+    {
+      "id": 23,
+      "title": "Dobrovolné líznutí kdykoliv",
+      "status": "done"
     }
   ]
 }
