@@ -8,7 +8,10 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ### Added
 - Zvuk konce hry: při výhře hráče zazní fanfára, při prohře smutný zvuk. Přehraje se právě jednou ve chvíli skončení partie (remíza je beze zvuku) a po spuštění nové partie může zaznít znovu.
-- Hudba na pozadí ve smyčce: během partie hraje podkresová hudba, která se rozjede po prvním kliknutí/stisku klávesy (kvůli pravidlům prohlížečů), ztichne při konci hry (aby fanfára/smutný zvuk zazněly čistě) a naběhne znovu při nové partii. Tlačítko „Hudba: zap/vyp" mezi indikátory ji vypne nebo zapne; volba se uchová v prohlížeči.
+- Hudba na pozadí ve smyčce: během partie hraje podkresová hudba, která se rozjede po prvním kliknutí/stisku klávesy (kvůli pravidlům prohlížečů), ztichne při konci hry (aby fanfára/smutný zvuk zazněly čistě) a naběhne znovu při nové partii. Tlačítko hudby ji vypne nebo zapne; volba se uchová v prohlížeči.
+
+### Changed
+- Přeskupení středu stolu: indikátor „Na tahu" je teď vlevo od lízacího balíčku jako ikona (🧑 ty / 🤖 počítač), indikátor barvy vpravo od odhazovací hromádky jako symbol barvy v kroužku (bez popisku „Barva:"). Ovládací tlačítka pod hromádkami jsou jen ikony — 🎨 pro výběr motivu a 🔊/🔇 pro hudbu. Plné popisky zůstávají v `title`/`aria-label`. Na úzkém mobilu se řada s balíčky zalomí místo vodorovného přetečení.
 
 ## [1.3.0] - 2026-06-26
 

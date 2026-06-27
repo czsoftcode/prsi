@@ -87,12 +87,12 @@ function renderDiscardPile(state: GameState): HTMLElement {
 /** Indikátor aktuálně požadované barvy — miniatura karty té barvy s popiskem. */
 function renderSuitIndicator(state: GameState): HTMLElement {
   const box = el("div", "indicator indicator--suit");
-  const label = el("span", "indicator__label");
-  label.textContent = "Barva:";
   const swatch = el("img", "indicator__suit-img");
   swatch.src = suitIconSrc(state.currentSuit);
   swatch.alt = SUIT_LABELS[state.currentSuit];
-  box.append(label, swatch);
+  // Jen symbol barvy v kroužku, bez popisku; název barvy zůstává v title/alt.
+  box.title = `Barva: ${SUIT_LABELS[state.currentSuit]}`;
+  box.append(swatch);
   return box;
 }
 
@@ -111,7 +111,10 @@ function renderThemeButton(): HTMLButtonElement {
   const btn = el("button", "indicator indicator--theme");
   btn.type = "button";
   btn.dataset.action = "theme";
-  btn.textContent = "Vyber si motiv obrázků";
+  const label = "Vyber si motiv obrázků";
+  btn.title = label;
+  btn.setAttribute("aria-label", label);
+  btn.textContent = "🎨";
   return btn;
 }
 
@@ -122,14 +125,23 @@ function renderMusicButton(): HTMLButtonElement {
   btn.type = "button";
   btn.dataset.action = "music";
   btn.setAttribute("aria-pressed", on ? "true" : "false");
-  btn.textContent = on ? "🔊 Hudba: zap" : "🔇 Hudba: vyp";
+  const label = on ? "Hudba: zap" : "Hudba: vyp";
+  btn.title = label;
+  btn.setAttribute("aria-label", label);
+  btn.textContent = on ? "🔊" : "🔇";
   return btn;
 }
 
 /** Indikátor, kdo je na tahu. */
 function renderTurnIndicator(state: GameState): HTMLElement {
   const box = el("div", "indicator indicator--turn");
-  box.textContent = state.currentPlayer === "player" ? "Na tahu: ty" : "Na tahu: počítač";
+  const isPlayer = state.currentPlayer === "player";
+  const label = isPlayer ? "Na tahu: ty" : "Na tahu: počítač";
+  // Jen ikona (šetří místo v řadě vedle balíčků na mobilu); popis zůstává
+  // dostupný přes title/aria-label kvůli přístupnosti.
+  box.textContent = isPlayer ? "🧑" : "🤖";
+  box.title = label;
+  box.setAttribute("aria-label", label);
   return box;
 }
 
@@ -137,22 +149,25 @@ function renderTurnIndicator(state: GameState): HTMLElement {
 function renderCenterZone(state: GameState): HTMLElement {
   const zone = el("div", "zone zone--center");
 
-  const indicators = el("div", "indicators");
-  indicators.append(
+  // Balíčky s indikátory po stranách: "Na tahu" vlevo od lízacího balíčku,
+  // "Barva:" vpravo od odhazovací hromádky — šetří svislé místo na mobilu.
+  const piles = el("div", "piles");
+  piles.append(
     renderTurnIndicator(state),
+    renderDrawPile(state),
+    renderDiscardPile(state),
     renderSuitIndicator(state),
-    renderThemeButton(),
-    renderMusicButton(),
   );
+
+  // Pod balíčky zůstávají ovládací tlačítka a indikátor nakupených sedem.
+  const indicators = el("div", "indicators");
+  indicators.append(renderThemeButton(), renderMusicButton());
   const sevens = renderSevensIndicator(state);
   if (sevens) {
     indicators.append(sevens);
   }
 
-  const piles = el("div", "piles");
-  piles.append(renderDrawPile(state), renderDiscardPile(state));
-
-  zone.append(indicators, piles);
+  zone.append(piles, indicators);
   return zone;
 }
 

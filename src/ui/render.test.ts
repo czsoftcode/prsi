@@ -57,7 +57,8 @@ describe("render (jsdom smoke)", () => {
     );
     expect(btn).not.toBeNull();
     expect(btn?.tagName).toBe("BUTTON");
-    expect(btn?.textContent).toBe("Vyber si motiv obrázků");
+    expect(btn?.textContent).toBe("🎨");
+    expect(btn?.getAttribute("aria-label")).toBe("Vyber si motiv obrázků");
   });
 
   it("vykreslí vypínač hudby a popisek odráží stav zap/vyp", () => {
@@ -68,7 +69,8 @@ describe("render (jsdom smoke)", () => {
     );
     expect(btn).not.toBeNull();
     expect(btn?.tagName).toBe("BUTTON");
-    expect(btn?.textContent).toContain("zap");
+    expect(btn?.textContent).toBe("🔊");
+    expect(btn?.getAttribute("aria-label")).toContain("zap");
     expect(btn?.getAttribute("aria-pressed")).toBe("true");
 
     vi.mocked(isMusicEnabled).mockReturnValue(false);
@@ -76,8 +78,34 @@ describe("render (jsdom smoke)", () => {
     const off = root.querySelector<HTMLButtonElement>(
       ".indicators [data-action='music']",
     );
-    expect(off?.textContent).toContain("vyp");
+    expect(off?.textContent).toBe("🔇");
+    expect(off?.getAttribute("aria-label")).toContain("vyp");
     expect(off?.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("ve středové zóně jsou balíčky před blokem indikátorů", () => {
+    render(makeState(), root);
+    const center = root.querySelector(".zone--center")!;
+    const piles = center.querySelector(".piles")!;
+    const indicators = center.querySelector(".indicators")!;
+    expect(piles).not.toBeNull();
+    expect(indicators).not.toBeNull();
+    // piles musí v DOM předcházet indicators (tlačítka jsou pod hromádkami).
+    expect(
+      piles.compareDocumentPosition(indicators) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("Na tahu je vlevo od balíčků a Barva vpravo", () => {
+    render(makeState(), root);
+    const piles = root.querySelector(".piles")!;
+    const children = Array.from(piles.children);
+    // Pořadí v řadě: [Na tahu] [lízací] [odhazovací] [Barva].
+    expect(children[0]?.classList.contains("indicator--turn")).toBe(true);
+    expect(children[1]?.classList.contains("pile--draw")).toBe(true);
+    expect(children[2]?.classList.contains("pile--discard")).toBe(true);
+    expect(children[3]?.classList.contains("indicator--suit")).toBe(true);
   });
 
   it("indikátor sedem se skryje při 0 a zobrazí při >0", () => {

@@ -1,0 +1,42 @@
+{
+  "id": 21,
+  "title": "Popisky a tlačítka pod hromádky",
+  "goal": "Přesunout blok indikátorů (Na tahu, Barva:, sedmy) a tlačítek (motiv, hudba) ze shora pod lízací balíček a odhazovací hromádku a upravit CSS layout středové zóny tak, aby to fungovalo na desktopu i mobilu.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "render.ts: prohodit pořadí ve středové zóně",
+      "status": "done",
+      "detail": "V renderCenterZone změnit zone.append(indicators, piles) na pořadí piles → indicators, aby se blok indikátorů a tlačítek vykresloval pod hromádkami."
+    },
+    {
+      "title": "CSS: odstup pod balíčky kvůli přesahu počtu",
+      "status": "done",
+      "detail": "Upravit .zone--center / přidat odstup nad .indicators, aby přečuhující .pile__count (bottom: -1.4em) nekolidoval s přesunutým řádkem indikátorů."
+    },
+    {
+      "title": "CSS: ověření a doladění mobilního layoutu",
+      "status": "done",
+      "detail": "V @media (max-width: 900px) ověřit, že přesun bloku pod hromádky nevytlačí ruku hráče z viewportu; doladit odstupy, ať zůstane vše dosažitelné."
+    },
+    {
+      "title": "Test: pořadí DOM ve středové zóně",
+      "status": "done",
+      "detail": "Doplnit do render.test.ts test, že .piles je v .zone--center před .indicators."
+    },
+    {
+      "title": "Zelený build + ruční ověření",
+      "status": "done",
+      "detail": "npm run build + vitest projde; vizuální kontrola na desktopu i úzkém viewportu, že popisky/tlačítka jsou pod hromádkami a počet karet se nepřekrývá."
+    }
+  ],
+  "startedAt": "2026-06-27T09:20:10.098Z",
+  "resolvedVerify": [
+    "Vizuální umístění bloku pod hromádkami na desktopu i mobilu"
+  ],
+  "completedAt": "2026-06-27T09:45:47.329Z",
+  "autoCommit": {
+    "preSha": "2a9b5c5040199a6ade695abbfc31cc57ed7fdee5",
+    "subject": "Phase 21: Popisky a tlačítka pod hromádky"
+  }
+}

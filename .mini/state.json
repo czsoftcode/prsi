@@ -102,6 +102,11 @@
       "id": 20,
       "title": "Hudba na pozadí ve smyčce",
       "status": "done"
+    },
+    {
+      "id": 21,
+      "title": "Popisky a tlačítka pod hromádky",
+      "status": "done"
     }
   ]
 }
