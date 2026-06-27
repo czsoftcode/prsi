@@ -1,0 +1,42 @@
+{
+  "id": 31,
+  "title": "CSP proti cizímu skriptu",
+  "goal": "Do index.html přidat restriktivní <meta> Content-Security-Policy: script-src omezit na 'self' + host plausible.softcode.cz (inline bootstrap vyřešit SHA-256 hashem nebo přesunem do souboru), connect-src na Plausible event endpoint, default-src na 'self', plus dle potřeby img/style/media/font-src. Ověřit, že produkční build (analytics skript, styly, obrázky, zvuk, hra) funguje bez CSP porušení. SRI na plausible se záměrně nepřidává (skript se mění, hash by hru rozbil). Pozn.: GitHub Pages neumí HTTP hlavičky, proto meta-CSP. (Řeší SEC-2 ze security review phází 1-29.)",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Zmapovat zdroje pro CSP z buildu",
+      "status": "done",
+      "detail": "Spustit npm run build, prohlédnout dist/index.html a vygenerované assety — zjistit jaké originy a inline prvky vznikají (inline style/script, modul skripty, obrázky, audio, plausible loader + event endpoint). Výstup: konkrétní seznam nutných direktiv."
+    },
+    {
+      "title": "Spočítat SHA-256 hash inline bootstrap skriptu",
+      "status": "done",
+      "detail": "Z přesného obsahu inline bloku plausible.init získat hodnotu sha256-…, aby šel povolit bez unsafe-inline. Doložit příkaz, kterým se hash spočítal."
+    },
+    {
+      "title": "Přidat <meta> CSP do index.html",
+      "status": "done",
+      "detail": "default-src self; script-src self https://plausible.softcode.cz sha256-…; connect-src na Plausible event endpoint; img-src/media-src/style-src dle zjištění z kroku 1; object-src none; base-uri self. Komentář vysvětlující meta-CSP (GitHub Pages neumí hlavičky)."
+    },
+    {
+      "title": "Ověřit produkční build bez CSP porušení",
+      "status": "done",
+      "detail": "npm run build + vite preview, načíst hru, zkontrolovat konzoli — žádné Refused to … violates CSP. Potvrdit načtení plausible skriptu i event requestu, stylů, obrázků, zvuku a hratelnost."
+    },
+    {
+      "title": "Regresní kontrola: testy a build",
+      "status": "done",
+      "detail": "npm test a npm run build projdou bez chyby (potvrzení že zásah do index.html nic nerozbil)."
+    }
+  ],
+  "startedAt": "2026-06-27T17:12:04.030Z",
+  "resolvedVerify": [
+    "Živé načtení nasazené hry v prohlížeči — konzole bez CSP porušení"
+  ],
+  "completedAt": "2026-06-27T18:55:16.426Z",
+  "autoCommit": {
+    "preSha": "e6913f8ba34edcdf6e49ff154750bddeffd2c8b1",
+    "subject": "Phase 31: CSP proti cizímu skriptu"
+  }
+}

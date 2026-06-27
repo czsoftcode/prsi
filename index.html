@@ -3,6 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      Content-Security-Policy přes <meta>, ne HTTP hlavičku: hostuje se na
+      GitHub Pages, který vlastní hlavičky neumí. Omezuje, odkud smí běžet skript
+      a kam smí jít síťový požadavek, aby kompromitovaný cizí původ nemohl spustit
+      libovolný kód v originu hry.
+      - script-src: vlastní bundle ('self'), loader Plausible a inline bootstrap
+        povolený přes SHA-256 hash (při úpravě inline skriptu hash přepočítat!).
+      - connect-src: Plausible posílá události na svůj /api/event.
+      - img/media/style: jen vlastní assety (karty, pozadí, zvuky, CSS bundle).
+      SRI na loader Plausible se záměrně nepřidává — skript se na serveru mění a
+      pevný hash by hru rozbil při každé aktualizaci.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' https://plausible.softcode.cz 'sha256-s3GjtVo80AO5y21xNb09L193qY2mDVWzcLbCiBHrn4s='; connect-src 'self' https://plausible.softcode.cz; img-src 'self'; media-src 'self'; style-src 'self'; object-src 'none'; base-uri 'self'"
+    />
     <title>Prší</title>
     <!-- Privacy-friendly analytics by Plausible (self-hosted) -->
     <script async src="https://plausible.softcode.cz/js/pa-F3K1g5-i8UcnhDxRhjcS0.js"></script>

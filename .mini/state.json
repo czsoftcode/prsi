@@ -152,6 +152,11 @@
       "id": 30,
       "title": "CI: least-privilege a SHA pinning",
       "status": "done"
+    },
+    {
+      "id": 31,
+      "title": "CSP proti cizímu skriptu",
+      "status": "done"
     }
   ]
 }
