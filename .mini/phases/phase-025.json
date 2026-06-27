@@ -1,0 +1,39 @@
+{
+  "id": 25,
+  "title": "AI: strategické šetření sedmy",
+  "goal": "chooseAiMove dostane heuristiku, aby pod nakupenými sedmami mohla místo zahrání vlastní sedmy vědomě vrátit draw (vzít penaltu) a sedmu si nechat na pozdější útok; heuristika zůstane jednoduchá a deterministická (bez RNG) a je pokrytá jednotkovými testy v ai.test.ts.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Heuristika shouldSaveSeven (čistý predikát)",
+      "status": "done",
+      "detail": "Nová pomocná funkce v ai.ts, deterministická (bez RNG), rozhodne zda AI pod pendingSevens>0 raději vezme penaltu místo zahrání sedmy. Kritérium: šetřit jen když penalta je nejmenší (pendingSevens===1) a ruka AI je dost velká (aiHand.length>=4); nikdy nešetřit když by sedma byla poslední karta. Jasný vstup→výstup."
+    },
+    {
+      "title": "Zapojení do chooseAiMove",
+      "status": "done",
+      "detail": "Když pendingSevens>0 a kandidáti jsou sedmy, zavolat shouldSaveSeven; je-li true vrátit {type:draw}, jinak ponechat dnešní chování (zahrát sedmu přes pickCard). Mimo pendingSevens se logika nemění."
+    },
+    {
+      "title": "Jednotkové testy v ai.test.ts",
+      "status": "done",
+      "detail": "Pokrýt obě větve — AI sedmu ušetří (draw) když kritérium platí; AI sedmu zahraje když neplatí (velká penalta / malá ruka / sedma poslední karta). Testy padnou když predikát dočasně obrátím."
+    },
+    {
+      "title": "Regrese smyčky a patu",
+      "status": "done",
+      "detail": "Ověřit že AI volbou draw pod pendingSevens při prázdném balíčku nevznikne zacyklení v advanceAi a že isPat/stall logika zůstává korektní; projít game.test.ts."
+    },
+    {
+      "title": "Zelený build, lint, celá suite + E2E",
+      "status": "done",
+      "detail": "tsc/build, lint, kompletní vitest včetně simulation.test.ts; pokud seedovaná E2E simulace zareaguje jinak, aktualizovat ji."
+    }
+  ],
+  "startedAt": "2026-06-27T11:00:48.151Z",
+  "completedAt": "2026-06-27T12:41:37.546Z",
+  "autoCommit": {
+    "preSha": "4c4d4844abcf989203cbc371e0662ae1e75fa7d9",
+    "subject": "Phase 25: AI: strategické šetření sedmy"
+  }
+}

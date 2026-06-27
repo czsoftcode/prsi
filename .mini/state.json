@@ -122,6 +122,11 @@
       "id": 24,
       "title": "Eso: přebití a stání",
       "status": "done"
+    },
+    {
+      "id": 25,
+      "title": "AI: strategické šetření sedmy",
+      "status": "done"
     }
   ]
 }

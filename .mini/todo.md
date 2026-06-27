@@ -14,4 +14,4 @@
 - [x] UI výběru motivu: tlačítko "Motiv" vedle indikátoru barvy, které otevře in-app obrazovku (overlay) s miniaturami 4 karet (z každé barvy jedna) + rub pro každý dostupný motiv; klik přepne aktivní motiv a vrátí do hry.
 - [x] Registr dostupných motivů (cards_NN + dashboard_NN), aby obrazovka výběru nabízela motivy bez natvrdo zadaného seznamu a šlo přidat další motiv jen nahráním složky.
 - [x] Eso: přebití a stání — eso vytvoří čekací stav na soupeři (nový stav v enginu, obdoba pendingSevens); soupeř buď přebije vlastním esem (řetězení), nebo stojí a přijde o tah. V tomto stavu nelze líznout (výjimka kromě esa z pravidla líznout kdykoliv). Promítnout do AI.
-- [ ] Sedma — AI strana pravidla nejsem povinen hrát sedmu: heuristika AI, aby uměla strategicky šetřit sedmu a místo jejího zahrání vzít penaltu (lidský hráč to už umí přes uvolněný gate ve fázi 23).
+- [x] Sedma — AI strana pravidla nejsem povinen hrát sedmu: heuristika AI, aby uměla strategicky šetřit sedmu a místo jejího zahrání vzít penaltu (lidský hráč to už umí přes uvolněný gate ve fázi 23).

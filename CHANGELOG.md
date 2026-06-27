@@ -6,6 +6,11 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-06-27
+
+### Added
+- Nový motiv karet „05" (sada `cards_05` + pozadí `dashboard_05`). Přidá se do výběru motivu automaticky; vzhled karet i pravidla zůstávají beze změny.
+
 ## [2.1.0] - 2026-06-27
 
 ### Changed
