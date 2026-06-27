@@ -1,0 +1,42 @@
+{
+  "id": 30,
+  "title": "CI: least-privilege a SHA pinning",
+  "goal": "V .github/workflows/deploy.yml omezit build job na contents: read a přesunout pages: write + id-token: write jen na deploy job; připnout všechny použité Actions na konkrétní commit SHA místo mutable tagů; přidat .github/dependabot.yml s ekosystémem github-actions, aby Dependabot hlídal a navrhoval povýšení připnutých SHA. (Řeší SEC-3 ze security review phází 1-29.)",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Build job omezit na contents: read",
+      "status": "done",
+      "detail": "Zrušit top-level permissions s write právy; build jobu dát explicitně jen permissions: contents: read. Po změně build job nemá pages: write ani id-token: write."
+    },
+    {
+      "title": "Přesunout configure-pages do deploy jobu",
+      "status": "done",
+      "detail": "actions/configure-pages (enablement: true) přemístit z buildu do deploy jobu před deploy-pages; deploy jobu dát permissions pages: write + id-token: write. Build přestane potřebovat write práva, deploy zůstane funkční."
+    },
+    {
+      "title": "Připnout všechny Actions na commit SHA",
+      "status": "done",
+      "detail": "Všech 5 (checkout, setup-node, configure-pages, upload-pages-artifact, deploy-pages) přepsat z @vX na konkrétní @<sha> s komentářem # vX.Y.Z. SHA dohledat z GitHub releases."
+    },
+    {
+      "title": "Přidat .github/dependabot.yml",
+      "status": "done",
+      "detail": "Konfigurace s package-ecosystem: github-actions, directory: /, týdenní interval. Dependabot pak otevírá PR s povýšením připnutých SHA."
+    },
+    {
+      "title": "Ověřit validitu workflow",
+      "status": "done",
+      "detail": "Zkontrolovat YAML syntaxi a odsazení, že každá Action má SHA + komentář a že práva sedí podle least-privilege; popsat čím se ověřilo."
+    }
+  ],
+  "startedAt": "2026-06-27T16:43:20.351Z",
+  "resolvedVerify": [
+    "Reálný běh workflow na GitHubu (build + deploy projde)"
+  ],
+  "completedAt": "2026-06-27T16:49:52.154Z",
+  "autoCommit": {
+    "preSha": "e688fea0e262530c3a75656c913701ba958ed9bc",
+    "subject": "Phase 30: CI: least-privilege a SHA pinning"
+  }
+}

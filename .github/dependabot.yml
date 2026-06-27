@@ -1,0 +1,9 @@
+version: 2
+updates:
+  # Hlídá verze GitHub Actions ve workflow. Protože jsou Actions připnuté
+  # na commit SHA, Dependabot otevírá PR s novým SHA (a komentářem # vX.Y.Z),
+  # když vyjde novější verze — povýšení tak nemusí být hlídáno ručně.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

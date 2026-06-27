@@ -147,6 +147,11 @@
       "id": 29,
       "title": "Větší karty na velkých obrazovkách",
       "status": "done"
+    },
+    {
+      "id": 30,
+      "title": "CI: least-privilege a SHA pinning",
+      "status": "done"
     }
   ]
 }

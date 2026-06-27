@@ -6,6 +6,9 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ## [Unreleased]
 
+### Security
+- Workflow nasazení na GitHub Pages zpevněn: build job běží jen s právem `contents: read`, zápisová práva (`pages`, `id-token`) má nově pouze deploy job, a všech 5 použitých GitHub Actions je připnuto na konkrétní commit SHA místo pohyblivých tagů (`@v4` apod.). Přidán `.github/dependabot.yml`, který hlídá nové verze Actions a otevírá PR s povýšením připnutých SHA. (Řeší nález SEC-3 ze security review.)
+
 ### Changed
 - Na velkých displejích (šířka od 1200px) jsou karty výrazně větší — strop velikosti se zvedl o ~50 % (na 144px na monitorech 1080p a vyšších). Velikost zůstává vázaná i na výšku okna, takže na nízkém širokoúhlém monitoru (1366×768) se karty nenafouknou natolik, aby ruka přetekla mimo obrazovku. Na střední šířce (do 1200px) a na mobilu se nic nemění.
 
