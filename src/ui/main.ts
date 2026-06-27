@@ -5,6 +5,7 @@ import {
   createGame,
   playerPlay,
   playerDraw,
+  playerStand,
   advanceAi,
   playerPlayable,
   winnerOf,
@@ -158,10 +159,9 @@ function startGame(app: HTMLElement): void {
   /**
    * Dožene tahy AI a animuje JEDEN přelet. Priorita: zahrání (vrch hromádky se
    * změnil) → ghost ze zóny AI na hromádku. Jinak když ruka AI vzrostla → líznutí
-   * (rub z balíčku do zóny AI). Zjednodušení: při esu hraje AI víc karet v jednom
-   * advanceAi (animuje se jen výsledná vrchní karta), a vzácný případ "eso + vynucené
-   * braní" ukáže jen zahrání. Detekce líznutí přes nárůst ruky, ne přes drawPile
-   * (robustní vůči remíchání balíčku). Zámek se uvolní až po letu.
+   * (rub z balíčku do zóny AI). Stání proti esům (standAce) nic nepřeletí — ruka
+   * ani vrch se nemění, takže se neanimuje. Detekce líznutí přes nárůst ruky, ne
+   * přes drawPile (robustní vůči remíchání balíčku). Zámek se uvolní až po letu.
    */
   async function runAi(gen: number): Promise<void> {
     if (gen !== generation || ended) {
@@ -265,6 +265,24 @@ function startGame(app: HTMLElement): void {
     scheduleAi(); // nastaví zámek dle toho, kdo je na tahu
   }
 
+  /**
+   * Stání proti nakupeným esům: hráč přijde o tah bez líznutí. Žádný přelet karty,
+   * jen překreslení a předání tahu AI. playerStand vrátí null, když stát nelze
+   * (není na tahu / konec / žádná esa) — pak se nic neděje.
+   */
+  function onStand(): void {
+    if (locked || gameOver() || state.currentPlayer !== "player") {
+      return;
+    }
+    const next = playerStand(state);
+    if (!next) {
+      return;
+    }
+    state = next;
+    draw();
+    scheduleAi(); // nastaví zámek dle toho, kdo je na tahu
+  }
+
   // Jeden delegovaný listener — přežije full re-render #app. Click pokrývá myš i dotyk.
   app.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
@@ -294,6 +312,10 @@ function startGame(app: HTMLElement): void {
     }
     if (target.closest<HTMLElement>("[data-action='theme']")) {
       void onChooseTheme();
+      return;
+    }
+    if (target.closest<HTMLElement>("[data-action='stand']")) {
+      onStand();
       return;
     }
     if (target.closest<HTMLElement>("[data-action='draw']")) {

@@ -160,6 +160,27 @@ body {
   font-weight: 700;
 }
 
+/* Indikátor nakupených es — modrý, ať se odliší od červených sedem. */
+.indicator--aces {
+  background: #1a56b3;
+  font-weight: 700;
+}
+
+/* Tlačítko „Stojím" proti nakupeným esům — výrazné, ať je jasná akce. */
+.indicator--stand {
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  background: #1a56b3;
+}
+
+.indicator--stand:hover,
+.indicator--stand:focus {
+  background: rgba(255, 211, 77, 0.35);
+}
+
 /* Tlačítko otevírající výběr motivu — vypadá jako ostatní indikátory. */
 .indicator--theme,
 .indicator--music {

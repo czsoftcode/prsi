@@ -53,6 +53,13 @@ export interface GameState {
    * hratelná je pouze sedma; jinak musí hráč líznout 2 × pendingSevens karet.
    */
   pendingSevens: number;
+  /**
+   * Počet nakupených es mířících na hráče, který je na tahu. Když je > 0, hráč buď
+   * přebije vlastním esem (řetězení, count se zvýší), nebo musí stát (standAce →
+   * přijde o tah bez líznutí, count se vynuluje). V tomto stavu je hratelné jen eso
+   * a nelze dobrovolně líznout. Vzájemně se vylučuje s pendingSevens (oba > 0 nikdy).
+   */
+  pendingAces: number;
 }
 
 /** Vytvoří kompletní balíček 32 mariášových karet (každá kombinace barva×hodnota). */
@@ -106,5 +113,6 @@ export function deal(deck: readonly Card[]): GameState {
     currentSuit: topCard.suit,
     currentPlayer: "player",
     pendingSevens: 0,
+    pendingAces: 0,
   };
 }

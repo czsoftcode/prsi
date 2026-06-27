@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { type Card, type GameState, type Suit } from "./cards";
-import { isPlayable, playableCards, playCard, drawCard, winnerOf } from "./moves";
+import { isPlayable, playableCards, playCard, drawCard, standAce, winnerOf } from "./moves";
 
 const c = (suit: Suit, rank: Card["rank"]): Card => ({ suit, rank });
 const key = (card: Card) => `${card.suit}-${card.rank}`;
@@ -16,6 +16,7 @@ function makeState(partial: Partial<GameState>): GameState {
     currentSuit: partial.currentSuit ?? discardPile[discardPile.length - 1]!.suit,
     currentPlayer: partial.currentPlayer ?? "player",
     pendingSevens: partial.pendingSevens ?? 0,
+    pendingAces: partial.pendingAces ?? 0,
   };
 }
 
@@ -151,6 +152,15 @@ describe("drawCard", () => {
     expect(moved).toEqual(["srdce-7", "srdce-8"]);
   });
 
+  it("pod nakupenými esy vyhodí Error (líznout nelze)", () => {
+    const state = makeState({
+      playerHand: [c("kule", "8")],
+      drawPile: [c("zelene", "10")],
+      pendingAces: 1,
+    });
+    expect(() => drawCard(state, "player", noRng)).toThrow();
+  });
+
   it("vrátí stav beze změny, když není co líznout ani míchat", () => {
     const state = makeState({
       playerHand: [c("kule", "9")],
@@ -184,26 +194,80 @@ describe("střídání tahu", () => {
   });
 });
 
-describe("eso", () => {
-  it("po esu zůstává na tahu tentýž hráč", () => {
+describe("eso — přebití a stání", () => {
+  it("zahrání esa předá tah soupeři a nastaví pendingAces na 1", () => {
     const state = makeState({
-      playerHand: [c("srdce", "eso")],
+      playerHand: [c("srdce", "eso"), c("kule", "8")],
       currentPlayer: "player",
       discardPile: [c("srdce", "kral")],
     });
-    expect(playCard(state, "player", c("srdce", "eso")).currentPlayer).toBe("player");
+    const next = playCard(state, "player", c("srdce", "eso"));
+    expect(next.currentPlayer).toBe("ai");
+    expect(next.pendingAces).toBe(1);
   });
 
-  it("dvě esa za sebou — hráč je pořád na tahu", () => {
+  it("v čekacím stavu je hratelné jen eso (přebití)", () => {
+    const top = c("srdce", "kral");
+    // shoda barvy i hodnoty by normálně prošla, ale pod nakupenými esy ne
+    expect(isPlayable(c("srdce", "8"), top, "srdce", 0, 1)).toBe(false);
+    expect(isPlayable(c("kule", "svrsek"), top, "srdce", 0, 1)).toBe(false);
+    expect(isPlayable(c("kule", "eso"), top, "srdce", 0, 1)).toBe(true);
+  });
+
+  it("playableCards v čekacím stavu vrátí jen esa", () => {
+    const hand = [c("srdce", "8"), c("kule", "eso"), c("zelene", "svrsek")];
+    const result = playableCards(hand, c("srdce", "kral"), "srdce", 0, 1);
+    expect(result.map(key)).toEqual(["kule-eso"]);
+  });
+
+  it("přebití esem řetězí: tah jde zpět a pendingAces roste (1 → 2)", () => {
     const state = makeState({
-      playerHand: [c("srdce", "eso"), c("kule", "eso")],
+      aiHand: [c("kule", "eso")],
+      currentPlayer: "ai",
+      discardPile: [c("srdce", "eso")],
+      currentSuit: "srdce",
+      pendingAces: 1,
+    });
+    const next = playCard(state, "ai", c("kule", "eso"));
+    expect(next.currentPlayer).toBe("player");
+    expect(next.pendingAces).toBe(2);
+  });
+
+  it("standAce předá tah soupeři a vynuluje pendingAces", () => {
+    const state = makeState({
+      playerHand: [c("kule", "8")],
+      currentPlayer: "player",
+      pendingAces: 2,
+    });
+    const next = standAce(state, "player");
+    expect(next.currentPlayer).toBe("ai");
+    expect(next.pendingAces).toBe(0);
+    // stání nelíže — ruka beze změny
+    expect(next.playerHand.map(key)).toEqual(["kule-8"]);
+  });
+
+  it("standAce bez nakupených es je Error", () => {
+    const state = makeState({ playerHand: [c("kule", "8")], pendingAces: 0 });
+    expect(() => standAce(state, "player")).toThrow();
+  });
+
+  it("standAce nemění vstupní stav", () => {
+    const state = makeState({ playerHand: [c("kule", "8")], pendingAces: 1 });
+    standAce(state, "player");
+    expect(state.currentPlayer).toBe("player");
+    expect(state.pendingAces).toBe(1);
+  });
+
+  it("eso jako poslední karta = výhra (efekt se neaplikuje)", () => {
+    const state = makeState({
+      playerHand: [c("srdce", "eso")],
+      aiHand: [c("kule", "9")],
       currentPlayer: "player",
       discardPile: [c("srdce", "kral")],
     });
-    const after1 = playCard(state, "player", c("srdce", "eso"));
-    const after2 = playCard(after1, "player", c("kule", "eso"));
-    expect(after2.currentPlayer).toBe("player");
-    expect(after2.playerHand).toHaveLength(0);
+    const next = playCard(state, "player", c("srdce", "eso"));
+    expect(next.playerHand).toHaveLength(0);
+    expect(winnerOf(next)).toBe("player");
   });
 });
 

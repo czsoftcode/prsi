@@ -8,7 +8,7 @@ import {
   type Player,
   type Rng,
 } from "./cards";
-import { playableCards, playCard, drawCard, winnerOf } from "./moves";
+import { playableCards, playCard, drawCard, standAce, winnerOf } from "./moves";
 import { chooseAiMove } from "./ai";
 
 /** Mulberry32 — stejný deterministický RNG jako v ostatních testech. */
@@ -47,12 +47,19 @@ function simulateGame(seed: number, firstPlayer: Player): { turns: number; outco
       return { turns: turn, outcome: winner };
     }
 
-    // Pat: aktuální hráč nemá co hrát a nemůže líznout
+    // Pat: aktuální hráč nemá co hrát a nemůže líznout. Pod nakupenými esy (pendingAces>0)
+    // pat nikdy nenastane — stání (standAce) je vždy platný tah, který hru posune.
     const hand = state.currentPlayer === "player" ? state.playerHand : state.aiHand;
     const top = state.discardPile[state.discardPile.length - 1]!;
-    const playable = playableCards(hand, top, state.currentSuit, state.pendingSevens);
+    const playable = playableCards(
+      hand,
+      top,
+      state.currentSuit,
+      state.pendingSevens,
+      state.pendingAces,
+    );
     const canDraw = state.drawPile.length > 0 || state.discardPile.length > 1;
-    if (playable.length === 0 && !canDraw) {
+    if (state.pendingAces === 0 && playable.length === 0 && !canDraw) {
       return { turns: turn, outcome: "pat" };
     }
 
@@ -66,6 +73,13 @@ function simulateGame(seed: number, firstPlayer: Player): { turns: number; outco
     expect(SUITS, `tah ${turn}: neplatná currentSuit`).toContain(state.currentSuit);
     expect(state.pendingSevens, `tah ${turn}: pendingSevens mimo rozsah`).toBeGreaterThanOrEqual(0);
     expect(state.pendingSevens, `tah ${turn}: pendingSevens > 4`).toBeLessThanOrEqual(4);
+    expect(state.pendingAces, `tah ${turn}: pendingAces mimo rozsah`).toBeGreaterThanOrEqual(0);
+    expect(state.pendingAces, `tah ${turn}: pendingAces > 4`).toBeLessThanOrEqual(4);
+    // Sedmy a esa se vzájemně vylučují — oba > 0 současně by byla chyba enginu.
+    expect(
+      state.pendingSevens === 0 || state.pendingAces === 0,
+      `tah ${turn}: pendingSevens i pendingAces > 0`,
+    ).toBe(true);
 
     // Tah
     const player = state.currentPlayer;
@@ -73,6 +87,8 @@ function simulateGame(seed: number, firstPlayer: Player): { turns: number; outco
       const move = chooseAiMove(state);
       if (move.type === "play") {
         state = playCard(state, "ai", move.card, move.chosenSuit);
+      } else if (move.type === "stand") {
+        state = standAce(state, "ai");
       } else {
         const next = drawCard(state, "ai", rng);
         // Bezpečnostní síť: drawCard vrátilo stejný stav (nic k lízání) — pat detekce ho
@@ -86,6 +102,9 @@ function simulateGame(seed: number, firstPlayer: Player): { turns: number; outco
         // Svršek: bot vybere první barvu ze SUITS deterministicky.
         const chosenSuit = card.rank === "svrsek" ? SUITS[0] : undefined;
         state = playCard(state, "player", card, chosenSuit);
+      } else if (state.pendingAces > 0) {
+        // Nakupená esa a žádné eso v ruce → player-bot stojí (líznout nelze).
+        state = standAce(state, "player");
       } else {
         const next = drawCard(state, "player", rng);
         if (next === state) return { turns: turn, outcome: "pat" };

@@ -24,6 +24,7 @@ function makeState(over: Partial<GameState> = {}): GameState {
     currentSuit: "kule",
     currentPlayer: "player",
     pendingSevens: 0,
+    pendingAces: 0,
     ...over,
   };
 }
@@ -118,6 +119,30 @@ describe("render (jsdom smoke)", () => {
 
     render(makeState({ pendingSevens: 2 }), root);
     expect(root.querySelector(".indicator--sevens")?.textContent).toContain("4");
+  });
+
+  it("indikátor es se skryje při 0 a zobrazí při >0", () => {
+    render(makeState({ pendingAces: 0 }), root);
+    expect(root.querySelector(".indicator--aces")).toBeNull();
+
+    render(makeState({ pendingAces: 2 }), root);
+    expect(root.querySelector(".indicator--aces")?.textContent).toContain("2");
+  });
+
+  it("tlačítko Stojím je vidět jen když je hráč na tahu a míří na něj esa", () => {
+    // hráč na tahu, esa nakupená → tlačítko je
+    render(makeState({ currentPlayer: "player", pendingAces: 1 }), root);
+    const btn = root.querySelector<HTMLElement>("[data-action='stand']");
+    expect(btn).not.toBeNull();
+    expect(btn?.tagName).toBe("BUTTON");
+
+    // bez nakupených es → není
+    render(makeState({ currentPlayer: "player", pendingAces: 0 }), root);
+    expect(root.querySelector("[data-action='stand']")).toBeNull();
+
+    // esa nakupená, ale na tahu je AI → není (hráč nemá co potvrdit)
+    render(makeState({ currentPlayer: "ai", pendingAces: 1 }), root);
+    expect(root.querySelector("[data-action='stand']")).toBeNull();
   });
 
   it("prázdný lízací balíček vykreslí placeholder, ne chybu", () => {

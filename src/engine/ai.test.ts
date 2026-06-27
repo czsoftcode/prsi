@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { type Card, type GameState, type Suit } from "./cards";
-import { playableCards, playCard, drawCard } from "./moves";
+import { playableCards, playCard, drawCard, standAce } from "./moves";
 import { chooseAiMove } from "./ai";
 
 const c = (suit: Suit, rank: Card["rank"]): Card => ({ suit, rank });
@@ -17,6 +17,7 @@ function makeState(partial: Partial<GameState>): GameState {
     currentSuit: partial.currentSuit ?? discardPile[discardPile.length - 1]!.suit,
     currentPlayer: partial.currentPlayer ?? "ai",
     pendingSevens: partial.pendingSevens ?? 0,
+    pendingAces: partial.pendingAces ?? 0,
   };
 }
 
@@ -177,12 +178,49 @@ describe("chooseAiMove — invariant: vrácený tah je vždy proveditelný", () 
         expect(() => drawCard(state, "ai", rng)).not.toThrow();
         return;
       }
+      if (move.type === "stand") {
+        expect(state.pendingAces).toBeGreaterThan(0);
+        expect(() => standAce(state, "ai")).not.toThrow();
+        return;
+      }
       const top = state.discardPile[state.discardPile.length - 1]!;
-      const playable = playableCards(state.aiHand, top, state.currentSuit, state.pendingSevens);
+      const playable = playableCards(
+        state.aiHand,
+        top,
+        state.currentSuit,
+        state.pendingSevens,
+        state.pendingAces,
+      );
       expect(playable.some((card) => sameCard(card, move.card))).toBe(true);
       expect(() => playCard(state, "ai", move.card, move.chosenSuit)).not.toThrow();
     },
   );
+});
+
+describe("chooseAiMove — nakupená esa", () => {
+  it("pendingAces > 0 a má eso → přebije (zahraje eso)", () => {
+    const state = makeState({
+      discardPile: [c("srdce", "eso")],
+      currentSuit: "srdce",
+      pendingAces: 1,
+      aiHand: [c("kule", "eso"), c("srdce", "kral")],
+    });
+    const move = chooseAiMove(state);
+    expect(move.type).toBe("play");
+    if (move.type === "play") {
+      expect(move.card.rank).toBe("eso");
+    }
+  });
+
+  it("pendingAces > 0 a nemá eso → stand (i když má kartu v barvě)", () => {
+    const state = makeState({
+      discardPile: [c("srdce", "eso")],
+      currentSuit: "srdce",
+      pendingAces: 2,
+      aiHand: [c("srdce", "kral"), c("kule", "8")],
+    });
+    expect(chooseAiMove(state)).toEqual({ type: "stand" });
+  });
 });
 
 describe("chooseAiMove — čistota", () => {

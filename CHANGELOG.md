@@ -6,6 +6,11 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-06-27
+
+### Changed
+- Eso funguje podle pravidel jako přebití a stání místo dřívějšího „hraješ znovu". Zahrané eso předá tah soupeři, který buď přebije vlastním esem (esa se řetězí a nakupí), nebo musí stát — přijde o tah bez líznutí. Když na tebe míří nakupená esa, hratelné je jen eso a z balíčku si nelízneš; pokud eso nemáš (nebo nechceš přebíjet), klikni na tlačítko „Stojím". Počet nakupených es ukazuje modrý indikátor pod hromádkami.
+
 ## [2.0.0] - 2026-06-27
 
 ### Changed

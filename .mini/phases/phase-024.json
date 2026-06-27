@@ -1,0 +1,53 @@
+{
+  "id": 24,
+  "title": "Eso: přebití a stání",
+  "goal": "Eso v enginu předá tah soupeři do čekacího stavu (obdoba pendingSevens), kde soupeř buď přebije vlastním esem (řetězení), nebo musí stát a přijít o tah bez líznutí; v tomto stavu je hratelné jen eso a nelze dobrovolně líznout — promítnuto do AI i UI (indikátor + akce stání) a pokryté testy.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "GameState: pole pendingAces + init",
+      "status": "done",
+      "detail": "pendingAces: number do GameState (cards.ts), init 0 v deal; build prochází po update všech tvůrců stavu."
+    },
+    {
+      "title": "moves.ts: efekt esa + funkce standAce",
+      "status": "done",
+      "detail": "isPlayable dostane param pendingAces (>0 hratelné jen eso); playCard u esa předá tah soupeři a pendingAces+1; ostatní karty pendingAces nemění; nová pure funkce standAce(state, player) předá tah a vynuluje pendingAces bez líznutí; playableCards projde nový param."
+    },
+    {
+      "title": "Testy moves.ts pro eso",
+      "status": "done",
+      "detail": "eso předá tah + nastaví pendingAces; přebití esem (řetězení tam a zpět); v čekacím stavu hratelné jen eso; standAce předá tah a vynuluje count; eso jako poslední karta = výhra (winnerOf přednost). Po dočasném rozbití kódu test padne."
+    },
+    {
+      "title": "AI: variant stand + chooseAiMove",
+      "status": "done",
+      "detail": "AiMove rozšířit o { type: stand }; chooseAiMove v čekacím stavu s esem přebije, bez esa vrátí stand; testy ai.ts pro oba případy."
+    },
+    {
+      "title": "game.ts: wiring stání, blok líznutí, isPat, advanceAi",
+      "status": "done",
+      "detail": "export playerStand(state) (jen hráč na tahu v čekacím stavu); playerDraw vrátí null při pendingAces>0; advanceAi ošetří move.type stand -> standAce; isPat počítá stání jako platný tah (pendingAces>0 -> není pat); testy game.ts."
+    },
+    {
+      "title": "UI: indikátor nakupených es + tlačítko Stojím",
+      "status": "done",
+      "detail": "indikátor počtu nakupených es (obdoba sedem) v render; tlačítko Stojím pod hromádky (pattern fáze 21), viditelné jen když je hráč na tahu a pendingAces>0; klik volá playerStand + advanceAi; testy render/main."
+    },
+    {
+      "title": "Zelený build, lint, celá suite + oprava E2E simulace",
+      "status": "done",
+      "detail": "aktualizovat simulation.test.ts na novou eso sémantiku (řetězení/stání); npm run build, lint a celý npm test zelené."
+    }
+  ],
+  "startedAt": "2026-06-27T10:33:43.201Z",
+  "resolvedVerify": [
+    "Eso flow v prohlížeči (klik na Stojím)",
+    "Vzhled indikátoru es a tlačítka Stojím"
+  ],
+  "completedAt": "2026-06-27T10:52:50.666Z",
+  "autoCommit": {
+    "preSha": "2c2668c0914645cb7095209b6560a3edfcd9956d",
+    "subject": "Phase 24: Eso: přebití a stání"
+  }
+}

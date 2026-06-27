@@ -7,11 +7,13 @@ import { playableCards } from "./moves";
 /**
  * Rozhodnutí AI o tahu.
  * - `play`: zahrát danou kartu; u svrška je `chosenSuit` vyplněn vždy (jinak undefined),
- * - `draw`: nemá co zahrát (líznutí 1, resp. 2 × pendingSevens řeší drawCard).
+ * - `draw`: nemá co zahrát (líznutí 1, resp. 2 × pendingSevens řeší drawCard),
+ * - `stand`: nakupená esa a nemá čím přebít → stojí (standAce, přijde o tah bez líznutí).
  */
 export type AiMove =
   | { type: "play"; card: Card; chosenSuit?: Suit }
-  | { type: "draw" };
+  | { type: "draw" }
+  | { type: "stand" };
 
 /**
  * Priorita hodnoty při výběru z hratelných karet (vyšší = hraj dřív). Záměrně
@@ -82,17 +84,25 @@ function chooseSuit(hand: readonly Card[], played: Card): Suit {
 
 /**
  * Rozhodne tah AI nad aktuálním stavem. Garantuje platnost: `play` vrací jen kartu
- * z playableCards (respektuje vynucenou barvu i nakupené sedmy) a u svrška vždy
- * doplní `chosenSuit`; nemá-li co hrát, vrací `draw`. Čistá funkce — stav nemění.
+ * z playableCards (respektuje vynucenou barvu, nakupené sedmy i esa) a u svrška vždy
+ * doplní `chosenSuit`. Nemá-li co hrát: pod nakupenými esy `stand` (nelíže se), jinak
+ * `draw`. Eso má v RANK_PRIORITY nejvyšší prioritu, takže pod nakupenými esy AI vždy
+ * přebije, pokud eso má. Čistá funkce — stav nemění.
  */
 export function chooseAiMove(state: GameState): AiMove {
   const top = state.discardPile[state.discardPile.length - 1];
   if (!top) {
     throw new Error("chooseAiMove: odhazovací hromádka je prázdná");
   }
-  const candidates = playableCards(state.aiHand, top, state.currentSuit, state.pendingSevens);
+  const candidates = playableCards(
+    state.aiHand,
+    top,
+    state.currentSuit,
+    state.pendingSevens,
+    state.pendingAces,
+  );
   if (candidates.length === 0) {
-    return { type: "draw" };
+    return state.pendingAces > 0 ? { type: "stand" } : { type: "draw" };
   }
   const card = pickCard(candidates);
   if (card.rank === "svrsek") {

@@ -107,6 +107,35 @@ function renderSevensIndicator(state: GameState): HTMLElement | null {
   return box;
 }
 
+/** Indikátor nakupených es — skrytý při 0. */
+function renderAcesIndicator(state: GameState): HTMLElement | null {
+  if (state.pendingAces <= 0) {
+    return null;
+  }
+  const box = el("div", "indicator indicator--aces");
+  box.textContent = `Esa: ${state.pendingAces} (přebij, nebo stůj)`;
+  return box;
+}
+
+/**
+ * Tlačítko „Stojím" proti nakupeným esům. Viditelné jen když je hráč na tahu
+ * a míří na něj esa (pendingAces > 0) — jinak null. Klik řeší delegovaný listener
+ * přes data-action="stand".
+ */
+function renderStandButton(state: GameState): HTMLButtonElement | null {
+  if (state.currentPlayer !== "player" || state.pendingAces <= 0) {
+    return null;
+  }
+  const btn = el("button", "indicator indicator--stand");
+  btn.type = "button";
+  btn.dataset.action = "stand";
+  const label = "Stojím (přijdu o tah)";
+  btn.title = label;
+  btn.setAttribute("aria-label", label);
+  btn.textContent = "Stojím";
+  return btn;
+}
+
 /** Tlačítko otevírající výběr motivu. Má data-action pro delegovaný listener. */
 function renderThemeButton(): HTMLButtonElement {
   const btn = el("button", "indicator indicator--theme");
@@ -174,12 +203,20 @@ function renderCenterZone(state: GameState): HTMLElement {
     renderSuitIndicator(state),
   );
 
-  // Pod balíčky zůstávají ovládací tlačítka a indikátor nakupených sedem.
+  // Pod balíčky zůstávají ovládací tlačítka a indikátory nakupených sedem/es.
   const indicators = el("div", "indicators");
   indicators.append(renderThemeButton(), renderMusicButton(), renderHintButton());
   const sevens = renderSevensIndicator(state);
   if (sevens) {
     indicators.append(sevens);
+  }
+  const aces = renderAcesIndicator(state);
+  if (aces) {
+    indicators.append(aces);
+  }
+  const stand = renderStandButton(state);
+  if (stand) {
+    indicators.append(stand);
   }
 
   zone.append(piles, indicators);
@@ -196,7 +233,13 @@ function renderPlayerZone(state: GameState): HTMLElement {
   // nápověda jen rozhoduje, zda se promítne do CSS třídy.
   const showHint = myTurn && isHintEnabled();
   const playable = showHint
-    ? playableCards(state.playerHand, topOfDiscard(state), state.currentSuit, state.pendingSevens)
+    ? playableCards(
+        state.playerHand,
+        topOfDiscard(state),
+        state.currentSuit,
+        state.pendingSevens,
+        state.pendingAces,
+      )
     : [];
   state.playerHand.forEach((card, index) => {
     const img = faceCard(card);

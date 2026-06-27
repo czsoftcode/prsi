@@ -30,19 +30,25 @@ function otherPlayer(player: Player): Player {
 }
 
 /**
- * Lze danou kartu zahrát? Když na hráče míří nakupené sedmy (pendingSevens > 0),
- * je hratelná POUZE sedma (svršek sedmy neruší). Jinak je svršek divoká karta —
- * lze ho zahrát na cokoliv (a mění barvu); ostatní karty platí běžné pravidlo:
- * shoda barvy (proti aktuální požadované barvě) nebo hodnoty (proti vrchní kartě
- * hromádky). Jediné místo, kde se rozhoduje o hratelnosti — playableCards i
- * playCard se opírají o tuto funkci.
+ * Lze danou kartu zahrát? Když na hráče míří nakupená esa (pendingAces > 0), je
+ * hratelné POUZE eso (přebití; svršek esa neruší) — jediná alternativa je stání
+ * (standAce). Když míří nakupené sedmy (pendingSevens > 0), je hratelná POUZE sedma
+ * (svršek sedmy neruší). Jinak je svršek divoká karta — lze ho zahrát na cokoliv
+ * (a mění barvu); ostatní karty platí běžné pravidlo: shoda barvy (proti aktuální
+ * požadované barvě) nebo hodnoty (proti vrchní kartě hromádky). Jediné místo, kde
+ * se rozhoduje o hratelnosti — playableCards i playCard se opírají o tuto funkci.
+ * pendingAces a pendingSevens se vzájemně vylučují (oba > 0 nikdy).
  */
 export function isPlayable(
   card: Card,
   topCard: Card,
   currentSuit: Suit,
   pendingSevens = 0,
+  pendingAces = 0,
 ): boolean {
+  if (pendingAces > 0) {
+    return card.rank === "eso";
+  }
   if (pendingSevens > 0) {
     return card.rank === "7";
   }
@@ -58,8 +64,9 @@ export function playableCards(
   topCard: Card,
   currentSuit: Suit,
   pendingSevens = 0,
+  pendingAces = 0,
 ): Card[] {
-  return hand.filter((card) => isPlayable(card, topCard, currentSuit, pendingSevens));
+  return hand.filter((card) => isPlayable(card, topCard, currentSuit, pendingSevens, pendingAces));
 }
 
 /** Identita karty pro porovnání (karty jsou hodnotové, ne referenční). */
@@ -70,7 +77,7 @@ function sameCard(a: Card, b: Card): boolean {
 /**
  * Vyloží kartu z ruky hráče na vrch hromádky a aplikuje efekt speciálních karet:
  * - sedma: zvýší pendingSevens (soupeř bude brát 2 × pendingSevens),
- * - eso: tah zůstává hráči (soupeř stojí → v 1v1 hraješ znovu),
+ * - eso: zvýší pendingAces a předá tah soupeři (ten musí přebít esem, nebo stát),
  * - svršek: vyžaduje `chosenSuit` a nastaví na něj aktuální barvu,
  * - ostatní: aktuální barva = barva karty, tah přechází na soupeře.
  *
@@ -89,7 +96,9 @@ export function playCard(
   if (index === -1) {
     throw new Error(`playCard: hráč "${player}" nemá kartu ${card.suit}-${card.rank}`);
   }
-  if (!isPlayable(card, topOfDiscard(state), state.currentSuit, state.pendingSevens)) {
+  if (
+    !isPlayable(card, topOfDiscard(state), state.currentSuit, state.pendingSevens, state.pendingAces)
+  ) {
     throw new Error(`playCard: kartu ${card.suit}-${card.rank} nelze zahrát`);
   }
 
@@ -104,11 +113,14 @@ export function playCard(
   const newHand = hand.slice();
   newHand.splice(index, 1);
 
-  // Efekt karty na barvu, nakupené sedmy a tah.
+  // Efekt karty na barvu, nakupené sedmy/esa a tah.
   const newSuit: Suit = isSvrsek ? chosenSuit! : card.suit;
   const newPendingSevens = card.rank === "7" ? state.pendingSevens + 1 : state.pendingSevens;
-  // Eso: soupeř stojí, takže tah zůstává stejnému hráči. Ostatní karty tah předají.
-  const newCurrentPlayer = card.rank === "eso" ? player : otherPlayer(player);
+  // Eso předá tah soupeři a nakupí se (soupeř musí přebít esem, nebo stát). Sedmy a
+  // esa se vzájemně vylučují, takže non-eso karta nechává pendingAces beze změny (0).
+  const newPendingAces = card.rank === "eso" ? state.pendingAces + 1 : state.pendingAces;
+  // Tah vždy přechází na soupeře (efekt esa se uplatní až tím, že soupeř musí reagovat).
+  const newCurrentPlayer = otherPlayer(player);
 
   return {
     playerHand: player === "player" ? newHand : state.playerHand.slice(),
@@ -118,6 +130,7 @@ export function playCard(
     currentSuit: newSuit,
     currentPlayer: newCurrentPlayer,
     pendingSevens: newPendingSevens,
+    pendingAces: newPendingAces,
   };
 }
 
@@ -129,6 +142,11 @@ export function playCard(
  * nepřechází). Čistá funkce — vrací nový stav, vstup nemění.
  */
 export function drawCard(state: GameState, player: Player, rng: Rng): GameState {
+  if (state.pendingAces > 0) {
+    // Pod nakupenými esy se nelíže — jedinou alternativou k přebití je stání (standAce).
+    // Tichý líz by porušil pravidlo bez signálu, proto raději tvrdě selži.
+    throw new Error("drawCard: pod nakupenými esy nelze líznout (jen přebít esem, nebo stát)");
+  }
   const count = state.pendingSevens > 0 ? 2 * state.pendingSevens : 1;
 
   let drawPile = state.drawPile.slice();
@@ -167,6 +185,29 @@ export function drawCard(state: GameState, player: Player, rng: Rng): GameState 
     currentSuit: state.currentSuit,
     currentPlayer: otherPlayer(player),
     pendingSevens: 0,
+    pendingAces: 0,
+  };
+}
+
+/**
+ * Stání proti nakupeným esům: hráč přijde o tah bez líznutí a nakupená esa se
+ * vynulují. Jediná alternativa k přebití vlastním esem (viz isPlayable). Vyhodí
+ * Error, když na hráče žádná esa nemíří (pendingAces === 0) — stát jindy nelze.
+ * Čistá funkce — vrací nový stav, vstup nemění.
+ */
+export function standAce(state: GameState, player: Player): GameState {
+  if (state.pendingAces <= 0) {
+    throw new Error("standAce: stát lze jen proti nakupeným esům (pendingAces === 0)");
+  }
+  return {
+    playerHand: state.playerHand.slice(),
+    aiHand: state.aiHand.slice(),
+    drawPile: state.drawPile.slice(),
+    discardPile: state.discardPile.slice(),
+    currentSuit: state.currentSuit,
+    currentPlayer: otherPlayer(player),
+    pendingSevens: state.pendingSevens,
+    pendingAces: 0,
   };
 }
 

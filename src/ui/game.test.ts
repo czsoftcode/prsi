@@ -4,6 +4,7 @@ import {
   createGame,
   playerPlay,
   playerDraw,
+  playerStand,
   advanceAi,
   playerPlayable,
   isPat,
@@ -35,6 +36,7 @@ function makeState(over: Partial<GameState> = {}): GameState {
     currentSuit: "srdce",
     currentPlayer: "player",
     pendingSevens: 0,
+    pendingAces: 0,
     ...over,
   };
 }
@@ -110,6 +112,44 @@ describe("playerDraw — dobrovolné líznutí kdykoliv", () => {
     });
     expect(playerDraw(s, seededRng(1))).toBeNull();
   });
+
+  it("vrátí null pod nakupenými esy (líznout nelze, jen přebít nebo stát)", () => {
+    const s = makeState({
+      playerHand: [card("kule", "8")],
+      discardPile: [card("srdce", "eso")],
+      currentSuit: "srdce",
+      pendingAces: 1,
+    });
+    expect(playerDraw(s, seededRng(1))).toBeNull();
+  });
+});
+
+describe("playerStand — stání proti nakupeným esům", () => {
+  it("stojí, vynuluje pendingAces a předá tah AI (bez líznutí)", () => {
+    const s = makeState({
+      playerHand: [card("kule", "8"), card("zelene", "9")],
+      discardPile: [card("srdce", "eso")],
+      currentSuit: "srdce",
+      pendingAces: 2,
+    });
+    const next = playerStand(s);
+    expect(next).not.toBeNull();
+    expect(next!.currentPlayer).toBe("ai");
+    expect(next!.pendingAces).toBe(0);
+    expect(next!.playerHand).toHaveLength(2); // nelíže
+  });
+
+  it("vrátí null, když žádná esa nemíří (pendingAces === 0)", () => {
+    expect(playerStand(makeState({ pendingAces: 0 }))).toBeNull();
+  });
+
+  it("vrátí null, když hráč není na tahu", () => {
+    expect(playerStand(makeState({ currentPlayer: "ai", pendingAces: 1 }))).toBeNull();
+  });
+
+  it("vrátí null, když už je vítěz", () => {
+    expect(playerStand(makeState({ playerHand: [], pendingAces: 1 }))).toBeNull();
+  });
 });
 
 describe("playerPlay", () => {
@@ -135,13 +175,14 @@ describe("playerPlay", () => {
     expect(next!.currentPlayer).toBe("ai");
   });
 
-  it("eso ponechá tah hráči", () => {
+  it("eso předá tah AI a nastaví pendingAces (čekací stav)", () => {
     const s = makeState({
       playerHand: [card("srdce", "eso"), card("kule", "8")],
     });
     const next = playerPlay(s, 0);
     expect(next).not.toBeNull();
-    expect(next!.currentPlayer).toBe("player");
+    expect(next!.currentPlayer).toBe("ai");
+    expect(next!.pendingAces).toBe(1);
   });
 
   it("svršek bez barvy vrátí null, s barvou nastaví currentSuit", () => {
@@ -159,7 +200,7 @@ describe("playerPlay", () => {
 });
 
 describe("advanceAi", () => {
-  it("dožene řetězené tahy AI po esu (hraje víckrát)", () => {
+  it("eso AI předá tah hráči do čekacího stavu (nehraje dál)", () => {
     const s = makeState({
       currentPlayer: "ai",
       aiHand: [card("srdce", "eso"), card("srdce", "8"), card("kule", "9")],
@@ -167,9 +208,38 @@ describe("advanceAi", () => {
       currentSuit: "srdce",
     });
     const next = advanceAi(s, seededRng(1));
-    // Zahrála eso (tah jí zůstal) i 8 srdce (předala tah) → ruka 3 → 1.
-    expect(next.aiHand).toHaveLength(1);
+    // Zahrála eso → tah jde hráči (čekací stav), AI dál nehraje.
+    expect(next.aiHand).toHaveLength(2);
     expect(next.currentPlayer).toBe("player");
+    expect(next.pendingAces).toBe(1);
+  });
+
+  it("AI přebije eso vlastním esem (řetězení), tah jde zpět hráči", () => {
+    const s = makeState({
+      currentPlayer: "ai",
+      aiHand: [card("kule", "eso"), card("srdce", "9")],
+      discardPile: [card("srdce", "eso")],
+      currentSuit: "srdce",
+      pendingAces: 1,
+    });
+    const next = advanceAi(s, seededRng(1));
+    expect(next.currentPlayer).toBe("player");
+    expect(next.pendingAces).toBe(2);
+    expect(next.aiHand).toHaveLength(1);
+  });
+
+  it("AI bez esa pod nakupenými esy stojí (přijde o tah, nelíže)", () => {
+    const s = makeState({
+      currentPlayer: "ai",
+      aiHand: [card("srdce", "9"), card("kule", "8")],
+      discardPile: [card("srdce", "eso")],
+      currentSuit: "srdce",
+      pendingAces: 1,
+    });
+    const next = advanceAi(s, seededRng(1));
+    expect(next.currentPlayer).toBe("player");
+    expect(next.pendingAces).toBe(0);
+    expect(next.aiHand).toHaveLength(2); // stání nelíže
   });
 
   it("nezacyklí se při stallu a vrátí beze změny", () => {
@@ -224,5 +294,12 @@ describe("isPat", () => {
 
   it("zachytí i AI stall (currentPlayer === ai, AI nemůže hrát ani líznout)", () => {
     expect(isPat({ ...patBase(), currentPlayer: "ai", aiHand: [card("kule", "9")] })).toBe(true);
+  });
+
+  it("není pat pod nakupenými esy (stání je vždy dostupné)", () => {
+    // jinak by to byl pat (prázdný balíček, nehratelná ruka), ale stání hru posune
+    expect(isPat({ ...patBase(), discardPile: [card("srdce", "eso")], pendingAces: 1 })).toBe(
+      false,
+    );
   });
 });
