@@ -1,0 +1,33 @@
+{
+  "id": 29,
+  "title": "Větší karty na velkých obrazovkách",
+  "goal": "Přidat @media pravidlo pro velké displeje (min-width ~1200px), které zvětší --card-w zhruba o 50 % (strop ~144 px) vázaný i na vh, aby karty nebyly příliš malé, bez dopadu na mobilní a střední rozlišení.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Přidat media query pro velké displeje",
+      "status": "done",
+      "detail": "Do :root sekce stylu přidat @media (min-width: 1200px) přepisující --card-w na clamp se stropem ~144px (cca 150 % současných 96px), mez vázanou na vh, např. clamp(96px, min(11vw, 22vh), 144px)."
+    },
+    {
+      "title": "Komentář vysvětlující práh a vh-vazbu",
+      "status": "done",
+      "detail": "Nad pravidlo doplnit krátký komentář ve stylu okolních (proč 1200px, proč strop, proč vh), konzistentní s komentářem u mobilního breakpointu."
+    },
+    {
+      "title": "Vizuální kontrola tří rozlišení",
+      "status": "done",
+      "detail": "Ověřit, že na velkém displeji (>=1920px) jsou karty výrazně větší, na ~1100px beze změny a na 1366x768 ruka nepřeteče viewport na výšku."
+    }
+  ],
+  "startedAt": "2026-06-27T16:11:42.481Z",
+  "resolvedVerify": [
+    "Karty jsou na velkém displeji (>=1920px) subjektivně výrazně větší a čitelné",
+    "Na 1366x768 ruka nepřeteče viewport na výšku"
+  ],
+  "completedAt": "2026-06-27T16:17:38.043Z",
+  "autoCommit": {
+    "preSha": "e86094727c23e5a6a391acb9024d0e6c14a3b583",
+    "subject": "Phase 29: Větší karty na velkých obrazovkách"
+  }
+}

@@ -6,6 +6,9 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ## [Unreleased]
 
+### Changed
+- Na velkých displejích (šířka od 1200px) jsou karty výrazně větší — strop velikosti se zvedl o ~50 % (na 144px na monitorech 1080p a vyšších). Velikost zůstává vázaná i na výšku okna, takže na nízkém širokoúhlém monitoru (1366×768) se karty nenafouknou natolik, aby ruka přetekla mimo obrazovku. Na střední šířce (do 1200px) a na mobilu se nic nemění.
+
 ### Fixed
 - Do výběru motivu se nově dostane jen sada s kompletními assety. Registr odmítne složku `cards_NN`, které chybí kterýkoli z 37 souborů (32 líců, rub, 4 ikony barev) nebo některé z obou pozadí, i složku s nečíselným/jednociferným označením. Dřív stačila libovolná složka `cards_*` s párem pozadí a neúplný motiv pak v náhledu i hře sypal chybějící obrázky (404).
 - README sjednocen s aktuálními pravidly: eso je popsáno jako „přebij vlastním esem, nebo stůj" (místo dřívějšího „hraješ vzápětí znovu") a doplněno dobrovolné líznutí kdykoliv na tahu. Dřív README popisovalo stará pravidla a odporovalo skutečnému chování hry.

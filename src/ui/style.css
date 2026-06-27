@@ -15,6 +15,19 @@
   }
 }
 
+/* Velké displeje: na šířce >=1200px byly karty se stropem 96px zbytečně malé.
+   Zvedáme strop o ~50 % (na 144px) a spodní mez na 96px, aby karty rostly.
+   Karta má poměr 2:3, takže 144px šířky = 216px výšky; tři řady (AI ruka,
+   hromádky, hráčova ruka) musí na výšku zůstat ve viewportu. Preferovaná
+   velikost je proto vázaná i na vh přes min(11vw, 16vh): na nízkém širokoúhlém
+   monitoru (1366x768) rozhoduje 16vh ≈ 123px a karty se nenafouknou na plných
+   144px, takže ruka nepřeteče; na 1080p+ je strop 144px plně využit. */
+@media (min-width: 1200px) {
+  :root {
+    --card-w: clamp(96px, min(11vw, 16vh), 144px);
+  }
+}
+
 * {
   box-sizing: border-box;
 }
