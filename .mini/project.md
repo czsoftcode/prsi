@@ -9,7 +9,7 @@ Uživatel ve věku 6+
 ## Approach
 - Jádro je čistý herní engine v TS (pure funkce: pravidla, validace tahu, vyhodnocení), oddělený od vykreslování a testovatelný bez DOM.
 - Jedna herní obrazovka: ruka hráče dole, rub karet AI nahoře, lízací balíček + odhazovací hromádka uprostřed, indikátor aktuální barvy a nakupených sedem; overlaye pro výběr barvy (svršek) a konec hry.
-- Pravidla: 32 mariášových karet; tah = shoda barvy nebo hodnoty; svršek mění barvu; sedma = soupeř bere 2 a hromadí se max 4 sedmy (= 8 karet); eso = soupeř stojí (v 1v1 hraješ znovu); kdo nemá hratelnou kartu, líže 1 a tah končí; dojde-li lízací balíček, zamíchá se odhazovací zpět; vyhrává první s prázdnou rukou.
+- Pravidla: 32 mariášových karet; tah = shoda barvy nebo hodnoty; svršek mění barvu; sedma = soupeř bere 2 a hromadí se max 4 sedmy (= 8 karet); eso = soupeř musí přebít vlastním esem, nebo stojí a přijde o tah (esa se hromadí, pod nakupenými esy nelze líznout) — v 1v1 po nepřebitém esu hraješ znovu; kdo nemá hratelnou kartu, líže 1 a tah končí, líznout lze ale i dobrovolně kdykoliv na tahu (předá tah soupeři); dojde-li lízací balíček, zamíchá se odhazovací zpět; vyhrává první s prázdnou rukou.
 - AI je jednoduchá heuristika — vždy jen platné tahy, záměrně hloupá.
 - Grafika karet: AI-generované PNG v public/cards/, pojmenování {barva}-{hodnota}.png (barvy zaludy/zelene/srdce/kule), rub jako rub.png.
 

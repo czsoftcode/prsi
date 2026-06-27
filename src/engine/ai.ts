@@ -18,7 +18,8 @@ export type AiMove =
 /**
  * Priorita hodnoty při výběru z hratelných karet (vyšší = hraj dřív). Záměrně
  * jednoduchá, „hloupá" heuristika:
- * - eso (4): v 1v1 znamená tah znovu → zbavíš se ruky rychleji, hraj nejdřív,
+ * - eso (4): nutí soupeře přebít vlastním esem, nebo stát (přijde o tah); když nepřebije,
+ *   v 1v1 hraješ vzápětí znovu → zbavíš se ruky rychleji, hraj nejdřív,
  * - sedma (3): tlačí soupeře brát, útočná,
  * - obyčejné (2): běžné karty, zbav se jich,
  * - svršek (1): řídí barvu, drž ho jako poslední záchranu / na odhození nechtěné barvy.

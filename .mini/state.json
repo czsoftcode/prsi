@@ -137,6 +137,11 @@
       "id": 27,
       "title": "Registr motivů: validace kompletní sady",
       "status": "done"
+    },
+    {
+      "id": 28,
+      "title": "Sjednocení pravidel v dokumentaci",
+      "status": "done"
     }
   ]
 }

@@ -31,7 +31,7 @@ Redundantní guard pendingSevens>0 před shouldSaveSeven
 
 Podmínka 'state.pendingSevens > 0 && shouldSaveSeven(state)': shouldSaveSeven vrací false pro cokoliv jiného než pendingSevens===1, takže prefix 'pendingSevens > 0 &&' nikdy nezmění výsledek. Neškodí, ale je nadbytečný; buď ho zahodit, nebo nechat čistě shouldSaveSeven(state). Bez testovacího/funkčního dopadu.
 
-## 25-4 · should-know · open
+## 25-4 · should-know · resolved
 **Where:** README.md:17
 **Reviewed-at:** 9e0f11788f0805cdb823d85618288dff60de822f
 **Source:** project

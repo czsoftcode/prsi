@@ -1,0 +1,35 @@
+{
+  "id": 28,
+  "title": "Sjednocení pravidel v dokumentaci",
+  "goal": "README, projektový kontrakt v .mini/project.md a komentář v src/ai.ts popíší eso jako přebij-nebo-stůj a doplní dobrovolné líznutí kdykoliv, aby přesně odpovídaly shipped pravidlům z fází 23–24 (žádná změna herní logiky).",
+  "status": "done",
+  "fromFinding": "25-4",
+  "steps": [
+    {
+      "title": "README: eso = přebij nebo stůj",
+      "status": "done",
+      "detail": "README.md:17 přepsat — po esu soupeř buď přebije vlastním esem, nebo stojí (přijde o tah), místo dnešního „hraješ vzápětí znovu\"."
+    },
+    {
+      "title": "README: doplnit dobrovolné líznutí",
+      "status": "done",
+      "detail": "README.md:18 rozšířit — líznout si jednu kartu lze kdykoliv (dobrovolně), nejen když nemáš hratelnou kartu."
+    },
+    {
+      "title": "Projektový kontrakt v .mini/project.md",
+      "status": "done",
+      "detail": ".mini/project.md:12 sjednotit větu o pravidlech — eso jako přebij-nebo-stůj a dobrovolné líznutí kdykoliv, aby odpovídala shipped chování."
+    },
+    {
+      "title": "Komentář priority eso v ai.ts + zelená regrese",
+      "status": "done",
+      "detail": "src/engine/ai.ts:21 upřesnit, že eso není bezpodmínečné tah-znovu (soupeř může přebít vlastním esem); npm test musí projít, žádná změna logiky."
+    }
+  ],
+  "startedAt": "2026-06-27T15:43:09.783Z",
+  "completedAt": "2026-06-27T16:07:57.011Z",
+  "autoCommit": {
+    "preSha": "3cb8b7b22ccdcc740b29cd9ed05632b1101080b4",
+    "subject": "Phase 28: Sjednocení pravidel v dokumentaci"
+  }
+}

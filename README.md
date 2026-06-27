@@ -14,8 +14,12 @@ výhru, bez přihlašování a bez serveru.
 - **Svršek (Q)** je žolík — můžeš ho zahrát na cokoliv a změníš jím požadovanou barvu.
 - **Sedma** nutí soupeře líznout 2 karty. Sedmy se hromadí (max 4 = 8 karet),
   pokud soupeř přebije další sedmou.
-- **Eso (A)** soupeře zastaví (v souboji 1 na 1 hraješ vzápětí znovu).
-- Když nemáš hratelnou kartu, **líznéš si jednu** a tah končí.
+- **Eso (A)** soupeře zastaví: musí ho **přebít vlastním esem**, nebo **stojí** a přijde
+  o tah (líznout pod nakupenými esy nelze). Esa se hromadí; v souboji 1 na 1 tak po
+  nepřebitém esu hraješ vzápětí znovu.
+- Když nemáš hratelnou kartu, **líznéš si jednu** a tah končí. Líznout si můžeš ale
+  i **dobrovolně kdykoliv jsi na tahu** — i s hratelnou kartou v ruce —, čímž tah předáš
+  soupeři.
 - Dojde-li lízací balíček, odhazovací hromádka (kromě vrchní karty) se zamíchá zpět.
 - Vyhrává ten, kdo se **první zbaví všech karet**.
 
