@@ -157,6 +157,11 @@
       "id": 31,
       "title": "CSP proti cizímu skriptu",
       "status": "done"
+    },
+    {
+      "id": 32,
+      "title": "Uvolnit style-src na unsafe-inline",
+      "status": "done"
     }
   ]
 }

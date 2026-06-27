@@ -1,0 +1,37 @@
+{
+  "id": 32,
+  "title": "Uvolnit style-src na unsafe-inline",
+  "goal": "V <meta> CSP v index.html přidat do style-src klíčové slovo 'unsafe-inline' (a upravit komentář: dynamické inline styly animací karet + Vite dev klient; nonce/hash nejsou na GitHub Pages proveditelné). Cíl: odstranit porušení 'Applying inline style violates style-src self'. script-src zůstává přísný (vlastní smysl SEC-2). Ověřit v dev i produkčním buildu, že konzole je bez CSP chyb a animace fungují. (Oprava regrese z fáze 31 / SEC-2.)",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Přidat 'unsafe-inline' do style-src",
+      "status": "done",
+      "detail": "V <meta> CSP v index.html rozšířit style-src 'self' na style-src 'self' 'unsafe-inline' a upravit komentář (důvod: dynamické inline styly animací + Vite dev klient, nonce/hash neproveditelné na GitHub Pages). Ostatní direktivy — hlavně script-src — beze změny."
+    },
+    {
+      "title": "Ověřit CSP hodnotu v produkčním buildu",
+      "status": "done",
+      "detail": "npm run build, grep dist/index.html — style-src obsahuje 'self' 'unsafe-inline', script-src zůstal přísný ('self' + plausible host + hash), žádná jiná direktiva se nezměnila."
+    },
+    {
+      "title": "Ověřit v prohlížeči bez CSP chyb (dev + prod)",
+      "status": "skipped",
+      "detail": "[ověří člověk] npm run dev i vite preview — konzole bez 'Applying inline style violates style-src', animace zahrání/líznutí karty fungují. Claude nemůže (prohlížeč nedosáhne na localhost shellu)."
+    },
+    {
+      "title": "Regrese: testy a build",
+      "status": "done",
+      "detail": "npm test (388 testů) a npm run build projdou bez chyby."
+    }
+  ],
+  "startedAt": "2026-06-27T19:02:55.143Z",
+  "resolvedVerify": [
+    "Konzole bez CSP chyb v dev i produkci, animace karet fungují"
+  ],
+  "completedAt": "2026-06-27T19:09:38.252Z",
+  "autoCommit": {
+    "preSha": "0c82abe9c5a253d3c9475a96e3343dff32885811",
+    "subject": "Phase 32: Uvolnit style-src na unsafe-inline"
+  }
+}

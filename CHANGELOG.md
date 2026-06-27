@@ -7,7 +7,7 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 ## [Unreleased]
 
 ### Security
-- Přidána Content-Security-Policy (přes `<meta>`, protože GitHub Pages neumí HTTP hlavičky), která omezuje, odkud smí běžet skript a kam smí jít síťový požadavek: skripty jen z vlastního původu a z `plausible.softcode.cz` (inline bootstrap povolen přes SHA-256 hash), obrázky/zvuky/styly jen z vlastního původu. Kompromitovaný analytický server tak už nemůže spustit libovolný kód v originu hry. (Řeší nález SEC-2 ze security review.)
+- Přidána Content-Security-Policy (přes `<meta>`, protože GitHub Pages neumí HTTP hlavičky), která omezuje, odkud smí běžet skript a kam smí jít síťový požadavek: skripty jen z vlastního původu a z `plausible.softcode.cz` (inline bootstrap povolen přes SHA-256 hash), obrázky/zvuky jen z vlastního původu. Kompromitovaný analytický server tak už nemůže spustit libovolný kód v originu hry. (Styly povolují `'unsafe-inline'` kvůli dynamickým inline stylům animací — nízké riziko; klíčové omezení skriptů zůstává přísné.) (Řeší nález SEC-2 ze security review.)
 - Workflow nasazení na GitHub Pages zpevněn: build job běží jen s právem `contents: read`, zápisová práva (`pages`, `id-token`) má nově pouze deploy job, a všech 5 použitých GitHub Actions je připnuto na konkrétní commit SHA místo pohyblivých tagů (`@v4` apod.). Přidán `.github/dependabot.yml`, který hlídá nové verze Actions a otevírá PR s povýšením připnutých SHA. (Řeší nález SEC-3 ze security review.)
 
 ### Changed

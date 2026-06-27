@@ -11,13 +11,17 @@
       - script-src: vlastní bundle ('self'), loader Plausible a inline bootstrap
         povolený přes SHA-256 hash (při úpravě inline skriptu hash přepočítat!).
       - connect-src: Plausible posílá události na svůj /api/event.
-      - img/media/style: jen vlastní assety (karty, pozadí, zvuky, CSS bundle).
+      - img/media: jen vlastní assety (karty, pozadí, zvuky).
+      - style-src má 'unsafe-inline': animace karet sázejí inline styly přes
+        element.style.* a Vite dev klient injektuje styly za běhu; nonce nejde
+        (GitHub Pages neumí hlavičky) a hash také ne (hodnoty transform se mění).
+        Inline styl je nízké riziko — klíčový script-src zůstává přísný.
       SRI na loader Plausible se záměrně nepřidává — skript se na serveru mění a
       pevný hash by hru rozbil při každé aktualizaci.
     -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' https://plausible.softcode.cz 'sha256-s3GjtVo80AO5y21xNb09L193qY2mDVWzcLbCiBHrn4s='; connect-src 'self' https://plausible.softcode.cz; img-src 'self'; media-src 'self'; style-src 'self'; object-src 'none'; base-uri 'self'"
+      content="default-src 'self'; script-src 'self' https://plausible.softcode.cz 'sha256-s3GjtVo80AO5y21xNb09L193qY2mDVWzcLbCiBHrn4s='; connect-src 'self' https://plausible.softcode.cz; img-src 'self'; media-src 'self'; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'"
     />
     <title>Prší</title>
     <!-- Privacy-friendly analytics by Plausible (self-hosted) -->
