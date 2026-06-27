@@ -1,0 +1,40 @@
+{
+  "id": 27,
+  "title": "Registr motivů: validace kompletní sady",
+  "goal": "themesRegistry().scan() přijme motiv jen když NN je dvojciferné a složka cards_NN obsahuje všech 32 líců, rub.png i 4 suit-* ikony (vedle páru dashboardů); neúplná nebo chybně pojmenovaná sada se do THEMES nedostane a je to pokryto testem unhappy path.",
+  "status": "done",
+  "fromFinding": "25-6",
+  "steps": [
+    {
+      "title": "Sdílený pure modul názvů assetů motivu",
+      "status": "done",
+      "detail": "Nový soubor (např. src/ui/theme-assets.ts): exportuje rankSlug, cardFileName(suit,rank), REQUIRED_THEME_FILES (32 líců + rub.png + 4 suit-*.png) a isValidThemeId (/^\\d{2}$/). Importuje pouze SUITS/RANKS z engine/cards, žádné import.meta ani theme.ts — listový modul importovatelný z vite.config.ts."
+    },
+    {
+      "title": "Refaktor assets.ts na sdílený modul",
+      "status": "done",
+      "detail": "assets.ts používá rankSlug/cardFileName ze sdíleného modulu místo lokální kopie; chování beze změny, stávající testy zelené."
+    },
+    {
+      "title": "Zpřísnit scan() v vite.config.ts",
+      "status": "done",
+      "detail": "Kromě páru dashboardů ověřit isValidThemeId(NN) a že readdirSync(cards_NN) obsahuje všechny REQUIRED_THEME_FILES; neúplná nebo chybně pojmenovaná sada se do THEMES nedostane."
+    },
+    {
+      "title": "Test unhappy path nad reálným predikátem",
+      "status": "done",
+      "detail": "Test ověří vyřazení: chybějící líc / rub.png / suit-* ikona, NN 6 i abc; kompletní sada projde. Plus contract test: líce v REQUIRED_THEME_FILES se shodují s názvy odvozenými z cardSrc (sdílený kontrakt, ne zkopírovaný seznam)."
+    },
+    {
+      "title": "Zelená regrese",
+      "status": "done",
+      "detail": "npm test, build, lint i E2E projdou; THEMES stále obsahuje motivy 01–05."
+    }
+  ],
+  "startedAt": "2026-06-27T15:25:44.004Z",
+  "completedAt": "2026-06-27T15:36:26.700Z",
+  "autoCommit": {
+    "preSha": "c232a4c3fa04d6a218721a39b4571405cf5dd9c1",
+    "subject": "Phase 27: Registr motivů: validace kompletní sady"
+  }
+}

@@ -1,6 +1,11 @@
 import { defineConfig, type Plugin } from "vite";
 import { readdirSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
+import {
+  isValidThemeId,
+  hasAllRequiredCardFiles,
+  dashboardFileNames,
+} from "./src/ui/theme-assets";
 
 // Registr dostupných motivů jako virtuální modul `virtual:themes`.
 //
@@ -10,10 +15,13 @@ import { resolve } from "node:path";
 // Žádný commitnutý vygenerovaný soubor: přidat motiv = nahrát složku + rebuild
 // (v dev serveru je třeba restart, plugin load proběhne jednou).
 //
-// Validace je jen na úroveň existence (ne obsah složky): cards_NN existuje A
-// ZÁROVEŇ dashboard_NN.webp i .jpg existují (oba formáty — `tableBgImageSet()`
-// staví image-set z obou). Motiv bez kompletního páru se do registru nedostane
-// (např. cards_03 bez dashboardu).
+// Validace kompletní sady (ne jen existence složky), aby do výběru nepronikl
+// motiv sypoucí 404:
+//  - NN je přesně dvojciferné (isValidThemeId) — odfiltruje `cards_`, `cards_x` ap.,
+//  - dashboard_NN.webp i .jpg existují (oba formáty — `tableBgImageSet()` staví
+//    image-set z obou),
+//  - složka cards_NN obsahuje VŠECHNY REQUIRED_THEME_FILES (32 líců + rub + 4 ikony).
+// Seznam názvů sdílí runtime vykreslování (theme-assets.ts) — žádná druhá pravda.
 function themesRegistry(): Plugin {
   const VIRTUAL_ID = "virtual:themes";
   const RESOLVED_ID = "\0" + VIRTUAL_ID;
@@ -30,12 +38,25 @@ function themesRegistry(): Plugin {
     } catch {
       return []; // public/ nedostupné — prázdný registr (appka spadne na default)
     }
-    const valid = entries.filter(
-      (nn) =>
-        existsSync(resolve(imagesDir, `dashboard_${nn}.webp`)) &&
-        existsSync(resolve(imagesDir, `dashboard_${nn}.jpg`)),
-    );
+    const valid = entries.filter((nn) => isValidThemeId(nn) && hasCompleteAssets(nn));
     return valid.sort();
+
+    function hasCompleteAssets(nn: string): boolean {
+      const dash = dashboardFileNames(nn);
+      if (
+        !existsSync(resolve(imagesDir, dash.webp)) ||
+        !existsSync(resolve(imagesDir, dash.jpg))
+      ) {
+        return false;
+      }
+      let files: string[];
+      try {
+        files = readdirSync(resolve(cardsDir, `cards_${nn}`));
+      } catch {
+        return false; // složka nečitelná (zmizela mezi readdir a teď) — vyřadit
+      }
+      return hasAllRequiredCardFiles(files);
+    }
   }
 
   return {

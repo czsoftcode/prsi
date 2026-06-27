@@ -49,7 +49,7 @@ Veřejné engine operace dovolují tah mimo pořadí
 
 playCard, drawCard ani standAce neověřují state.currentPlayer ani již existujícího vítěze. Konkrétně ve stavu currentPlayer=ai lze zavolat playCard(state, player, hratelnáKarta): karta se odebere z lidské ruky a currentPlayer zůstane ai, takže engine přijal nelegální tah. standAce volané za nesprávného hráče obdobně vynuluje pendingAces. UI wrappery dnes pořadí kontrolují, ale čistý engine deklarovaný jako jediná vrstva pravidel ne; nový caller nebo test může vytvořit neplatný stav bez chyby. Moves testy negativní případ nesprávného hráče nepokrývají.
 
-## 25-6 · should-know · open
+## 25-6 · should-know · resolved
 **Where:** vite.config.ts:28
 **Reviewed-at:** 9e0f11788f0805cdb823d85618288dff60de822f
 **Source:** project

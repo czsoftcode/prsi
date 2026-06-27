@@ -7,6 +7,7 @@
 
 import { SUITS, type Card, type Rank, type Suit } from "../engine/cards";
 import { getActiveTheme } from "./theme";
+import { cardFileName, suitIconFileName, dashboardFileNames, RUB_FILE } from "./theme-assets";
 
 // Prefix veřejných assetů. Vite ho nastaví dle `base`: v dev/testech "/",
 // v produkčním buildu na GitHub Pages "/prsi/". Vždy končí lomítkem, takže
@@ -36,7 +37,7 @@ export const SUIT_LABELS: Record<Suit, string> = {
 
 /** Cesta k obrázku rubu karty v aktivním motivu. */
 export function rubSrc(): string {
-  return `${cardsDir()}rub.png`;
+  return `${cardsDir()}${RUB_FILE}`;
 }
 
 /**
@@ -47,36 +48,22 @@ export function rubSrc(): string {
  * `--table-bg` (overlay je v style.css).
  */
 export function tableBgImageSet(): string {
-  const nn = getActiveTheme();
+  const dash = dashboardFileNames(getActiveTheme());
   return (
     `image-set(` +
-    `url("${BASE}images/dashboard_${nn}.webp") type("image/webp"), ` +
-    `url("${BASE}images/dashboard_${nn}.jpg") type("image/jpeg"))`
+    `url("${BASE}images/${dash.webp}") type("image/webp"), ` +
+    `url("${BASE}images/${dash.jpg}") type("image/jpeg"))`
   );
 }
 
 /** Cesta k ikoně barvy (indikátor aktuální barvy), např. "srdce" -> ".../cards_01/suit-srdce.png". */
 export function suitIconSrc(suit: Suit): string {
-  return `${cardsDir()}suit-${suit}.png`;
-}
-
-/** Část názvu souboru pro daný rank (numerické 7–9 se nulují, zbytek 1:1). */
-function rankSlug(rank: Rank): string {
-  switch (rank) {
-    case "7":
-      return "07";
-    case "8":
-      return "08";
-    case "9":
-      return "09";
-    default:
-      return rank; // "10", "svrsek", "spodek", "kral", "eso"
-  }
+  return `${cardsDir()}${suitIconFileName(suit)}`;
 }
 
 /** Cesta k obrázku konkrétní karty, např. {srdce,7} -> "/cards_01/srdce-07.png". */
 export function cardSrc(card: Card): string {
-  return `${cardsDir()}${card.suit}-${rankSlug(card.rank)}.png`;
+  return `${cardsDir()}${cardFileName(card.suit, card.rank)}`;
 }
 
 /**
@@ -87,7 +74,7 @@ export function cardSrc(card: Card): string {
 export function themePreviewSrcs(themeId: string): { cards: string[]; rub: string } {
   const dir = cardsDirOf(themeId);
   return {
-    cards: SUITS.map((suit) => `${dir}${suit}-${rankSlug(PREVIEW_RANK)}.png`),
-    rub: `${dir}rub.png`,
+    cards: SUITS.map((suit) => `${dir}${cardFileName(suit, PREVIEW_RANK)}`),
+    rub: `${dir}${RUB_FILE}`,
   };
 }

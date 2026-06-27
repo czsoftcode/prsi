@@ -132,6 +132,11 @@
       "id": 26,
       "title": "Engine: guard pořadí a vítěze",
       "status": "done"
+    },
+    {
+      "id": 27,
+      "title": "Registr motivů: validace kompletní sady",
+      "status": "done"
     }
   ]
 }
