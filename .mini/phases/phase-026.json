@@ -1,0 +1,40 @@
+{
+  "id": 26,
+  "title": "Engine: guard pořadí a vítěze",
+  "goal": "playCard, drawCard a standAce odmítnou (Error) tah nesprávného hráče i tah po skončené hře, čímž se kontrakt pravidel přesune z UI do enginu; pokryto negativními testy v moves.test.ts.",
+  "status": "done",
+  "fromFinding": "25-5",
+  "steps": [
+    {
+      "title": "Sdílený guard tahu (assertTurn)",
+      "status": "done",
+      "detail": "Privátní helper v moves.ts: vyhodí Error, když winnerOf(state) !== null nebo player !== state.currentPlayer; pořadí kontrol winner -> currentPlayer, nic nemění."
+    },
+    {
+      "title": "Zapojit guard do playCard, drawCard, standAce",
+      "status": "done",
+      "detail": "Volání assertTurn na začátku každé funkce, před stávajícími kontrolami (ownership / pendingAces)."
+    },
+    {
+      "title": "Negativní testy: tah nesprávného hráče",
+      "status": "done",
+      "detail": "V moves.test.ts pro všechny tři funkce volání za soupeře (player !== currentPlayer) vyhodí Error; test má zuby (padne při dočasném odstranění guardu)."
+    },
+    {
+      "title": "Negativní testy: tah po skončené hře",
+      "status": "done",
+      "detail": "Stav s prázdnou rukou (winnerOf !== null): každá ze tří funkcí vyhodí Error i kdyby byl player jinak na tahu."
+    },
+    {
+      "title": "Zelená regrese: suite, build, lint, E2E",
+      "status": "done",
+      "detail": "Existující happy-path testy a UI smyčka (game.ts) procházejí beze změny; build + lint + celá test suite + E2E zelené."
+    }
+  ],
+  "startedAt": "2026-06-27T14:53:32.379Z",
+  "completedAt": "2026-06-27T15:06:36.194Z",
+  "autoCommit": {
+    "preSha": "9e0f11788f0805cdb823d85618288dff60de822f",
+    "subject": "Phase 26: Engine: guard pořadí a vítěze"
+  }
+}

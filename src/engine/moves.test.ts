@@ -5,12 +5,17 @@ import { isPlayable, playableCards, playCard, drawCard, standAce, winnerOf } fro
 const c = (suit: Suit, rank: Card["rank"]): Card => ({ suit, rank });
 const key = (card: Card) => `${card.suit}-${card.rank}`;
 
-/** Sestaví stav z dílčích polí; doplní rozumné defaulty. */
+/**
+ * Sestaví stav z dílčích polí; doplní rozumné defaulty. Obě ruce defaultují na
+ * jednu placeholder kartu (= rozehraná partie), aby `winnerOf` byl null a guard
+ * pořadí/konce hry nehlásil falešnou výhru. Testy, které potřebují prázdnou ruku
+ * nebo konkrétní karty, si je nastaví explicitně.
+ */
 function makeState(partial: Partial<GameState>): GameState {
   const discardPile = partial.discardPile ?? [c("srdce", "kral")];
   return {
-    playerHand: partial.playerHand ?? [],
-    aiHand: partial.aiHand ?? [],
+    playerHand: partial.playerHand ?? [c("zaludy", "kral")],
+    aiHand: partial.aiHand ?? [c("zaludy", "kral")],
     drawPile: partial.drawPile ?? [],
     discardPile,
     currentSuit: partial.currentSuit ?? discardPile[discardPile.length - 1]!.suit,
@@ -104,6 +109,7 @@ describe("playCard", () => {
   it("funguje i pro AI", () => {
     const state = makeState({
       aiHand: [c("srdce", "9")],
+      currentPlayer: "ai",
       discardPile: [c("srdce", "kral")],
     });
     const next = playCard(state, "ai", c("srdce", "9"));
@@ -137,7 +143,7 @@ describe("drawCard", () => {
 
   it("při prázdném balíčku remíchá odhazovací hromádku bez vrchní karty", () => {
     const state = makeState({
-      playerHand: [],
+      playerHand: [c("kule", "9")], // jedna karta v ruce — hráč s prázdnou rukou by už vyhrál
       drawPile: [],
       discardPile: [c("srdce", "7"), c("srdce", "8"), c("srdce", "kral")], // top = kral
       currentSuit: "srdce",
@@ -146,9 +152,12 @@ describe("drawCard", () => {
     // vrchní karta zůstává na hromádce
     expect(next.discardPile.map(key)).toEqual(["srdce-kral"]);
     // líznula se jedna z remíchaných (7/8), v balíčku zbyla druhá
-    expect(next.playerHand).toHaveLength(1);
+    expect(next.playerHand).toHaveLength(2);
     expect(next.drawPile).toHaveLength(1);
-    const moved = [...next.playerHand, ...next.drawPile].map(key).sort();
+    // výchozí kule-9 zůstává, remíchané 7/8 se rozdělily mezi ruku a balíček
+    const moved = [...next.playerHand.filter((card) => key(card) !== "kule-9"), ...next.drawPile]
+      .map(key)
+      .sort();
     expect(moved).toEqual(["srdce-7", "srdce-8"]);
   });
 
@@ -186,7 +195,7 @@ describe("střídání tahu", () => {
 
   it("po líznutí přechází tah na soupeře", () => {
     const state = makeState({
-      aiHand: [],
+      aiHand: [c("srdce", "8")],
       drawPile: [c("kule", "9")],
       currentPlayer: "ai",
     });
@@ -371,12 +380,12 @@ describe("sedma — hromadění a líznutí penalty", () => {
       [3, 6],
     ] as const) {
       const state = makeState({
-        playerHand: [],
+        playerHand: [c("zaludy", "kral")], // 1 výchozí karta — s prázdnou rukou by hráč už vyhrál
         drawPile,
         pendingSevens: pending,
       });
       const next = drawCard(state, "player", noRng);
-      expect(next.playerHand).toHaveLength(expected);
+      expect(next.playerHand).toHaveLength(expected + 1); // +1 výchozí karta
       expect(next.pendingSevens).toBe(0);
     }
   });
@@ -384,7 +393,7 @@ describe("sedma — hromadění a líznutí penalty", () => {
   it("ber 8 při 4 nakupených sedmách (remíchá uprostřed penalty)", () => {
     // 5 v balíčku + 3 pod vrchní = 8 lízatelných; po 5 kartách dojde a remíchá se.
     const state = makeState({
-      playerHand: [],
+      playerHand: [c("zaludy", "kral")], // 1 výchozí karta
       drawPile: [
         c("kule", "7"),
         c("kule", "8"),
@@ -397,7 +406,7 @@ describe("sedma — hromadění a líznutí penalty", () => {
       pendingSevens: 4,
     });
     const next = drawCard(state, "player", noRng);
-    expect(next.playerHand).toHaveLength(8); // 2 × 4
+    expect(next.playerHand).toHaveLength(9); // 1 výchozí + 2 × 4
     expect(next.pendingSevens).toBe(0);
     // vrchní karta zůstala na hromádce
     expect(next.discardPile.map(key)).toEqual(["srdce-kral"]);
@@ -405,14 +414,14 @@ describe("sedma — hromadění a líznutí penalty", () => {
 
   it("penalta větší než dostupné karty vezme jen co jde (nezacyklí se)", () => {
     const state = makeState({
-      playerHand: [],
+      playerHand: [c("zaludy", "kral")], // 1 výchozí karta
       drawPile: [c("kule", "8"), c("kule", "9"), c("kule", "10")], // 3 + 0 pod vrchní
       discardPile: [c("srdce", "kral")],
       currentSuit: "srdce",
       pendingSevens: 4, // chtělo by 8, ale jsou jen 3
     });
     const next = drawCard(state, "player", noRng);
-    expect(next.playerHand).toHaveLength(3);
+    expect(next.playerHand).toHaveLength(4); // 1 výchozí + 3 dostupné
     expect(next.pendingSevens).toBe(0);
   });
 });
@@ -442,5 +451,79 @@ describe("winnerOf", () => {
     const next = playCard(state, "player", c("srdce", "7"));
     expect(next.playerHand).toHaveLength(0);
     expect(winnerOf(next)).toBe("player");
+  });
+});
+
+describe("guard pořadí tahu — tah nesprávného hráče", () => {
+  const noRng = () => 0;
+
+  // Ve všech případech má volající hráč legální tah (vlastní hratelnou kartu /
+  // smí líznout / smí stát), takže jediný důvod k Erroru je guard pořadí — bez
+  // guardu by volání prošlo a test by spadl (má zuby).
+  it("playCard za hráče, který není na tahu, vyhodí Error", () => {
+    const state = makeState({
+      currentPlayer: "ai",
+      playerHand: [c("srdce", "8")],
+      aiHand: [c("kule", "9")],
+      discardPile: [c("srdce", "kral")],
+    });
+    expect(() => playCard(state, "player", c("srdce", "8"))).toThrow(/na tahu/);
+  });
+
+  it("drawCard za hráče, který není na tahu, vyhodí Error", () => {
+    const state = makeState({
+      currentPlayer: "ai",
+      playerHand: [c("srdce", "8")],
+      aiHand: [c("kule", "9")],
+      drawPile: [c("kule", "7")],
+    });
+    expect(() => drawCard(state, "player", noRng)).toThrow(/na tahu/);
+  });
+
+  it("standAce za hráče, který není na tahu, vyhodí Error", () => {
+    const state = makeState({
+      currentPlayer: "ai",
+      pendingAces: 1,
+      playerHand: [c("srdce", "8")],
+      aiHand: [c("kule", "9")],
+    });
+    expect(() => standAce(state, "player")).toThrow(/na tahu/);
+  });
+});
+
+describe("guard pořadí tahu — tah po skončené hře", () => {
+  const noRng = () => 0;
+
+  // Vítěz je AI (prázdná ruka), ale na tahu je poražený hráč (currentPlayer ===
+  // "player"). Kontrola hráče by tedy prošla — Error padá výhradně z kontroly
+  // konce hry, která jde první.
+  it("playCard po výhře vyhodí Error i pro hráče na tahu", () => {
+    const state = makeState({
+      currentPlayer: "player",
+      playerHand: [c("srdce", "8")],
+      aiHand: [],
+      discardPile: [c("srdce", "kral")],
+    });
+    expect(() => playCard(state, "player", c("srdce", "8"))).toThrow(/skončila/);
+  });
+
+  it("drawCard po výhře vyhodí Error i pro hráče na tahu", () => {
+    const state = makeState({
+      currentPlayer: "player",
+      playerHand: [c("srdce", "8")],
+      aiHand: [],
+      drawPile: [c("kule", "7")],
+    });
+    expect(() => drawCard(state, "player", noRng)).toThrow(/skončila/);
+  });
+
+  it("standAce po výhře vyhodí Error i pro hráče na tahu", () => {
+    const state = makeState({
+      currentPlayer: "player",
+      pendingAces: 1,
+      playerHand: [c("srdce", "8")],
+      aiHand: [],
+    });
+    expect(() => standAce(state, "player")).toThrow(/skončila/);
   });
 });

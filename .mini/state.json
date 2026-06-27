@@ -127,6 +127,11 @@
       "id": 25,
       "title": "AI: strategické šetření sedmy",
       "status": "done"
+    },
+    {
+      "id": 26,
+      "title": "Engine: guard pořadí a vítěze",
+      "status": "done"
     }
   ]
 }

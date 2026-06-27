@@ -30,6 +30,23 @@ function otherPlayer(player: Player): Player {
 }
 
 /**
+ * Guard pořadí a konce hry pro veřejné tahové operace. Engine je deklarovaný jako
+ * jediná vrstva pravidel, takže pořadí tahu nesmí hlídat jen UI: tady tvrdě selže,
+ * když (1) je partie už rozhodnutá (winnerOf !== null) nebo (2) operaci volá hráč,
+ * který není na tahu. Kontrola konce hry jde první — po výhře je `currentPlayer`
+ * poražený, takže samotná kontrola hráče by tah po skončené hře nezachytila. Čistá
+ * funkce — nic nemění, jen případně vyhodí Error.
+ */
+function assertTurn(state: GameState, player: Player, op: string): void {
+  if (winnerOf(state) !== null) {
+    throw new Error(`${op}: hra už skončila, další tah nelze zahrát`);
+  }
+  if (player !== state.currentPlayer) {
+    throw new Error(`${op}: na tahu je "${state.currentPlayer}", ne "${player}"`);
+  }
+}
+
+/**
  * Lze danou kartu zahrát? Když na hráče míří nakupená esa (pendingAces > 0), je
  * hratelné POUZE eso (přebití; svršek esa neruší) — jediná alternativa je stání
  * (standAce). Když míří nakupené sedmy (pendingSevens > 0), je hratelná POUZE sedma
@@ -91,6 +108,7 @@ export function playCard(
   card: Card,
   chosenSuit?: Suit,
 ): GameState {
+  assertTurn(state, player, "playCard");
   const hand = handOf(state, player);
   const index = hand.findIndex((c) => sameCard(c, card));
   if (index === -1) {
@@ -142,6 +160,7 @@ export function playCard(
  * nepřechází). Čistá funkce — vrací nový stav, vstup nemění.
  */
 export function drawCard(state: GameState, player: Player, rng: Rng): GameState {
+  assertTurn(state, player, "drawCard");
   if (state.pendingAces > 0) {
     // Pod nakupenými esy se nelíže — jedinou alternativou k přebití je stání (standAce).
     // Tichý líz by porušil pravidlo bez signálu, proto raději tvrdě selži.
@@ -196,6 +215,7 @@ export function drawCard(state: GameState, player: Player, rng: Rng): GameState 
  * Čistá funkce — vrací nový stav, vstup nemění.
  */
 export function standAce(state: GameState, player: Player): GameState {
+  assertTurn(state, player, "standAce");
   if (state.pendingAces <= 0) {
     throw new Error("standAce: stát lze jen proti nakupeným esům (pendingAces === 0)");
   }

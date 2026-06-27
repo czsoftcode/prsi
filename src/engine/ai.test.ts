@@ -10,7 +10,9 @@ const sameCard = (a: Card, b: Card) => a.suit === b.suit && a.rank === b.rank;
 function makeState(partial: Partial<GameState>): GameState {
   const discardPile = partial.discardPile ?? [c("srdce", "kral")];
   return {
-    playerHand: partial.playerHand ?? [],
+    // Soupeřova ruka defaultuje na jednu kartu (rozehraná partie), aby winnerOf byl
+    // null a guard pořadí/konce hry v moves nehlásil falešnou výhru hráče.
+    playerHand: partial.playerHand ?? [c("zaludy", "kral")],
     aiHand: partial.aiHand ?? [],
     drawPile: partial.drawPile ?? [c("kule", "8")],
     discardPile,
