@@ -194,9 +194,10 @@ body {
   background: rgba(255, 211, 77, 0.35);
 }
 
-/* Tlačítko otevírající výběr motivu — vypadá jako ostatní indikátory. */
+/* Tlačítka v řadě indikátorů — vypadají jako ostatní indikátory. */
 .indicator--theme,
-.indicator--music {
+.indicator--music,
+.indicator--difficulty {
   color: inherit;
   font: inherit;
   border: none;
@@ -206,7 +207,9 @@ body {
 .indicator--theme:hover,
 .indicator--theme:focus,
 .indicator--music:hover,
-.indicator--music:focus {
+.indicator--music:focus,
+.indicator--difficulty:hover,
+.indicator--difficulty:focus {
   background: rgba(255, 211, 77, 0.35);
 }
 

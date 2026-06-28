@@ -1,0 +1,48 @@
+{
+  "id": 35,
+  "title": "UI: výběr úrovně obtížnosti",
+  "goal": "Přidat perzistentní volbu úrovně AI (difficulty.ts dle vzoru hint.ts — best-effort localStorage, default dospělý) a cyklující tlačítko v hlavičce pro přepínání mezi dítě/dospělý/expert. Zvolená úroveň se propíše do chooseAiMove v game.ts a uplatní se až od nové partie (změna uprostřed rozehrané hry neovlivní běžící partii). Pokrýt testy modulu (perzistence, default, cyklus) i propojení herní smyčky.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Modul difficulty.ts (perzistence úrovně AI)",
+      "status": "done",
+      "detail": "src/ui/difficulty.ts dle vzoru hint.ts: líná init z localStorage (klíč prsi.difficulty), best-effort try/catch, default dospely. API getAiLevel/setAiLevel/cycleAiLevel (dítě→dospělý→expert→dítě). Validace uložené hodnoty proti AiLevel, neznámá → default."
+    },
+    {
+      "title": "Testy modulu difficulty.ts",
+      "status": "done",
+      "detail": "difficulty.test.ts: set→get perzistence, default při prázdném i poškozeném úložišti, cyklus přes všechny tři úrovně včetně wrap. localStorage mockovat jako u hint/audio testů."
+    },
+    {
+      "title": "Parametrizovat advanceAi o úroveň",
+      "status": "done",
+      "detail": "advanceAi(state, rng, level: AiLevel = dospely) v game.ts předá level do chooseAiMove. Default zachová zpětnou kompatibilitu stávajících volání. Test, že advanceAi úroveň skutečně předá (reálný rozdíl dite vs expert, ne mock)."
+    },
+    {
+      "title": "Tlačítko obtížnosti v hlavičce",
+      "status": "done",
+      "detail": "renderDifficultyButton() v render.ts dle renderHintButton: data-action=difficulty, ikona 🧒/🧑/🎓 dle getAiLevel(), title/aria-label Obtížnost: dítě|dospělý|expert. Zařadit vedle nápovědy/hudby."
+    },
+    {
+      "title": "Propojení kliku a herní smyčky v main.ts",
+      "status": "done",
+      "detail": "Klik na data-action=difficulty (před locked, jako hint): cycleAiLevel() + draw(). Volání advanceAi na main.ts:175 změnit na advanceAi(state, rng, getAiLevel()) — úroveň se uplatní okamžitě na další tah AI."
+    },
+    {
+      "title": "Regrese",
+      "status": "done",
+      "detail": "typecheck + build + celá testovací sada zelená."
+    }
+  ],
+  "startedAt": "2026-06-28T12:30:58.918Z",
+  "resolvedVerify": [
+    "Vizuál a chování tlačítka obtížnosti v prohlížeči",
+    "Okamžitý dopad změny úrovně na hru"
+  ],
+  "completedAt": "2026-06-28T12:50:19.666Z",
+  "autoCommit": {
+    "preSha": "3e86a23a1496a746a08a4ca83fa75d1fe78b9b1c",
+    "subject": "Phase 35: UI: výběr úrovně obtížnosti"
+  }
+}

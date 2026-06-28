@@ -172,6 +172,11 @@
       "id": 34,
       "title": "AI: tři úrovně obtížnosti (engine)",
       "status": "done"
+    },
+    {
+      "id": 35,
+      "title": "UI: výběr úrovně obtížnosti",
+      "status": "done"
     }
   ]
 }

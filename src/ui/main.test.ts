@@ -30,4 +30,19 @@ describe("main bootstrap", () => {
     btn.click();
     expect(document.querySelector(".overlay--theme")).not.toBeNull();
   });
+
+  it("klik na tlačítko obtížnosti cykluje úroveň a překreslí popisek", async () => {
+    localStorage.clear(); // začni od defaultu (dospělý), ať je cyklus deterministický
+    await import("./main");
+    const sel = "#app [data-action='difficulty']";
+    expect(
+      document.querySelector<HTMLButtonElement>(sel)!.getAttribute("aria-label"),
+    ).toBe("Obtížnost: dospělý");
+    document.querySelector<HTMLButtonElement>(sel)!.click();
+    // dospělý → expert (cyklus dítě→dospělý→expert→dítě); po překreslení nový label
+    expect(
+      document.querySelector<HTMLButtonElement>(sel)!.getAttribute("aria-label"),
+    ).toBe("Obtížnost: expert");
+    expect(localStorage.getItem("prsi.difficulty")).toBe("expert");
+  });
 });

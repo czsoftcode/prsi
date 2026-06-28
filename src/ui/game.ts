@@ -12,7 +12,7 @@ import {
   type Suit,
 } from "../engine/cards";
 import { playableCards, playCard, drawCard, standAce, winnerOf } from "../engine/moves";
-import { chooseAiMove } from "../engine/ai";
+import { chooseAiMove, type AiLevel } from "../engine/ai";
 
 /** Bezpečnostní strop kol AI smyčky (proti zacyklení při neočekávaném stavu). */
 const AI_LOOP_GUARD = 200;
@@ -122,13 +122,17 @@ export function playerStand(state: GameState): GameState | null {
  * stall — drawCard vrátí tentýž stav (prázdný balíček, nelze remíchat) a tah se
  * neposune. Strop AI_LOOP_GUARD je pojistka proti zacyklení.
  */
-export function advanceAi(state: GameState, rng: Rng): GameState {
+export function advanceAi(
+  state: GameState,
+  rng: Rng,
+  level: AiLevel = "dospely",
+): GameState {
   let cur = state;
   for (let guard = 0; guard < AI_LOOP_GUARD; guard++) {
     if (cur.currentPlayer !== "ai" || winnerOf(cur) !== null) {
       break;
     }
-    const move = chooseAiMove(cur);
+    const move = chooseAiMove(cur, level);
     const next =
       move.type === "play"
         ? playCard(cur, "ai", move.card, move.chosenSuit)

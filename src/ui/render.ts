@@ -12,6 +12,8 @@ import {
 } from "./assets";
 import { isMusicEnabled } from "./audio";
 import { isHintEnabled } from "./hint";
+import { getAiLevel } from "./difficulty";
+import type { AiLevel } from "../engine/ai";
 
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -176,6 +178,30 @@ function renderHintButton(): HTMLButtonElement {
   return btn;
 }
 
+/** Ikona a popisek pro každou úroveň obtížnosti AI. */
+const DIFFICULTY_DISPLAY: Record<AiLevel, { icon: string; label: string }> = {
+  dite: { icon: "🧒", label: "dítě" },
+  dospely: { icon: "🧑", label: "dospělý" },
+  expert: { icon: "🎓", label: "expert" },
+};
+
+/**
+ * Cyklující tlačítko úrovně obtížnosti AI. Ikona/popisek odráží aktuální volbu;
+ * klik (delegovaný listener v main.ts) přepne na další úroveň. Změna se uplatní
+ * okamžitě na další tah AI.
+ */
+function renderDifficultyButton(): HTMLButtonElement {
+  const { icon, label } = DIFFICULTY_DISPLAY[getAiLevel()];
+  const btn = el("button", "indicator indicator--difficulty");
+  btn.type = "button";
+  btn.dataset.action = "difficulty";
+  const text = `Obtížnost: ${label}`;
+  btn.title = text;
+  btn.setAttribute("aria-label", text);
+  btn.textContent = icon;
+  return btn;
+}
+
 /** Indikátor, kdo je na tahu. */
 function renderTurnIndicator(state: GameState): HTMLElement {
   const box = el("div", "indicator indicator--turn");
@@ -205,7 +231,12 @@ function renderCenterZone(state: GameState): HTMLElement {
 
   // Pod balíčky zůstávají ovládací tlačítka a indikátory nakupených sedem/es.
   const indicators = el("div", "indicators");
-  indicators.append(renderThemeButton(), renderMusicButton(), renderHintButton());
+  indicators.append(
+    renderThemeButton(),
+    renderMusicButton(),
+    renderHintButton(),
+    renderDifficultyButton(),
+  );
   const sevens = renderSevensIndicator(state);
   if (sevens) {
     indicators.append(sevens);

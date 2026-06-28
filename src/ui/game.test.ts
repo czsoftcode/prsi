@@ -258,6 +258,28 @@ describe("advanceAi", () => {
     const s = makeState({ currentPlayer: "ai", playerHand: [] });
     expect(advanceAi(s, seededRng(1))).toBe(s);
   });
+
+  it("propíše úroveň do chooseAiMove: dítě vs expert volí jiný tah", () => {
+    // Attack mode (hráč má ≤2 karty): expert vrhne eso, dítě drží útočné karty
+    // a zahraje obyčejnou. Stejný vstup → různý tah = level se reálně předává
+    // dál (zuby: ne mock). Oba mají na barvu srdce dvě hratelné karty: eso a 8.
+    const base = (): GameState =>
+      makeState({
+        currentPlayer: "ai",
+        playerHand: [card("kule", "8"), card("zelene", "9")], // ≤2 → attack mode
+        aiHand: [card("srdce", "eso"), card("srdce", "8")],
+        discardPile: [card("srdce", "9")],
+        currentSuit: "srdce",
+      });
+
+    const expert = advanceAi(base(), seededRng(1), "expert");
+    expect(expert.pendingAces).toBe(1); // zahrál eso
+    expect(expert.aiHand).toEqual([card("srdce", "8")]); // eso pryč
+
+    const dite = advanceAi(base(), seededRng(1), "dite");
+    expect(dite.pendingAces).toBe(0); // eso si nechal
+    expect(dite.aiHand).toEqual([card("srdce", "eso")]); // zahrál obyčejnou 8
+  });
 });
 
 describe("isPat", () => {

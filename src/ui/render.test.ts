@@ -4,12 +4,15 @@ import type { Card, GameState } from "../engine/cards";
 import { render } from "./render";
 import { isMusicEnabled } from "./audio";
 import { isHintEnabled } from "./hint";
+import { getAiLevel } from "./difficulty";
 
 // render čte stav hudby pro popisek vypínače — mockujeme ho, ať test ovládá
 // zap/vyp nezávisle na localStorage. Default true odpovídá reálnému chování.
 vi.mock("./audio", () => ({ isMusicEnabled: vi.fn(() => true) }));
 // stejně mockujeme stav nápovědy — řídí, zda render přidá třídu card--playable.
 vi.mock("./hint", () => ({ isHintEnabled: vi.fn(() => true) }));
+// a stav úrovně obtížnosti — řídí ikonu/popisek cyklujícího tlačítka.
+vi.mock("./difficulty", () => ({ getAiLevel: vi.fn(() => "dospely") }));
 
 function card(suit: Card["suit"], rank: Card["rank"]): Card {
   return { suit, rank };
@@ -86,6 +89,26 @@ describe("render (jsdom smoke)", () => {
     expect(off?.textContent).toBe("🔇");
     expect(off?.getAttribute("aria-label")).toContain("vyp");
     expect(off?.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("vykreslí tlačítko obtížnosti s ikonou a popiskem dle úrovně", () => {
+    vi.mocked(getAiLevel).mockReturnValue("expert");
+    render(makeState(), root);
+    const btn = root.querySelector<HTMLButtonElement>(
+      ".indicators [data-action='difficulty']",
+    );
+    expect(btn).not.toBeNull();
+    expect(btn?.tagName).toBe("BUTTON");
+    expect(btn?.textContent).toBe("🎓");
+    expect(btn?.getAttribute("aria-label")).toBe("Obtížnost: expert");
+
+    vi.mocked(getAiLevel).mockReturnValue("dite");
+    render(makeState(), root);
+    const child = root.querySelector<HTMLButtonElement>(
+      ".indicators [data-action='difficulty']",
+    );
+    expect(child?.textContent).toBe("🧒");
+    expect(child?.getAttribute("aria-label")).toBe("Obtížnost: dítě");
   });
 
   it("ve středové zóně jsou balíčky před blokem indikátorů", () => {

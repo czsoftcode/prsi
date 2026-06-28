@@ -26,6 +26,7 @@ import {
   setMusicEnabled,
 } from "./audio";
 import { isHintEnabled, setHintEnabled } from "./hint";
+import { getAiLevel, cycleAiLevel } from "./difficulty";
 
 /** Prodleva před reakcí AI, aby byl tah vidět (není to animace, jen pauza). */
 const AI_DELAY_MS = 600;
@@ -172,7 +173,7 @@ function startGame(app: HTMLElement): void {
     // Zdroje obou možných animací, zachycené před překreslením.
     const playFrom = rectOf(".zone--ai .card--back") ?? rectOf(".zone--ai");
     const drawFrom = rectOf(".pile--draw");
-    state = advanceAi(state, rng);
+    state = advanceAi(state, rng, getAiLevel());
     const played = topDiscard(state);
     const drew = state.aiHand.length - aiCountBefore;
     draw();
@@ -300,6 +301,14 @@ function startGame(app: HTMLElement): void {
     if (target.closest<HTMLElement>("[data-action='hint']")) {
       setHintEnabled(!isHintEnabled());
       draw(); // překresli stůl: tlačítko + (ne)zvýraznění hratelných karet
+      return;
+    }
+    // Přepínač obtížnosti AI — také PŘED zámkem `locked`, ať jde cyklovat
+    // i v okně AI prodlevy. Změna se uplatní okamžitě na další tah AI
+    // (advanceAi čte getAiLevel()); běžící tah hru nepřekresluje jinak než labelem.
+    if (target.closest<HTMLElement>("[data-action='difficulty']")) {
+      cycleAiLevel();
+      draw(); // překresli tlačítko (nová ikona/popisek)
       return;
     }
     if (locked) {

@@ -15,5 +15,5 @@
 - [x] Registr dostupných motivů (cards_NN + dashboard_NN), aby obrazovka výběru nabízela motivy bez natvrdo zadaného seznamu a šlo přidat další motiv jen nahráním složky.
 - [x] Eso: přebití a stání — eso vytvoří čekací stav na soupeři (nový stav v enginu, obdoba pendingSevens); soupeř buď přebije vlastním esem (řetězení), nebo stojí a přijde o tah. V tomto stavu nelze líznout (výjimka kromě esa z pravidla líznout kdykoliv). Promítnout do AI.
 - [x] Sedma — AI strana pravidla nejsem povinen hrát sedmu: heuristika AI, aby uměla strategicky šetřit sedmu a místo jejího zahrání vzít penaltu (lidský hráč to už umí přes uvolněný gate ve fázi 23).
-- [ ] UI: výběr úrovně obtížnosti (dítě/dospělý/expert) + propojení s chooseAiMove
-- [ ] Vize: vyškrtnout non-goal 'Nepřidávej nastavení obtížnosti' přes /mini:project (po dokončení AI úrovní)
+- [x] UI: výběr úrovně obtížnosti (dítě/dospělý/expert) + propojení s chooseAiMove
+- [x] Vize: vyškrtnout non-goal 'Nepřidávej nastavení obtížnosti' přes /mini:project (po dokončení AI úrovní)
