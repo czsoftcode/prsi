@@ -167,6 +167,11 @@
       "id": 33,
       "title": "Upgrade vitest na bezpečnou verzi",
       "status": "done"
+    },
+    {
+      "id": 34,
+      "title": "AI: tři úrovně obtížnosti (engine)",
+      "status": "done"
     }
   ]
 }

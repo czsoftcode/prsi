@@ -236,3 +236,99 @@ describe("chooseAiMove — čistota", () => {
     expect(JSON.stringify(state)).toBe(snapshot);
   });
 });
+
+describe("chooseAiMove — úroveň dítě (slabá)", () => {
+  it("volí nejnižší prioritu: zahodí svršek dřív než eso (opak dospělého)", () => {
+    const state = makeState({
+      currentSuit: "srdce",
+      aiHand: [c("srdce", "svrsek"), c("srdce", "eso")],
+    });
+    const child = chooseAiMove(state, "dite");
+    const adult = chooseAiMove(state, "dospely");
+    expect(child).toMatchObject({ type: "play", card: { rank: "svrsek" } });
+    if (child.type === "play") {
+      expect(child.chosenSuit).toBeDefined();
+    }
+    expect(adult).toMatchObject({ type: "play", card: { rank: "eso" } });
+  });
+
+  it("drží útočnou sedmu, zahraje obyčejnou kartu", () => {
+    const state = makeState({
+      currentSuit: "srdce",
+      aiHand: [c("srdce", "8"), c("srdce", "7")],
+    });
+    expect(chooseAiMove(state, "dite")).toMatchObject({
+      type: "play",
+      card: { rank: "8" },
+    });
+  });
+
+  it("pod nakupenými sedmami sedmu zahraje (vynuceno, jako ostatní úrovně)", () => {
+    const state = makeState({
+      discardPile: [c("srdce", "7")],
+      currentSuit: "srdce",
+      pendingSevens: 1,
+      aiHand: [c("kule", "7"), c("srdce", "kral")],
+    });
+    expect(chooseAiMove(state, "dite")).toMatchObject({
+      type: "play",
+      card: { rank: "7" },
+    });
+  });
+});
+
+describe("chooseAiMove — úroveň expert (šetří útok)", () => {
+  it("šetří eso, dokud má soupeř dost karet (zbaví se obyčejné)", () => {
+    const state = makeState({
+      currentSuit: "srdce",
+      playerHand: [c("kule", "8"), c("kule", "9"), c("kule", "10"), c("zelene", "8"), c("zelene", "9")],
+      aiHand: [c("srdce", "8"), c("srdce", "eso")],
+    });
+    expect(chooseAiMove(state, "expert")).toMatchObject({
+      type: "play",
+      card: { rank: "8" },
+    });
+    // dospělý naopak eso zahraje hned
+    expect(chooseAiMove(state, "dospely")).toMatchObject({
+      type: "play",
+      card: { rank: "eso" },
+    });
+  });
+
+  it("vrhne eso, když je soupeř blízko výhry (≤ práh karet)", () => {
+    const state = makeState({
+      currentSuit: "srdce",
+      playerHand: [c("kule", "8")],
+      aiHand: [c("srdce", "8"), c("srdce", "eso")],
+    });
+    expect(chooseAiMove(state, "expert")).toMatchObject({
+      type: "play",
+      card: { rank: "eso" },
+    });
+  });
+
+  it("svršek zahraje na přepnutí na vlastní převažující barvu", () => {
+    const state = makeState({
+      currentSuit: "srdce",
+      playerHand: [c("kule", "8"), c("kule", "9"), c("kule", "10")],
+      aiHand: [c("srdce", "svrsek"), c("srdce", "eso"), c("kule", "9"), c("kule", "10")],
+    });
+    const move = chooseAiMove(state, "expert");
+    expect(move).toMatchObject({ type: "play", card: { rank: "svrsek" } });
+    if (move.type === "play") {
+      expect(move.chosenSuit).toBe("kule"); // převažující barva ve zbytku ruky
+    }
+  });
+
+  it("svrškem neplýtvá, když by jen vracel stejnou barvu (drží ho)", () => {
+    const state = makeState({
+      currentSuit: "srdce",
+      playerHand: [c("kule", "8"), c("kule", "9"), c("kule", "10")],
+      aiHand: [c("srdce", "svrsek"), c("srdce", "9")],
+    });
+    expect(chooseAiMove(state, "expert")).toMatchObject({
+      type: "play",
+      card: { rank: "9" },
+    });
+  });
+});

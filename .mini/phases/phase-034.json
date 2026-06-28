@@ -1,0 +1,42 @@
+{
+  "id": 34,
+  "title": "AI: tři úrovně obtížnosti (engine)",
+  "goal": "Parametrizovat chooseAiMove o úroveň ditě|dospely|expert se třemi deterministickými strategiemi (dítě = slabá bez náhody, dospělý = stávající heuristika, expert = chytřejší: šetří sedmy/esa a svršek na barvu) a pokrýt každou úroveň testy. Bez UI a bez Math.random — engine zůstává čistý a deterministický.",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Typ AiLevel + parametrizace chooseAiMove",
+      "status": "done",
+      "detail": "Pridat export type AiLevel = dite|dospely|expert a volitelny 2. parametr level: AiLevel = dospely. Bez nove strategie default beze zmeny chovani -> vsech 388 stavajicich testu prochazi (overuje dospely = stavajici heuristika)."
+    },
+    {
+      "title": "Strategie dite (deterministicky slaba)",
+      "status": "done",
+      "detail": "Slaby ale deterministicky vyber bez Math.random (napr. obracena priorita: svrsek/obycejne driv, utocne karty nesetri ani takticky nevyuziva). Pri pendingSevens/pendingAces se chova jako dnes. Vlastni describe overujici ze dite voli hur nez dospely ve stejnem stavu."
+    },
+    {
+      "title": "Strategie expert (setri utocne karty)",
+      "status": "done",
+      "detail": "Chytrejsi deterministicky vyber: prednostne se zbavuje obycejnych karet, sedmu a eso drzi jako utok (zahraje kdyz ma souper malo karet nebo je to vynucene), svrsek hraje jen na prepnuti na vlastni prevazujici barvu. Vlastni describe na klicove scenare."
+    },
+    {
+      "title": "Testy tri urovni + komentar v ai.ts",
+      "status": "done",
+      "detail": "Zkontrolovat pokryti vsech tri vetvi, doplnit/aktualizovat hlavickovy komentar o urovnich. Zuby: docasne rozbiti strategie shodi prislusny test."
+    },
+    {
+      "title": "Regrese: typecheck + build + cela sada",
+      "status": "done",
+      "detail": "tsc bez chyb, vite build projde, kompletni testovaci sada zelena."
+    }
+  ],
+  "startedAt": "2026-06-28T10:42:09.632Z",
+  "resolvedVerify": [
+    "Herní pocit tří úrovní v reálné partii"
+  ],
+  "completedAt": "2026-06-28T10:54:32.705Z",
+  "autoCommit": {
+    "preSha": "604430ba08437c9517e0b70691b2e9cbff5eb115",
+    "subject": "Phase 34: AI: tři úrovně obtížnosti (engine)"
+  }
+}

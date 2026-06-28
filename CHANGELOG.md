@@ -6,6 +6,9 @@ a projekt používá [sémantické verzování](https://semver.org/lang/cs/).
 
 ## [Unreleased]
 
+### Added
+- Engine AI nově umí tři úrovně obtížnosti (`chooseAiMove(state, level)`): **dítě** (slabá — útočné karty drží, zahazuje je pozdě), **dospělý** (dosavadní heuristika, výchozí) a **expert** (šetří sedmy a esa na finiš, kdy soupeři dochází ruka, a svrškem přepíná na vlastní převažující barvu). Všechny úrovně jsou deterministické (bez náhody). Zatím jen v enginu — výběr úrovně v UI přijde v navazující fázi.
+
 ## [2.3.0] - 2026-06-28
 
 ### Security
