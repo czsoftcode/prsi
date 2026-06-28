@@ -1,0 +1,34 @@
+{
+  "id": 33,
+  "title": "Upgrade vitest na bezpečnou verzi",
+  "goal": "Povýšit vitest (a @vitest/* pokud existuje) z ^2.1.x na nejnovější opravenou major verzi (dle auditu 4.x), znovu uzamknout závislosti a ověřit, že npm audit je bez známých advisories a celá testovací sada (388 testů) prochází. Opravit případné API rozdíly po major bumpu (config, vi.* mocky, defaulty prostředí). Jen vývojový toolchain, žádný produkční kód. (Řeší SEC-1 ze security review phází 1-29.)",
+  "status": "done",
+  "steps": [
+    {
+      "title": "Povýšit vitest na 4.x a sladit závislosti",
+      "status": "done",
+      "detail": "npm install -D vitest@^4 (+ @vitest/* pokud přibyde; případně bump jsdom, vyžaduje-li to peer). package.json + package-lock.json aktualizovány, instalace bez peer konfliktů."
+    },
+    {
+      "title": "Zprovoznit testovou sadu po bumpu",
+      "status": "done",
+      "detail": "npm test — opravit API/config rozdíly major verze (defineConfig z vitest/config, environment/per-file přepínač jsdom, chování vi.* mocků) dokud všech 388 testů neprojde. Doložit, co se muselo změnit."
+    },
+    {
+      "title": "Ověřit čistý audit",
+      "status": "done",
+      "detail": "npm audit — pět dosavadních advisories (vitest/vite/esbuild) pryč; pokud něco zůstane, popsat co a proč (nesouvisející / bez fixu)."
+    },
+    {
+      "title": "Regrese: build + typecheck",
+      "status": "done",
+      "detail": "npm run build a tsc --noEmit projdou bez chyby (produkční app build na vite 6 zůstává nedotčen)."
+    }
+  ],
+  "startedAt": "2026-06-28T09:01:43.726Z",
+  "completedAt": "2026-06-28T09:09:38.489Z",
+  "autoCommit": {
+    "preSha": "baf1eb55e5c812a3a9b2884f24d34ccae7403b0a",
+    "subject": "Phase 33: Upgrade vitest na bezpečnou verzi"
+  }
+}

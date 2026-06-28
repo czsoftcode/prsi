@@ -162,6 +162,11 @@
       "id": 32,
       "title": "Uvolnit style-src na unsafe-inline",
       "status": "done"
+    },
+    {
+      "id": 33,
+      "title": "Upgrade vitest na bezpečnou verzi",
+      "status": "done"
     }
   ]
 }
